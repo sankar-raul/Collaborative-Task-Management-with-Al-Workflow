@@ -1,5 +1,6 @@
 import { connectDB } from './config/db';
 import express from 'express';
+import { Request, Response } from 'express';
 import cors from 'cors';
 import http from 'http';
 import { Server, Socket } from 'socket.io';
@@ -53,6 +54,13 @@ io.on("connection", async (socket) => {
   });
 });
 
-const serverInstance = server.listen(PORT, () => {
+app.use((req: Request, res: Response) => {
+  res.status(404).json({ 
+    success: false,
+    message: "Route not found" 
+   });
+});
+
+server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

@@ -20,7 +20,7 @@ class AuthService {
             const newUser = new UserModel({
                 name,
                 email,
-                password,
+                password: passwordHash,
                 role: "User",
                 skills: skills,
                 availabilityHours: availabilityHours || 40,
@@ -33,8 +33,7 @@ class AuthService {
                 access_token,
             };
         } catch (error) {
-            console.error("Error registering user:", error);
-            throw new Error("Registration failed");
+            throw new Error(error.message || "Registration failed");
         }
     }
     static async login({
@@ -56,8 +55,8 @@ class AuthService {
                 access_token,
             };
         } catch (error) {
-            console.error("Error logging in:", error);
-            throw new Error("Login failed");
+            // console.error("Error logging in:", error);
+            throw new Error(error.message || "Login failed");
         }
     }
     static async logout(userId: string) {

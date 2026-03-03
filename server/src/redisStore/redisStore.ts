@@ -3,7 +3,7 @@ import { createClient } from 'redis'
 
 const REDIS_SERVER = process.env.REDIS_SERVER
 const is_dev_mode = config.EVIRONMENT == "development"
-console.log(is_dev_mode, REDIS_SERVER)
+// console.log(is_dev_mode, REDIS_SERVER)
 
 export const pub = createClient({url: is_dev_mode ? 'redis://127.0.0.1:6379' : REDIS_SERVER})
 export const sub = pub.duplicate()
@@ -13,7 +13,7 @@ export const redis = pub.duplicate()
     try {
         await Promise.all([pub.connect(), sub.connect(), redis.connect()])
         await redis.flushAll()
-        console.log("connected to redis")
+        console.log("[Redis] connected to redis")
     } catch (error) {
         console.log(error, '--> redis')
     }
