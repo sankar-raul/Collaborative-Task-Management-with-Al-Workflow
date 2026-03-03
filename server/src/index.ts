@@ -28,7 +28,6 @@ export const io = new Server(server, {
   cors: { origin: "*" }
 });
 
-
 io.use(async (socket, next) => {
     // const token = cookie.parse(socket.request.headers.cookie || '')?.access_token
     const token = socket.handshake.auth.token
