@@ -3,12 +3,16 @@ import express from 'express';
 import { Request, Response } from 'express';
 import cors from 'cors';
 import http from 'http';
-import { Server, Socket } from 'socket.io';
+import { Server } from 'socket.io';
 import softAuth from './api/middleware/softAuth';
 import authRoute from './api/routers/auth.route';
 import config from './config/config';
 import { connectUser, disconnectUser } from './redisStore/redisStore';
 import { JWTSecurity } from './utils/security';
+import projectRouter from './api/routers/project.route';
+import adminRoute from './api/routers/admin.route';
+import hardAuth from './api/middleware/hardAuth';
+import adminAuth from './api/middleware/adminAuth';
 
 const PORT = config.PORT || 8080;
 
@@ -22,6 +26,11 @@ app.use(express.json());
 app.use(softAuth);
 
 app.use("/api/auth", authRoute);
+app.use("/api/projects", hardAuth, projectRouter);
+app.use("/api/admin", adminAuth, adminRoute);
+// app.use("/api/tasks", require("./api/routers/task.route").default);
+// app.use("/api/comments", require("./api/routers/comment.route").default);
+// app.use("/api/notifications", require("./api/routers/notification.route").default);
 
 const server = http.createServer(app);
 
