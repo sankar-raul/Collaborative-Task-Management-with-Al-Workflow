@@ -1,7 +1,10 @@
-import { useState, KeyboardEvent, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
+import type { KeyboardEvent } from "react";
 import { Link } from "react-router-dom";
 import Input from "../../components/shared/Input";
 import Button from "../../components/shared/Button";
+import { post } from "../../utils/api/apiMethod";
+import { useNavigate } from "react-router-dom";
 
 const SUGGESTED_SKILLS = [
   "react", "reactjs", "react-native", "node.js", "typescript",
@@ -11,7 +14,7 @@ const SUGGESTED_SKILLS = [
 
 const Register = () => {
   const [formData, setFormData] = useState({
-    username: "",
+    name: "",
     email: "",
     password: "",
     skills: [] as string[],
@@ -20,6 +23,9 @@ const Register = () => {
   const [skillInput, setSkillInput] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -72,10 +78,23 @@ const Register = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Register:", formData);
-    // TODO: Dispatch Redux register action here
+    setLoading(true);
+    setError("");
+
+    try {
+      const response = await post("auth/register", formData);
+      if (response.success && response.auth?.access_token) {
+        localStorage.setItem("access_token", response.auth.access_token);
+        // Optionally redirect the user or show success
+        navigate("/login");
+      }
+    } catch (err: any) {
+      setError(err.message || "Failed to register. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const filteredSuggestions = SUGGESTED_SKILLS.filter(
@@ -119,16 +138,17 @@ const Register = () => {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
-            
-              <Input
-                label="Username"
-                type="text"
-                name="username"
-                placeholder="janedoe"
-                value={formData.username}
-                onChange={handleChange}
-                required
-              />
+            {error && <div className="text-red-500 text-sm font-medium">{error}</div>}
+
+            <Input
+              label="Full Name"
+              type="text"
+              name="name"
+              placeholder="Jane Doe"
+              value={formData.name}
+              onChange={handleChange}
+              required
+            />
 
             <Input
               label="Email"
@@ -210,8 +230,8 @@ const Register = () => {
             </div>
 
             <div className="pt-2">
-              <Button type="submit" fullWidth>
-                Sign up
+              <Button type="submit" fullWidth disabled={loading}>
+                {loading ? "Signing up..." : "Sign up"}
               </Button>
             </div>
 

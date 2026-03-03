@@ -1,36 +1,26 @@
 import { createContext, useContext, useState } from "react";
 import type { ReactNode } from "react";
+import type { IAuthContextType, IMemeber } from "../@types/interface/userInterface";
 
-interface User {
-  email: string;
-  role: "admin" | "manager" | "developer";
-}
-
-interface AuthContextType {
-  user: User | null;
-  login: (email: string, password: string) => void;
-  logout: () => void;
-}
-
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<IAuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [member, setMember] = useState<IMemeber | null>(null);
 
   const login = (email: string, password: string) => {
     console.log("Login:", email, password);
     // Mock simple role assignment for demo purposes:
-    let role: "admin" | "manager" | "developer" = "admin";
+    const role: "admin" | "manager" | "developer" = "manager";
 
-    setUser({ email, role });
+    setMember({ email, role });
   };
 
   const logout = () => {
-    setUser(null);
+    setMember(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ member, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
