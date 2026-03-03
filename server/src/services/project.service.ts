@@ -170,7 +170,6 @@ class ProjectService {
       await project.populate("members.user", "name email");
       return project;
     } catch (error) {
-      console.error("Error updating member role in project:", error);
       throw error;
     }
   }
@@ -186,7 +185,6 @@ class ProjectService {
       }
       return project.members;
     } catch (error) {
-      console.error("Error fetching project members:", error);
       throw error;
     }
   }
@@ -198,7 +196,6 @@ class ProjectService {
       }).populate("members.user", "name email");
       return projects;
     } catch (error) {
-      console.error("Error fetching user projects:", error);
       throw error;
     }
   }
@@ -211,7 +208,6 @@ class ProjectService {
       }
       return project.members.some((member) => member.user.equals(userId));
     } catch (error) {
-      console.error("Error checking if user is project member:", error);
       throw error;
     }
   }
@@ -230,7 +226,6 @@ class ProjectService {
       }
       return member.role;
     } catch (error) {
-      console.error("Error fetching user project role:", error);
       throw error;
     }
   }
@@ -240,7 +235,6 @@ class ProjectService {
       const count = await ProjectModel.countDocuments();
       return count;
     } catch (error) {
-      console.error("Error fetching total projects count:", error);
       throw error;
     }
   }

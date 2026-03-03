@@ -6,7 +6,7 @@ export const getAsignedProjects = async (req: Request, res: Response) => {
     try {
         const userId = req.user.userId as unknown as Types.ObjectId;
         const projects = await ProjectService.getUserProjects(userId);
-        res.status(200).json({ success: true, data: projects });
+        res.status(200).json({ success: true, data: projects, total: projects.length });
         return;
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
