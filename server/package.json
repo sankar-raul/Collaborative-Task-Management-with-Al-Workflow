@@ -8,7 +8,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/index.js",
-    "dev": "nodemon --watch src --ext ts --exec ts-node -r tsconfig-paths/register src/index.ts"
+    "dev": "kill-port 8080 & ts-node-dev --respawn --transpile-only -r tsconfig-paths/register src/index.ts"
   },
   "dependencies": {
     "@types/helmet": "^4.0.0",
@@ -29,8 +29,10 @@
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/node": "^25.3.3",
+    "kill-port": "^2.0.1",
     "nodemon": "^3.1.14",
     "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.9.3"
   }

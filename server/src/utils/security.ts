@@ -1,16 +1,17 @@
 import config from "@/config/config";
 import { IUserToken } from "@/types/interface/userToken.interface";
-import jwt from "jsonwebtoken"
+import jwt, { SignOptions } from "jsonwebtoken"
 import argon2 from "argon2"
 
 export class JWTSecurity {
 
     static generateToken(userId: string, role: string): string {
-        return jwt.sign({ userId, role }, process.env.JWT_SECRET, { expiresIn: config.ACCESS_TOKEN_AGE });
+        const options: SignOptions = { expiresIn: config.ACCESS_TOKEN_AGE as any };
+        return jwt.sign({ userId, role }, config.JWT_SECRET as string, options);
     }
     static verifyToken(token: string): IUserToken | null {
         try {
-            return jwt.verify(token, process.env.JWT_SECRET) as IUserToken;
+            return jwt.verify(token, config.JWT_SECRET as string) as IUserToken;
         } catch (error) {
             return null;
         }
