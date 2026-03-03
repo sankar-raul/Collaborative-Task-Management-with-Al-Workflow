@@ -4,7 +4,6 @@ import type { Request, Response } from "express";
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export const registerUser = async (req: Request, res: Response) => {
-    console.log(req.user)
     try {
         const { name, email, password, skills=[], availabilityHours=40, currentWorkload=0 } = req.body || {};
         // Validate input
@@ -44,7 +43,6 @@ export const registerUser = async (req: Request, res: Response) => {
 };
 export const loginUser = async (req: Request, res: Response) => {
     try {
-        console.log(req.user)
         const { email, password } = req.body || {};
         // Validate input
         if (!email || !password) {
