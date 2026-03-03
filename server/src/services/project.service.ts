@@ -9,7 +9,10 @@ class ProjectService {
     try {
       const skip = (page - 1) * limit;
       const [projects, total] = await Promise.all([
-        ProjectModel.find().skip(skip).limit(limit),
+        ProjectModel.find()
+          .skip(skip)
+          .limit(limit)
+          .populate("members.user", "name email"),
         ProjectModel.countDocuments(),
       ]);
       return {
@@ -22,31 +25,35 @@ class ProjectService {
         },
       };
     } catch (error) {
-      console.error("Error fetching projects:", error);
       throw error;
     }
   }
 
-  static async createProject({ projectName, description, members }: IProject) {
+  static async createProject({
+    projectName,
+    description = "",
+    members = [],
+  }: IProject) {
     try {
       const project = new ProjectModel({ projectName, description, members });
       await project.save();
       return project;
     } catch (error) {
-      console.error("Error creating project:", error);
       throw error;
     }
   }
 
   static async getProjectById(projectId: string) {
     try {
-      const project = await ProjectModel.findById(projectId);
+      const project = await ProjectModel.findById(projectId).populate(
+        "members.user",
+        "name email",
+      );
       if (!project) {
         throw new Error("Project not found");
       }
       return project;
     } catch (error) {
-      console.error("Error fetching project by ID:", error);
       throw error;
     }
   }
@@ -56,14 +63,13 @@ class ProjectService {
       const project = await ProjectModel.findByIdAndUpdate(
         projectId,
         updateData,
-        { new: true },
-      );
+        { returnDocument: "after" },
+      ).populate("members.user", "name email");
       if (!project) {
         throw new Error("Project not found");
       }
       return project;
     } catch (error) {
-      console.error("Error updating project:", error);
       throw error;
     }
   }
@@ -91,6 +97,13 @@ class ProjectService {
     role?: Exclude<IUser["role"], "Admin">;
   }) {
     try {
+      const isUserAlreadyMember = await ProjectService.isUserProjectMember(
+        projectId,
+        userId,
+      );
+      if (isUserAlreadyMember) {
+        throw new Error("User is already a member of the project");
+      }
       const project = await ProjectModel.findById(projectId);
       if (!project) {
         throw new Error("Project not found");
@@ -104,9 +117,9 @@ class ProjectService {
       };
       project.members.push(newMember);
       await project.save();
+      await project.populate("members.user", "name email");
       return project;
     } catch (error) {
-      console.error("Error adding member to project:", error);
       throw error;
     }
   }
@@ -125,9 +138,9 @@ class ProjectService {
       }
       project.members.splice(memberIndex, 1);
       await project.save();
+      await project.populate("members.user", "name email");
       return project;
     } catch (error) {
-      console.error("Error removing member from project:", error);
       throw error;
     }
   }
@@ -154,6 +167,7 @@ class ProjectService {
       }
       member.role = newRole;
       await project.save();
+      await project.populate("members.user", "name email");
       return project;
     } catch (error) {
       console.error("Error updating member role in project:", error);
@@ -179,7 +193,9 @@ class ProjectService {
 
   static async getUserProjects(userId: Types.ObjectId) {
     try {
-      const projects = await ProjectModel.find({ "members.user": userId });
+      const projects = await ProjectModel.find({
+        "members.user": userId,
+      }).populate("members.user", "name email");
       return projects;
     } catch (error) {
       console.error("Error fetching user projects:", error);
@@ -215,6 +231,16 @@ class ProjectService {
       return member.role;
     } catch (error) {
       console.error("Error fetching user project role:", error);
+      throw error;
+    }
+  }
+
+  static async getTotalProjectsCount() {
+    try {
+      const count = await ProjectModel.countDocuments();
+      return count;
+    } catch (error) {
+      console.error("Error fetching total projects count:", error);
       throw error;
     }
   }

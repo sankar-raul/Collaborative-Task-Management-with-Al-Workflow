@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createProject, getProjects, getProjectById, updateProject, deleteProject, addProjectMember, removeProjectMember, getProjectMembers, updateProjectMemberRole } from "../controllers/project.controller";
+import { createProject, getProjects, getProjectById, updateProject, deleteProject, addProjectMember, removeProjectMember, getProjectMembers, updateProjectMemberRole, getTotalProjectsCount } from "../controllers/project.controller";
 import adminAuth from "../middleware/adminAuth";
 import isValidProjectMember from "../middleware/isValidProjectMember";
 import memberRoleMiddleware from "../middleware/memberRole.";
@@ -10,6 +10,7 @@ projectRouter.get("/", adminAuth, getProjects); // Admin can view all projects
 projectRouter.get("/:id", isValidProjectMember, getProjectById); // Only project members can view project details
 projectRouter.put("/:id", memberRoleMiddleware("Manager"), updateProject); // Only Managers and Admin can update project details
 projectRouter.delete("/:id", adminAuth, deleteProject); // Only Admin can delete a project
+projectRouter.get("/:id/count", adminAuth, getTotalProjectsCount) // Only project members can view project members
 projectRouter.post("/:id/members", memberRoleMiddleware("Manager"), addProjectMember); // Only Managers and Admin can add members to a project
 projectRouter.delete("/:id/members", memberRoleMiddleware("Manager"), removeProjectMember); // Only Managers and Admin can remove members from a project
 projectRouter.get("/:id/members", isValidProjectMember, getProjectMembers) // Only project members can view project members

@@ -1,12 +1,21 @@
+import { ROLE } from "@/constants/role.constant";
 import ProjectService from "@/services/project.service";
 import { Request, Response } from "express";
 import { Types } from "mongoose";
 
 export const createProject = async (req: Request, res: Response) => {
     try {
-        const { projectName, description, members } = req.body;
+        const { projectName, description="", members=[] } = req.body || {};
+        if (!projectName) {
+            res.status(400).json({ success: false, message: "Project name is required" });
+            return;
+        }
         const project = await ProjectService.createProject({ projectName, description, members });
-        res.status(201).json({ success: true, data: project });
+        res.status(201).json({ 
+            success: true, 
+            message: "Project created successfully",
+            data: project
+         });
         return
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
@@ -18,8 +27,8 @@ export const getProjects = async (req: Request, res: Response) => {
     try {
         const page = parseInt(req.query.page as string) || 1;
         const limit = parseInt(req.query.limit as string) || 10;
-        const result = await ProjectService.getProjects(page, limit);
-        res.status(200).json({ success: true, data: result });
+        const { projects, pagination } = await ProjectService.getProjects(page, limit);
+        res.status(200).json({ success: true, data: projects, pagination });
         return
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
@@ -67,7 +76,7 @@ export const deleteProject = async (req: Request, res: Response) => {
 export const addProjectMember = async (req: Request, res: Response) => {
     try {
         const projectId = req.params.id as string;
-        const { userId, role } = req.body;
+        const { userId, role=ROLE["USER"] } = req.body;
         const project = await ProjectService.addMember({
             projectId,
             userId,
@@ -84,6 +93,10 @@ export const removeProjectMember = async (req: Request, res: Response) => {
     try {
         const projectId = req.params.id as string;
         const userId = req.body.userId as Types.ObjectId;
+        if (!userId) {
+            res.status(400).json({ success: false, message: "User ID is required" });
+            return;
+        }
         const project = await ProjectService.removeMember(projectId, userId);
         res.status(200).json({ success: true, data: project });
         return;
@@ -127,6 +140,17 @@ export const getUserProjects = async (req: Request, res: Response) => {
         const userId = req.user.userId  as unknown as Types.ObjectId;
         const projects = await ProjectService.getUserProjects(userId);
         res.status(200).json({ success: true, data: projects });
+        return;
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+        return;
+    }
+};
+
+export const getTotalProjectsCount = async (req: Request, res: Response) => {
+    try {
+        const count = await ProjectService.getTotalProjectsCount();
+        res.status(200).json({ success: true, data: count });
         return;
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
