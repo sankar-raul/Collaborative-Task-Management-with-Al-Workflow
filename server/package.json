@@ -1,0 +1,31 @@
+{
+  "name": "collaborative-task-management",
+  "version": "1.0.0",
+  "description": "Collaborative Task Management with Al Workflow",
+  "main": "dist/index.js",
+  "author": "Runtime Terror",
+  "license": "MIT",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "nodemon --watch src --ext ts --exec ts-node -r tsconfig-paths/register src/index.ts"
+  },
+  "dependencies": {
+    "@types/helmet": "^4.0.0",
+    "@types/mongoose": "^5.11.97",
+    "bcrypt": "^6.0.0",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "helmet": "^8.1.0",
+    "mongoose": "^9.2.3"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/node": "^25.3.3",
+    "nodemon": "^3.1.14",
+    "ts-node": "^10.9.2",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.9.3"
+  }
+}

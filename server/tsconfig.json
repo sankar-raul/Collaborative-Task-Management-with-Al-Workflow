@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "module": "Node16",
+    "esModuleInterop": true,
+    // "strict": true,
+    "target": "ES2020",
+    "moduleResolution": "node16",
+    "sourceMap": true,
+    "outDir": "dist",
+    "typeRoots": ["./node_modules/@types", "src/@types"],
+    "lib": ["ES2020"],
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "*": ["node_modules/*", "src/@types/*"]
+    },
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["src/**/*"]
+  // "exclude": ["node_modules", "dist"]
+}
