@@ -1,5 +1,5 @@
 export const TASK_STATUS = {
-    BACKLOG: "Backlog",
+    BACKLOG: "To Do",
     ASSIGNED: "Assigned",
     IN_PROGRESS: "In Progress",
     IN_REVIEW: "In Review",

@@ -15,7 +15,7 @@ const taskSchema = new Schema<ITask>(
     projectId: { type: Schema.Types.ObjectId, ref: "Project", required: true },
     status: {
       type: String,
-      enum: [ "Backlog", "Assigned", "In Progress", "In Review", "Completed" ],
+      enum: [ "To Do", "Assigned", "In Progress", "In Review", "Completed" ],
       required: true,
     },
     deadline: { type: Date },

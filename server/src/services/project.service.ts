@@ -238,6 +238,21 @@ class ProjectService {
       throw error;
     }
   }
+
+  static async getProjectByTaskId(taskId: string) {
+  try {
+    const project = await ProjectModel.findOne({ "tasks._id": taskId }).populate(
+      "members.user",
+      "name email",
+    );
+    if (!project) {
+      throw new Error("Project not found for the given task ID");
+    }
+    return project;
+  } catch (error) {
+    throw error;
+  }
+};
 }
 
 export default ProjectService;
