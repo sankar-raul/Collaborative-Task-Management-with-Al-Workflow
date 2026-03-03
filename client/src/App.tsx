@@ -8,9 +8,7 @@ function App() {
   return (
     <>
       <AuthProvider>
-
-
-      <RouterProvider router={routes} />
+        <RouterProvider router={routes} />
       </AuthProvider>
     </>
   )
