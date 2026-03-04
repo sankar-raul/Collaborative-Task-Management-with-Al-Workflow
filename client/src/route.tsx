@@ -6,6 +6,8 @@ import ProtectedRoute from "./routes/protectedRoutes";
 import RoleProtectedRoute from "./routes/RoleProtectedRoute";
 import RootLayout from "./components/layout/RootLayout";
 
+import RedirectIfAuthenticated from "./routes/RedirectIfAuthenticated";
+
 // Admin Pages
 import { UsersRoles } from "./pages/admin/UsersRoles";
 import { Analytics } from "./pages/admin/Analytics";
@@ -29,8 +31,16 @@ const routes = createBrowserRouter(
     createRoutesFromElements(
         <>
             {/* Auth Routes - without RootLayout */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={
+                <RedirectIfAuthenticated>
+                    <Login />
+                </RedirectIfAuthenticated>
+            } />
+            <Route path="/register" element={
+                <RedirectIfAuthenticated>
+                    <Register />
+                </RedirectIfAuthenticated>
+            } />
 
             {/* Common Protected Routes wrapped in RootLayout */}
             <Route path="/" element={

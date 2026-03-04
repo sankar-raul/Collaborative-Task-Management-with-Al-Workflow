@@ -8,8 +8,9 @@ interface ProtectedRouteProps {
 
 const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const { member } = useAuth();
+  const token = localStorage.getItem("access_token");
 
-  if (!member) {
+  if (!member && !token) {
     return <Navigate to="/login" replace />;
   }
 

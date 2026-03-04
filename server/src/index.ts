@@ -22,7 +22,10 @@ const PORT = config.PORT || 8080;
 connectDB();
 
 const app = express();
-app.use(cors());
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true,
+}));
 app.use(express.json());
 
 app.use(softAuth);
@@ -42,18 +45,18 @@ export const io = new Server(server, {
 });
 
 io.use(async (socket, next) => {
-    // const token = cookie.parse(socket.request.headers.cookie || '')?.access_token
-    const token = socket.handshake.auth.token
-    // console.log(token)
-    if (!token) {
-        return next(new Error("unauthorized!"))
-    }
-    const user = JWTSecurity.verifyToken(token)
-    // console.log(token)
-    if (!user) return next(new Error("unauthorized!"))
-    socket.user = user
-    await connectUser({user_id: user.userId, socket_id: socket.id})
-    next()
+  // const token = cookie.parse(socket.request.headers.cookie || '')?.access_token
+  const token = socket.handshake.auth.token
+  // console.log(token)
+  if (!token) {
+    return next(new Error("unauthorized!"))
+  }
+  const user = JWTSecurity.verifyToken(token)
+  // console.log(token)
+  if (!user) return next(new Error("unauthorized!"))
+  socket.user = user
+  await connectUser({ user_id: user.userId, socket_id: socket.id })
+  next()
 })
 
 
@@ -62,15 +65,15 @@ io.on("connection", async (socket) => {
 
   socket.on("disconnect", async () => {
     console.log("Socket disconnected:", socket.id);
-    await disconnectUser({user_id: socket.user.userId, socket_id: socket.id})
+    await disconnectUser({ user_id: socket.user.userId, socket_id: socket.id })
   });
 });
 
 app.use((req: Request, res: Response) => {
-  res.status(404).json({ 
+  res.status(404).json({
     success: false,
-    message: "Route not found" 
-   });
+    message: "Route not found"
+  });
 });
 
 server.listen(PORT, () => {
