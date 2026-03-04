@@ -15,6 +15,44 @@ export const getAsignedProjects = async (req: Request, res: Response) => {
     }
 };
 
+export const getMemberById = async (req: Request, res: Response) => {
+    try {
+        const memberId = req.params.id as string;
+        const member = await MemberService.getMemberById(memberId);
+        res.status(200).json({ success: true, data: member });
+        return;
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+        return;
+    }
+};
+
+export const getMyDetails = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user.userId as unknown as Types.ObjectId;
+        const member = await MemberService.getMemberById(userId.toString());
+        res.status(200).json({ success: true, data: member });
+        return;
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+        return;
+    }
+};
+
+export const searchMembers = async (req: Request, res: Response) => {
+    try {
+        const query = req.query.q as string;
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = parseInt(req.query.limit as string) || 10;
+        const { members, pagination } = await MemberService.searchMembers(query, page, limit);
+        res.status(200).json({ success: true, data: members, pagination });
+        return;
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+        return;
+    }
+};
+
 export const getUserProjectRole = async (req: Request, res: Response) => {
     try {
         const projectId = req.params.id as string;

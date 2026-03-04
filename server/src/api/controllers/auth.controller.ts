@@ -3,6 +3,23 @@ import type { Request, Response } from "express";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+export const me = async (req: Request, res: Response) => {
+    try {
+        const user = req.user;
+        res.status(200).json({
+            message: "User details retrieved successfully",
+            success: true,
+            user: user
+        });
+    } catch (error) {
+        console.error("Error retrieving user details:", error.message);
+        res.status(500).json({
+            message: error.message || "Internal server error",
+            success: false,
+        });
+    }
+};
+
 export const registerUser = async (req: Request, res: Response) => {
     try {
         const { name, email, password, skills=[], availabilityHours=40, currentWorkload=0 } = req.body || {};
@@ -57,7 +74,7 @@ export const loginUser = async (req: Request, res: Response) => {
                 success: false,
              });
         }
-        const { user, access_token } = await AuthService.login({ email, password });
+        const { user, access_token, role } = await AuthService.login({ email, password });
         res.status(200).json({
             message: "Login successful",
             success: true,
@@ -65,6 +82,7 @@ export const loginUser = async (req: Request, res: Response) => {
                 id: user._id,
                 name: user.name,
                 email: user.email,
+                role: role,
             },
             auth: {
                 access_token: access_token,

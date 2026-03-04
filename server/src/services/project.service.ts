@@ -194,7 +194,10 @@ class ProjectService {
       const projects = await ProjectModel.find({
         "members.user": userId,
       }).populate("members.user", "name email");
-      return projects;
+      return projects.map(project => ({
+        ...project.toObject(),
+        userRole: project.members.find(member => member.user.equals(userId))?.role,
+      }));
     } catch (error) {
       throw error;
     }
