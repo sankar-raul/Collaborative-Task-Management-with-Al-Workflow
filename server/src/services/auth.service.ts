@@ -53,6 +53,7 @@ class AuthService {
             return {
                 user,
                 access_token,
+                role: user.role,
             };
         } catch (error) {
             // console.error("Error logging in:", error);

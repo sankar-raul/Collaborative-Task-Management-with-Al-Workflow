@@ -57,7 +57,7 @@ export const loginUser = async (req: Request, res: Response) => {
                 success: false,
              });
         }
-        const { user, access_token } = await AuthService.login({ email, password });
+        const { user, access_token, role } = await AuthService.login({ email, password });
         res.status(200).json({
             message: "Login successful",
             success: true,
@@ -65,6 +65,7 @@ export const loginUser = async (req: Request, res: Response) => {
                 id: user._id,
                 name: user.name,
                 email: user.email,
+                role: role,
             },
             auth: {
                 access_token: access_token,
