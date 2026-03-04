@@ -1,16 +1,10 @@
-import { useState } from "react";
 import { useAuth } from "../../context/authContext";
 import AdminDashboard from "../dashboard/AdminDashboard";
 import ManagerDashboard from "../dashboard/ManagerDashboard";
 import DeveloperDashboard from "../dashboard/DeveloperDashboard";
-import Sidebar from "../../components/layout/Sidebar";
-import Header from "../../components/layout/Header";
 
 export default function Home() {
   const { member } = useAuth();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-
-  const toggleSidebar = () => setIsSidebarOpen(!isSidebarOpen);
 
   const renderDashboard = () => {
     switch (member?.role) {
@@ -31,30 +25,8 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex font-sans overflow-hidden">
-      {/* Sidebar - Desktop & Mobile overlay */}
-      <div
-        className={`${isSidebarOpen ? 'fixed inset-0 z-40 bg-black/50 md:bg-transparent md:static md:inset-auto' : 'hidden md:block'} transition-opacity`}
-        onClick={() => isSidebarOpen && setIsSidebarOpen(false)}
-      >
-        <div
-          className="bg-white w-64 h-full"
-          onClick={(e) => e.stopPropagation()}
-        >
-          <Sidebar />
-        </div>
-      </div>
-
-      {/* Main Content Area */}
-      <div className="flex-1 flex flex-col h-screen overflow-hidden">
-        <Header onMenuClick={toggleSidebar} />
-
-        <main className="flex-1 overflow-y-auto w-full px-4 sm:px-6 lg:px-8 py-8">
-          <div className="max-w-7xl mx-auto w-full">
-            {renderDashboard()}
-          </div>
-        </main>
-      </div>
-    </div>
+    <>
+      {renderDashboard()}
+    </>
   );
 }
