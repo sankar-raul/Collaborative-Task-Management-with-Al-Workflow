@@ -2,24 +2,48 @@ import { NavLink } from "react-router-dom";
 import { useAuth } from "../../context/authContext";
 import {
     LayoutDashboard,
-    CheckSquare,
     FolderOpen,
-    MessageSquare,
     LogOut,
+    Users,
+    BarChart3,
+    UserCircle,
+    ClipboardList
 } from "lucide-react";
 
 export default function Sidebar() {
-    const { logout } = useAuth();
+    const { member, logout } = useAuth();
 
-    const navLinks = [
-        { name: "Dashboard", path: "/", icon: LayoutDashboard },
-        { name: "My Tasks", path: "/tasks", icon: CheckSquare },
-        { name: "Projects", path: "/projects", icon: FolderOpen },
-        { name: "Messages", path: "/messages", icon: MessageSquare },
-    ];
+    const getNavLinks = () => {
+        const baseLinks = [
+            { name: "Dashboard", path: "/", icon: LayoutDashboard },
+        ];
+
+        let roleLinks: any[] = [];
+
+        if (member?.role === "admin") {
+            roleLinks = [
+                { name: "Users & Roles", path: "/users", icon: Users },
+                { name: "Manage Projects", path: "/admin/projects", icon: FolderOpen },
+                { name: "Analytics", path: "/admin/analytics", icon: BarChart3 },
+            ];
+        } else if (member?.role === "manager") {
+            roleLinks = [
+                { name: "Users & Roles", path: "/users", icon: Users },
+                { name: "Team Workload", path: "/manager/workload", icon: ClipboardList },
+            ];
+        }
+
+        return [
+            ...baseLinks,
+            ...roleLinks,
+            { name: "Profile", path: "/profile", icon: UserCircle }
+        ];
+    };
+
+    const navLinks = getNavLinks();
 
     return (
-        <aside className="w-64 bg-[#f8fbff] h-screen flex flex-col border-r border-gray-100 hidden md:flex sticky top-0">
+        <aside className="w-64 bg-white h-screen flex-col border-r border-gray-100 hidden md:flex sticky top-0">
             {/* Brand logo area */}
             <div className="h-16 flex items-center px-6 border-b border-transparent">
                 <div className="flex items-center space-x-2">
@@ -56,13 +80,13 @@ export default function Sidebar() {
             </nav>
 
             {/* Sign Out Button */}
-            <div className="p-4 border-t border-gray-100">
+            <div className="p-4 border-t border-gray-200">
                 <button
                     onClick={logout}
                     className="flex items-center w-full px-4 py-2 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 hover:text-gray-900 transition-colors"
                 >
                     <LogOut className="w-5 h-5 mr-3" />
-                    Sign Out
+                    Sign Out 
                 </button>
             </div>
         </aside>
