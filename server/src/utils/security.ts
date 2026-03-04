@@ -5,9 +5,14 @@ import argon2 from "argon2"
 
 export class JWTSecurity {
 
-    static generateToken(userId: string, role: string): string {
+    static generateToken({
+        userId,
+        role,
+        email,
+        name
+    }: IUserToken): string {
         const options: SignOptions = { expiresIn: config.ACCESS_TOKEN_AGE as any };
-        return jwt.sign({ userId, role }, config.JWT_SECRET as string, options);
+        return jwt.sign({ userId, role, email, name }, config.JWT_SECRET as string, options);
     }
     static verifyToken(token: string): IUserToken | null {
         try {

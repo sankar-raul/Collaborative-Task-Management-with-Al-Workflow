@@ -27,7 +27,12 @@ class AuthService {
                 currentWorkload: 0,
             });
             await newUser.save();
-            const access_token = JWTSecurity.generateToken(String(newUser._id), newUser.role);
+            const access_token = JWTSecurity.generateToken({
+                userId: String(newUser._id),
+                role: newUser.role,
+                email: newUser.email,
+                name: newUser.name,
+            });
             return {
                 user: newUser,
                 access_token,
@@ -49,7 +54,12 @@ class AuthService {
             if (!isPasswordValid) {
                 throw new Error("Invalid email or password");
             }
-            const access_token = JWTSecurity.generateToken(String(user._id), user.role);
+            const access_token = JWTSecurity.generateToken({
+                userId: String(user._id),
+                role: user.role,
+                email: user.email,
+                name: user.name,
+            });
             return {
                 user,
                 access_token,
