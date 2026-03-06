@@ -1,5 +1,5 @@
 import { Bell, Search, Menu } from "lucide-react";
-import { useAuth } from "../../context/authContext";
+import { useAuth } from "../../context/auth";
 
 interface HeaderProps {
     onMenuClick: () => void;
@@ -8,15 +8,12 @@ interface HeaderProps {
 export default function Header({ onMenuClick }: HeaderProps) {
     const { member } = useAuth();
 
-    // Format role for display (e.g., 'manager' -> 'Project Manager')
     const getDisplayRole = (role?: string) => {
         switch (role) {
-            case 'manager':
-                return 'Project Manager';
-            case 'admin':
+            case 'Admin':
                 return 'Administrator';
-            case 'developer':
-                return 'Developer';
+            case 'User':
+                return 'User';
             default:
                 return 'User';
         }
@@ -52,11 +49,11 @@ export default function Header({ onMenuClick }: HeaderProps) {
 
                 <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-gradient-to-br from-[#1e5eb5] to-[#14478f] text-white rounded-full flex items-center justify-center font-bold text-sm shadow-sm ring-2 ring-white">
-                        {member?.email?.substring(0, 2).toUpperCase() || 'U'}
+                        {member?.name?.substring(0, 2).toUpperCase() || 'U'}
                     </div>
                     <div className="hidden md:flex flex-col items-start pr-2">
                         <span className="text-sm font-bold text-gray-900 leading-tight">
-                            {member?.email?.split('@')[0] || "User"}
+                            {member?.name || "User"}
                         </span>
                         <span className="text-xs font-medium text-gray-500">
                             {getDisplayRole(member?.role)}

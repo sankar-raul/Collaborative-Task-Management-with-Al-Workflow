@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { useAuth } from "../../context/authContext";
+import { useAuth } from "../../context/auth";
 import {
     LayoutDashboard,
     FolderOpen,
@@ -20,17 +20,15 @@ export default function Sidebar() {
 
         let roleLinks: any[] = [];
 
-        if (member?.role === "admin") {
+        if (member?.role === "Admin") {
             roleLinks = [
                 { name: "Users & Roles", path: "/users", icon: Users },
                 { name: "Manage Projects", path: "/admin/projects", icon: FolderOpen },
                 { name: "Analytics", path: "/admin/analytics", icon: BarChart3 },
-            ];
-        } else if (member?.role === "manager") {
-            roleLinks = [
-                { name: "Users & Roles", path: "/users", icon: Users },
                 { name: "Team Workload", path: "/manager/workload", icon: ClipboardList },
             ];
+        } else if (member?.role === "User") {
+            roleLinks = [];
         }
 
         return [
@@ -86,7 +84,7 @@ export default function Sidebar() {
                     className="flex items-center w-full px-4 py-2 text-sm font-medium text-gray-600 rounded-lg hover:bg-gray-50 hover:text-gray-900 transition-colors"
                 >
                     <LogOut className="w-5 h-5 mr-3" />
-                    Sign Out 
+                    Sign Out
                 </button>
             </div>
         </aside>

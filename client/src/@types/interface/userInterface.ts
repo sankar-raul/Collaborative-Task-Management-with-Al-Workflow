@@ -2,7 +2,7 @@ export interface IMemeber {
   id: string;
   name: string;
   email: string;
-  role: "admin" | "manager" | "developer" | "User";
+  role: "Admin" | "User";
 }
 
 export interface IAuthContextType {

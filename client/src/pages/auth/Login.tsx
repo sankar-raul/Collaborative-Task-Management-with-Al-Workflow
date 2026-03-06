@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Input from "../../components/shared/Input";
 import Button from "../../components/shared/Button";
-import { useAuth } from "../../context/authContext";
+import { useAuth } from "../../context/auth";
 import PromoForLogin from "../../components/shared/PromoForLogin";
 
 const Login = () => {

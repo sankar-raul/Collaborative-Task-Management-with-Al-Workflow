@@ -1,6 +1,5 @@
-import { useAuth } from "../../context/authContext";
+import { useAuth } from "../../context/auth";
 import AdminDashboard from "../dashboard/AdminDashboard";
-import ManagerDashboard from "../dashboard/ManagerDashboard";
 import DeveloperDashboard from "../dashboard/DeveloperDashboard";
 
 export default function Home() {
@@ -8,11 +7,9 @@ export default function Home() {
 
   const renderDashboard = () => {
     switch (member?.role) {
-      case "admin":
+      case "Admin":
         return <AdminDashboard />;
-      case "manager":
-        return <ManagerDashboard />;
-      case "developer":
+      case "User":
         return <DeveloperDashboard />;
       default:
         return (

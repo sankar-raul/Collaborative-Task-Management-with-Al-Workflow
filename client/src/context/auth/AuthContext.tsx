@@ -1,54 +1,56 @@
-// import { api } from "@/utils/api";
-import {
-  useEffect,
-  useState,
-  type FC,
-  type ReactNode,
-} from "react";
-import { AuthContext } from "./useAuth";
+import { createContext, useState, type ReactNode } from "react";
+import type { IAuthContextType, IMemeber } from "../../@types/interface/userInterface";
 import { api } from "../../utils/api";
+import { jwtDecode } from "jwt-decode";
 
-export interface IAuthContextType {
-  user: {
-    id: string;
-    email: string;
-    name: string;
-    roll: string;
-  } | null;
-  error: string | null;
-  setUser: (user: IAuthContextType["user"]) => void;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-}
+export const AuthContext = createContext<IAuthContextType | undefined>(undefined);
 
-export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
-  const [user, setUser] = useState<IAuthContextType["user"]>(null);
-    const [error, setError] = useState<string | null>(null);
-    const [  isLoading, setIsLoading] = useState(true);
+export const AuthProvider = ({ children }: { children: ReactNode }) => {
+  const [member, setMember] = useState<IMemeber | null>(() => {
+    const savedMember = localStorage.getItem("userMember");
+    return savedMember ? JSON.parse(savedMember) : null;
+  });
 
-  useEffect(() => {
-    (async () => {
-        try {
-            setIsLoading(true);
-      const me = await api.auth.me();
-        if ("error" in me) {
-            setError(me.error);
-            setUser(null);
-        } else {
-            setUser(me as IAuthContextType["user"]);
-            setError(null);
-        }
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (err) {
-            setError("Failed to fetch user data.");
-            setUser(null);
-        } finally {
-            setIsLoading(false);
-        }
-    })();
-  }, []);
+  const login = async (email: string, password: string) => {
+    try {
+      const response = await api.auth.login({ email, password });
+      if (response && response.success) {
+        const token = response.auth.access_token;
+        localStorage.setItem("access_token", token);
+
+        const decoded: any = jwtDecode(token);
+        console.log("Decoded Token Data:", decoded);
+        const role = decoded.role || "User";
+
+        const newMember = {
+          id: response.user.id,
+          name: response.user.name,
+          email: response.user.email,
+          role
+        };
+
+        console.log("Logged in user member data:", newMember);
+
+        localStorage.setItem("userMember", JSON.stringify(newMember));
+        setMember(newMember);
+        return true;
+      }
+      return false;
+    } catch (error) {
+      console.error("Login failed:", error);
+      return false;
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("userMember");
+    setMember(null);
+    window.location.href = "/login";
+  };
+
   return (
-    <AuthContext.Provider value={{ user, setUser, isLoading, isAuthenticated: !!user, error }}>
+    <AuthContext.Provider value={{ member, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

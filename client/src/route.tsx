@@ -12,19 +12,15 @@ import RedirectIfAuthenticated from "./routes/RedirectIfAuthenticated";
 import { UsersRoles } from "./pages/admin/UsersRoles";
 import { Analytics } from "./pages/admin/Analytics";
 import { AdminProjects } from "./pages/admin/AdminProjects";
-
-// Manager Pages
-import { ProjectsTeams } from "./pages/manager/ProjectsTeams";
-import { TeamWorkload } from "./pages/manager/TeamWorkload";
-
-// Developer Pages
-import { MyTasks } from "./pages/developer/MyTasks";
+import { TeamWorkload } from "./pages/admin/TeamWorkload";
 
 // Common Pages
 import { Notifications } from "./pages/common/Notifications";
 import { Unauthorized } from "./pages/common/Unauthorized";
 import { Profile } from "./pages/common/Profile";
 import { Messages } from "./pages/common/Messages";
+import { ProjectsTeams } from "./pages/common/ProjectsTeams";
+import { MyTasks } from "./pages/common/MyTasks";
 
 
 const routes = createBrowserRouter(
@@ -59,14 +55,14 @@ const routes = createBrowserRouter(
                 <Route path="profile" element={<Profile />} />
 
                 <Route path="users" element={
-                    <RoleProtectedRoute allowedRoles={["admin", "manager"]}>
+                    <RoleProtectedRoute allowedRoles={["Admin"]}>
                         <UsersRoles />
                     </RoleProtectedRoute>
                 } />
 
                 {/* Admin Only Routes */}
                 <Route path="admin" element={
-                    <RoleProtectedRoute allowedRoles={["admin"]}>
+                    <RoleProtectedRoute allowedRoles={["Admin"]}>
                         <Outlet />
                     </RoleProtectedRoute>
                 }>
@@ -76,7 +72,7 @@ const routes = createBrowserRouter(
 
                 {/* Manager Only Routes */}
                 <Route path="manager/workload" element={
-                    <RoleProtectedRoute allowedRoles={["admin", "manager"]}>
+                    <RoleProtectedRoute allowedRoles={["Admin"]}>
                         <TeamWorkload />
                     </RoleProtectedRoute>
                 } />
