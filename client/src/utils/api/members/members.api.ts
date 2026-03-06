@@ -1,38 +1,19 @@
 import { get } from "../apiMethod";
-
-export interface Member {
-    _id: string;
-    name: string;
-    email: string;
-    role: string;
-    skills: string[];
-    availabilityHours: number;
-    currentWorkload: number;
-    createdAt: string;
-}
-
-export interface PaginationData {
-    total: number;
-    pages: number;
-    currentPage: number;
-    limit: number;
-}
-
-export interface GetAllMembersResponse {
-    success: boolean;
-    data: Member[];
-    pagination: PaginationData;
-    message?: string;
-}
-
+import { getToken } from "../GetToken";
+import type { GetAllMembersResponse, Member } from "../../../@types/interface/MembersInterface";
+import type { Project } from "../../../@types/interface/ProjectInterface";
 const ROUTE = 'members';
 
-export const getAllMembers = async (page: number = 1, limit: number = 10): Promise<GetAllMembersResponse> => {
-    const token = localStorage.getItem('access_token');
-    if (!token) {
-        throw new Error('No access token found');
-    }
 
+export const getAllMembers = async (page: number = 1, limit: number = 10): Promise<GetAllMembersResponse> => {
     // get(endpoint, filter/params, token)
-    return await get(`${ROUTE}/all`, { page, limit }, token);
+    return await get(`${ROUTE}/all`, { page, limit }, getToken());
+};
+
+export const getMemberById = async (id: string): Promise<{ success: boolean; data: Member }> => {
+    return await get(`${ROUTE}/${id}`, {}, getToken());
+};
+
+export const getAssignedProjects = async (): Promise<{ success: boolean; data: Project[]; total: number }> => {
+    return await get(`${ROUTE}/projects`, {}, getToken());
 };

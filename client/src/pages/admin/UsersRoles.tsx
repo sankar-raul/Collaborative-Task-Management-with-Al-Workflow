@@ -1,33 +1,14 @@
 import { Mail, Shield, User, Circle } from "lucide-react";
 
-import { useEffect, useState } from "react";
-import { api } from "../../utils/api";
-import type { Member } from "../../utils/api/members/members.api";
+// ...existing imports...
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/auth";
+import { useUsers } from "../../context/users";
 
 export const UsersRoles = () => {
-    const [systemUsers, setSystemUsers] = useState<Member[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
-
-    useEffect(() => {
-        const fetchMembers = async () => {
-            try {
-                setLoading(true);
-                const response = await api.members.getAllMembers(1, 100); // Fetch up to 100 users for now
-                if (response.success) {
-                    setSystemUsers(response.data);
-                } else {
-                    setError("Failed to fetch members");
-                }
-            } catch (err: any) {
-                setError(err.message || "An error occurred while fetching members");
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchMembers();
-    }, []);
+    const { systemUsers, isLoading: loading, error } = useUsers();
+    const navigate = useNavigate();
+    const { member } = useAuth();
 
     if (loading) {
         return (
@@ -62,12 +43,12 @@ export const UsersRoles = () => {
                                 <th className="px-6 py-4 font-semibold text-gray-600 text-sm uppercase tracking-wider">User</th>
                                 <th className="px-6 py-4 font-semibold text-gray-600 text-sm uppercase tracking-wider">Contact</th>
                                 <th className="px-6 py-4 font-semibold text-gray-600 text-sm uppercase tracking-wider">Role</th>
-                                <th className="px-6 py-4 font-semibold text-gray-600 text-sm uppercase tracking-wider">Status</th>
                                 <th className="px-6 py-4 font-semibold text-gray-600 text-sm uppercase tracking-wider">Joined Date</th>
+                                <th className="px-6 py-4 font-semibold text-gray-600 text-sm uppercase tracking-wider text-right">Actions</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
-                            {systemUsers.map((user) => (
+                            {systemUsers.filter(user => user._id !== member?.id).map((user) => (
                                 <tr key={user._id} className="hover:bg-gray-50 transition-colors">
                                     <td className="px-6 py-4">
                                         <div className="flex items-center">
@@ -92,14 +73,16 @@ export const UsersRoles = () => {
                                             {user.role}
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4">
-                                        <span className={`flex items-center w-fit px-3 py-1 rounded-full text-xs font-medium bg-green-50 text-green-700`}>
-                                            <Circle className={`w-2 h-2 mr-2 fill-green-500 text-green-500`} />
-                                            Active
-                                        </span>
-                                    </td>
                                     <td className="px-6 py-4 text-gray-500 text-sm">
                                         {new Date(user.createdAt).toLocaleDateString() || 'N/A'}
+                                    </td>
+                                    <td className="px-6 py-4 text-right">
+                                        <button
+                                            onClick={() => navigate(`/users/${user._id}`)}
+                                            className="px-4 py-2 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:text-indigo-700 rounded-lg text-sm font-medium transition-colors"
+                                        >
+                                            View Details
+                                        </button>
                                     </td>
                                 </tr>
                             ))}

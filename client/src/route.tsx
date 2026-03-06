@@ -10,17 +10,18 @@ import RedirectIfAuthenticated from "./routes/RedirectIfAuthenticated";
 
 // Admin Pages
 import { UsersRoles } from "./pages/admin/UsersRoles";
-import { Analytics } from "./pages/admin/Analytics";
+import { UserDetails } from "./pages/admin/UserDetails";
 import { AdminProjects } from "./pages/admin/AdminProjects";
-import { TeamWorkload } from "./pages/admin/TeamWorkload";
+import { AdminProjectDetails } from "./pages/admin/AdminProjectDetails";
 
-// Common Pages
+// Common Page
 import { Notifications } from "./pages/common/Notifications";
 import { Unauthorized } from "./pages/common/Unauthorized";
 import { Profile } from "./pages/common/Profile";
 import { Messages } from "./pages/common/Messages";
 import { ProjectsTeams } from "./pages/common/ProjectsTeams";
 import { MyTasks } from "./pages/common/MyTasks";
+import UserProjectDetails from "./pages/user/UserProjectDetails";
 
 
 const routes = createBrowserRouter(
@@ -50,6 +51,7 @@ const routes = createBrowserRouter(
                 {/* Common Pages */}
                 <Route path="notifications" element={<Notifications />} />
                 <Route path="projects" element={<ProjectsTeams />} />
+                <Route path="projects/:id" element={<UserProjectDetails />} />
                 <Route path="tasks" element={<MyTasks />} />
                 <Route path="messages" element={<Messages />} />
                 <Route path="profile" element={<Profile />} />
@@ -57,6 +59,11 @@ const routes = createBrowserRouter(
                 <Route path="users" element={
                     <RoleProtectedRoute allowedRoles={["Admin"]}>
                         <UsersRoles />
+                    </RoleProtectedRoute>
+                } />
+                <Route path="users/:id" element={
+                    <RoleProtectedRoute allowedRoles={["Admin"]}>
+                        <UserDetails />
                     </RoleProtectedRoute>
                 } />
 
@@ -67,15 +74,9 @@ const routes = createBrowserRouter(
                     </RoleProtectedRoute>
                 }>
                     <Route path="projects" element={<AdminProjects />} />
-                    <Route path="analytics" element={<Analytics />} />
+                    <Route path="projects/:id" element={<AdminProjectDetails />} />
                 </Route>
 
-                {/* Manager Only Routes */}
-                <Route path="manager/workload" element={
-                    <RoleProtectedRoute allowedRoles={["Admin"]}>
-                        <TeamWorkload />
-                    </RoleProtectedRoute>
-                } />
             </Route>
 
             <Route path="/unauthorized" element={<Unauthorized />} />

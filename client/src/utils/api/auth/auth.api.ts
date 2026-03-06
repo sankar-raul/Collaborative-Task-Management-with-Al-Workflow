@@ -1,4 +1,5 @@
 import { get, post } from "../apiMethod";
+import { getToken } from "../GetToken";
 
 interface MeResponse {
     id: string;
@@ -10,16 +11,16 @@ interface ErrorResponse {
     error: string;
 }
 const ROUTE = 'auth';
+
 export const me = async (): Promise<MeResponse | ErrorResponse> => {
-    const token = localStorage.getItem('access_token');
-    if (!token) {
-        return { error: 'No access token found' } as ErrorResponse;
-    }
     try {
-        const response = await get(`${ROUTE}/me`, {}, token);
+        const response = await get(`${ROUTE}/me`, {}, getToken());
         return response as MeResponse;
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (error) {
+        if (error instanceof Error && error.message === "No access token found") {
+            return { error: 'No access token found' } as ErrorResponse;
+        }
         return { error: 'Failed to fetch user info' } as ErrorResponse;
     }
 }

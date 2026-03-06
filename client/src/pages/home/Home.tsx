@@ -1,6 +1,6 @@
 import { useAuth } from "../../context/auth";
 import AdminDashboard from "../dashboard/AdminDashboard";
-import DeveloperDashboard from "../dashboard/DeveloperDashboard";
+import UserDashboard from "../dashboard/UserDashboard";
 
 export default function Home() {
   const { member } = useAuth();
@@ -10,7 +10,7 @@ export default function Home() {
       case "Admin":
         return <AdminDashboard />;
       case "User":
-        return <DeveloperDashboard />;
+        return <UserDashboard />;
       default:
         return (
           <div className="bg-white p-10 rounded-2xl shadow-xl w-full max-w-lg space-y-6 border border-gray-100 text-center mx-auto mt-12">

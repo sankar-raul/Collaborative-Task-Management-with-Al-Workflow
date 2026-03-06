@@ -5,9 +5,7 @@ import {
     FolderOpen,
     LogOut,
     Users,
-    BarChart3,
     UserCircle,
-    ClipboardList
 } from "lucide-react";
 
 export default function Sidebar() {
@@ -24,8 +22,6 @@ export default function Sidebar() {
             roleLinks = [
                 { name: "Users & Roles", path: "/users", icon: Users },
                 { name: "Manage Projects", path: "/admin/projects", icon: FolderOpen },
-                { name: "Analytics", path: "/admin/analytics", icon: BarChart3 },
-                { name: "Team Workload", path: "/manager/workload", icon: ClipboardList },
             ];
         } else if (member?.role === "User") {
             roleLinks = [];
