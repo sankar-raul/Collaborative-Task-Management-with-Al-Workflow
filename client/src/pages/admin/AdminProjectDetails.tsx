@@ -7,7 +7,10 @@ import {
     CheckCircle2,
     Users,
     MoreVertical,
-    CheckCircle
+    CheckCircle,
+    Plus,
+    X,
+    Clock
 } from "lucide-react";
 
 import type { Project } from "../../@types/interface/ProjectInterface";
@@ -22,7 +25,32 @@ export const AdminProjectDetails = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    // Create Task Modal State
+    const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+    const [createLoading, setCreateLoading] = useState(false);
+    const [newTask, setNewTask] = useState({
+        title: "",
+        description: "",
+        priority: "Medium" as "Low" | "Medium" | "High" | "Critical",
+        requiredSkills: "",
+        assignedTo: "",
+        deadline: "",
+        status: "To Do" as any
+    });
+
     /* ---------------- Fetch Project + Tasks ---------------- */
+
+    const fetchTasks = async () => {
+        if (!id) return;
+        try {
+            const tasksRes = await api.tasks.getTasksByProject(id);
+            if (tasksRes.success) {
+                setTasks(tasksRes.data);
+            }
+        } catch (err: any) {
+            console.error("Failed to refresh tasks:", err);
+        }
+    };
 
     useEffect(() => {
         const fetchData = async () => {
@@ -83,6 +111,42 @@ export const AdminProjectDetails = () => {
             </div>
         );
     }
+
+    /* ---------------- Create Task Handler ---------------- */
+
+    const handleCreateTask = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!id) return;
+
+        try {
+            setCreateLoading(true);
+            const taskData = {
+                ...newTask,
+                projectId: id,
+                requiredSkills: newTask.requiredSkills.split(",").map(s => s.trim()).filter(s => s !== ""),
+                deadline: newTask.deadline ? new Date(newTask.deadline).toISOString() : undefined
+            };
+
+            const res = await api.tasks.createTask(taskData as any);
+            if (res.success) {
+                setIsCreateModalOpen(false);
+                setNewTask({
+                    title: "",
+                    description: "",
+                    priority: "Medium",
+                    requiredSkills: "",
+                    assignedTo: "",
+                    deadline: "",
+                    status: "To Do"
+                });
+                fetchTasks(); // Refresh list
+            }
+        } catch (err: any) {
+            alert(err.message || "Failed to create task");
+        } finally {
+            setCreateLoading(false);
+        }
+    };
 
     /* ---------------- Page ---------------- */
 
@@ -207,9 +271,17 @@ export const AdminProjectDetails = () => {
             {/* Recent Tasks */}
             <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 mt-6">
 
-                <h3 className="text-lg font-semibold text-gray-900 mb-6">
-                    Recent Tasks
-                </h3>
+                <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-lg font-semibold text-gray-900">
+                        Recent Tasks
+                    </h3>
+                    <button
+                        onClick={() => setIsCreateModalOpen(true)}
+                        className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition-all shadow-md shadow-indigo-100 active:scale-95"
+                    >
+                        <Plus size={18} /> Create Task
+                    </button>
+                </div>
 
                 {tasks.length === 0 ? (
 
@@ -318,6 +390,129 @@ export const AdminProjectDetails = () => {
                 )}
 
             </div>
+
+            {/* Create Task Modal */}
+            {isCreateModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+                        <div className="px-8 py-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                            <h3 className="text-xl font-bold text-gray-900">Create New Task</h3>
+                            <button onClick={() => setIsCreateModalOpen(false)} className="p-2 hover:bg-white rounded-full transition-colors text-gray-400 hover:text-gray-600">
+                                <X size={20} />
+                            </button>
+                        </div>
+
+                        <form onSubmit={handleCreateTask} className="p-8 space-y-5">
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">Task Title</label>
+                                <input
+                                    required
+                                    type="text"
+                                    value={newTask.title}
+                                    onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
+                                    placeholder="e.g. Fix Production API Errors"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">Description</label>
+                                <textarea
+                                    value={newTask.description}
+                                    onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all resize-none h-24"
+                                    placeholder="Brief task overview..."
+                                />
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">Priority</label>
+                                    <select
+                                        value={newTask.priority}
+                                        onChange={(e) => setNewTask({ ...newTask, priority: e.target.value as any })}
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                    >
+                                        <option value="Low">Low</option>
+                                        <option value="Medium">Medium</option>
+                                        <option value="High">High</option>
+                                        <option value="Critical">Critical</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">Status</label>
+                                    <select
+                                        value={newTask.status}
+                                        onChange={(e) => setNewTask({ ...newTask, status: e.target.value as any })}
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                    >
+                                        <option value="To Do">To Do</option>
+                                        <option value="Assigned">Assigned</option>
+                                        <option value="In Progress">In Progress</option>
+                                        <option value="In Review">In Review</option>
+                                        <option value="Completed">Completed</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">Assign To Member</label>
+                                <select
+                                    value={newTask.assignedTo}
+                                    onChange={(e) => setNewTask({ ...newTask, assignedTo: e.target.value })}
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                                >
+                                    <option value="">Select Member</option>
+                                    {project.members?.map((m: any) => (
+                                        <option key={m.user?._id} value={m.user?._id}>
+                                            {m.user?.name} ({m.role})
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">Required Skills (Comma separated)</label>
+                                    <input
+                                        type="text"
+                                        value={newTask.requiredSkills}
+                                        onChange={(e) => setNewTask({ ...newTask, requiredSkills: e.target.value })}
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
+                                        placeholder="React, Node.js"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-2">Deadline</label>
+                                    <input
+                                        type="date"
+                                        value={newTask.deadline}
+                                        onChange={(e) => setNewTask({ ...newTask, deadline: e.target.value })}
+                                        className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex gap-4 pt-4">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsCreateModalOpen(false)}
+                                    className="flex-1 px-6 py-3 border border-gray-200 text-gray-600 font-bold rounded-xl hover:bg-gray-50 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={createLoading}
+                                    className="flex-1 px-6 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-md shadow-indigo-100 disabled:opacity-50"
+                                >
+                                    {createLoading ? "Creating..." : "Create Task"}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
 
         </div>
     );
