@@ -43,8 +43,9 @@ export const io = new Server(server, {
 
 io.use(async (socket, next) => {
     // const token = cookie.parse(socket.request.headers.cookie || '')?.access_token
-    const token = socket.handshake.auth.token
-    // console.log(token)
+    const token = socket.handshake.auth.token || socket.handshake.query?.token
+    console.log(socket.handshake.auth)
+    console.log(socket.id)
     if (!token) {
         return next(new Error("unauthorized!"))
     }
@@ -60,7 +61,14 @@ io.use(async (socket, next) => {
 io.on("connection", async (socket) => {
   console.log("Socket connected:", socket.id);
 
+  socket.on("msg", (data) => {
+    console.log("Received message:", data);
+    // Broadcast the message to all connected clients
+    socket.broadcast.emit("msg", data);
+  });
+
   socket.on("disconnect", async () => {
+
     console.log("Socket disconnected:", socket.id);
     await disconnectUser({user_id: socket.user.userId, socket_id: socket.id})
   });
