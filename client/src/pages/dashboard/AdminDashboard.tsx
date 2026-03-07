@@ -4,6 +4,7 @@ import { useUsers } from "../../context/users";
 import { useNavigate } from "react-router";
 import { useAuth } from "../../context/auth";
 import { api } from "../../utils/api";
+import { StatsCard } from "../../components/shared/StatsCard";
 import type { Project } from "../../@types/interface/ProjectInterface";
 
 export default function AdminDashboard() {
@@ -43,51 +44,36 @@ export default function AdminDashboard() {
 
             {/* Stats */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {[
-                    {
-                        title: "Total Users",
-                        value: totalUsers,
-                        icon: Users,
-                        color: "text-blue-600",
-                        bg: "bg-blue-100",
-                    },
-                    {
-                        title: "Active Projects",
-                        value: projects.length,
-                        icon: FolderKanban,
-                        color: "text-indigo-600",
-                        bg: "bg-indigo-100",
-                    },
-                    {
-                        title: "Total Tasks",
-                        value: 148,
-                        icon: ClipboardList,
-                        color: "text-emerald-600",
-                        bg: "bg-emerald-100",
-                    },
-                ].map((stat, i) => (
-                    <div
-                        key={i}
-                        className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm flex items-center space-x-4"
-                    >
-                        <div className={`p-3 rounded-lg ${stat.bg} ${stat.color}`}>
-                            <stat.icon className="w-6 h-6" />
-                        </div>
-                        <div>
-                            <p className="text-sm font-medium text-gray-500">{stat.title}</p>
-                            <h3 className="text-2xl font-bold text-gray-900">{stat.value}</h3>
-                        </div>
-                    </div>
-                ))}
+                <StatsCard
+                    title="Total Users"
+                    value={totalUsers}
+                    icon={Users}
+                    colorClass="text-blue-600"
+                    bgClass="bg-blue-100"
+                />
+                <StatsCard
+                    title="Active Projects"
+                    value={projects.length}
+                    icon={FolderKanban}
+                    colorClass="text-indigo-600"
+                    bgClass="bg-indigo-100"
+                />
+                <StatsCard
+                    title="Total Tasks"
+                    value={148}
+                    icon={ClipboardList}
+                    colorClass="text-emerald-600"
+                    bgClass="bg-emerald-100"
+                />
             </div>
 
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
 
-                <div className="bg-white rounded-xl border border-gray-100 shadow-sm">
+                <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
 
 
-                    <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
+                    <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 ">
                         <h2 className="text-lg font-semibold text-gray-800">Team Members</h2>
                         <span className="text-sm text-gray-500">
                             {systemUsers.length} users
@@ -156,6 +142,8 @@ export default function AdminDashboard() {
                         </div>
                     )}
                 </div>
+
+                {/* Projects */}
                 <div className="bg-white rounded-xl border border-gray-100 shadow-sm divide-y divide-gray-100">
                     <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
                         <h2 className="text-lg font-semibold text-gray-800">Projects</h2>

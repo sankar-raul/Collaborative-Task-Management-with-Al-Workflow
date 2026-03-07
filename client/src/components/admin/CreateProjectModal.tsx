@@ -1,56 +1,30 @@
-import { useState } from "react";
+import React from "react";
 import { X, Check } from "lucide-react";
-import { api } from "../../../utils/api";
-import { useUsers } from "../../../context/users";
 
 interface CreateProjectModalProps {
+    isOpen: boolean;
     onClose: () => void;
-    onSuccess: () => void;
+    onSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
+    submitting: boolean;
+    systemUsers: any[];
+    isUsersLoading: boolean;
+    selectedMembers: { user: string; role: string }[];
+    toggleMemberSelection: (userId: string) => void;
+    updateMemberRole: (userId: string, role: string) => void;
 }
 
-export const CreateProjectModal = ({ onClose, onSuccess }: CreateProjectModalProps) => {
-    const [submitting, setSubmitting] = useState(false);
-    const { systemUsers, isLoading: isUsersLoading } = useUsers();
-    const [selectedMembers, setSelectedMembers] = useState<{ user: string, role: string }[]>([]);
-
-    const toggleMemberSelection = (userId: string) => {
-        setSelectedMembers(prev =>
-            prev.some(m => m.user === userId)
-                ? prev.filter(m => m.user !== userId)
-                : [...prev, { user: userId, role: "User" }]
-        );
-    };
-
-    const updateMemberRole = (userId: string, role: string) => {
-        setSelectedMembers(prev =>
-            prev.map(m => m.user === userId ? { ...m, role } : m)
-        );
-    };
-
-    const handleCreateProject = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        setSubmitting(true);
-        const formData = new FormData(e.currentTarget);
-
-        const payload = {
-            projectName: formData.get("projectName") as string,
-            description: formData.get("description") as string,
-            members: selectedMembers
-        };
-
-        try {
-            const res = await api.projects.createProject(payload);
-            if (res.success) {
-                onSuccess();
-            } else {
-                alert(res.message);
-            }
-        } catch (err: any) {
-            alert(err.message);
-        } finally {
-            setSubmitting(false);
-        }
-    };
+export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
+    isOpen,
+    onClose,
+    onSubmit,
+    submitting,
+    systemUsers,
+    isUsersLoading,
+    selectedMembers,
+    toggleMemberSelection,
+    updateMemberRole,
+}) => {
+    if (!isOpen) return null;
 
     return (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
@@ -65,7 +39,7 @@ export const CreateProjectModal = ({ onClose, onSuccess }: CreateProjectModalPro
                     </button>
                 </div>
 
-                <form onSubmit={handleCreateProject} className="p-6 space-y-5">
+                <form onSubmit={onSubmit} className="p-6 space-y-5">
                     <div>
                         <label htmlFor="projectName" className="block text-sm font-semibold text-gray-700 mb-1.5">Project Name</label>
                         <input

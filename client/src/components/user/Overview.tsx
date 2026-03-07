@@ -1,5 +1,6 @@
-import React from 'react';
-import { Mail, Phone, Hash, Briefcase, MapPin, Edit2, ChevronRight } from 'lucide-react';
+import React, { useState } from 'react';
+import { Mail, Phone, Hash, Briefcase, MapPin, Edit2, ChevronRight, X } from 'lucide-react';
+import { api } from '../../utils/api';
 import type { Task } from '../../@types/interface/TasksInterface';
 import type { Project } from '../../@types/interface/ProjectInterface';
 
@@ -14,16 +15,50 @@ interface OverviewProps {
         completed: number;
         overdue: number;
     };
+    onUserUpdate?: (updatedUser: any) => void;
 }
 
-const Overview: React.FC<OverviewProps> = ({ user, tasks, projects, taskStats }) => {
+const Overview: React.FC<OverviewProps> = ({ user, tasks, projects, taskStats, onUserUpdate }) => {
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+    const [editForm, setEditForm] = useState({
+        name: user.name || '',
+        skills: user.skills ? user.skills.join(', ') : ''
+    });
+
+    const handleUpdateProfile = async (e: React.FormEvent) => {
+        e.preventDefault();
+        try {
+            setIsSaving(true);
+            const skillsArray = editForm.skills.split(',').map((s: string) => s.trim()).filter((s: string) => s !== "");
+            const res = await api.members.updateMe({ name: editForm.name, skills: skillsArray });
+            if (res.success) {
+                if (onUserUpdate) onUserUpdate(res.data);
+                setIsEditModalOpen(false);
+            } else {
+                alert("Failed to update profile");
+            }
+        } catch (error) {
+            console.error("Error updating profile:", error);
+            alert("An error occurred while updating profile");
+        } finally {
+            setIsSaving(false);
+        }
+    };
+
     return (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-in slide-in-from-bottom-4 duration-500">
             {/* Left Column - Employee Overview */}
             <div className="lg:col-span-12 xl:col-span-5 bg-white border border-gray-100 shadow-sm rounded-3xl p-8">
                 <div className="flex justify-between items-center mb-8">
                     <h3 className="text-xl font-bold text-gray-900">Employee Overview</h3>
-                    <button className="flex items-center gap-1.5 text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-xl text-sm font-bold transition-all">
+                    <button
+                        onClick={() => {
+                            setEditForm({ name: user.name || '', skills: user.skills ? user.skills.join(', ') : '' });
+                            setIsEditModalOpen(true);
+                        }}
+                        className="flex items-center gap-1.5 text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-3 py-1.5 rounded-xl text-sm font-bold transition-all"
+                    >
                         <Edit2 className="w-4 h-4" /> Edit
                     </button>
                 </div>
@@ -68,6 +103,24 @@ const Overview: React.FC<OverviewProps> = ({ user, tasks, projects, taskStats })
                             <p className="text-sm font-bold text-gray-900">Kolkata, WB</p>
                             <p className="text-xs text-gray-400 mt-0.5">Current Location</p>
                         </div>
+                    </div>
+                </div>
+
+                {/* Skills Section Integrated */}
+                <div className="mt-8 pt-8 border-t border-gray-50">
+                    <h4 className="text-sm font-black text-gray-900 uppercase tracking-wider mb-4">Expertise & Skills</h4>
+                    <div className="flex flex-wrap gap-2">
+                        {user.skills?.map((skill: string, i: number) => (
+                            <span
+                                key={i}
+                                className="px-3 py-1.5 text-xs font-bold rounded-xl bg-indigo-50 text-indigo-700 border border-indigo-100"
+                            >
+                                {skill}
+                            </span>
+                        ))}
+                        {(!user.skills || user.skills.length === 0) && (
+                            <p className="text-xs text-gray-400 italic">No skills listed.</p>
+                        )}
                     </div>
                 </div>
             </div>
@@ -156,6 +209,70 @@ const Overview: React.FC<OverviewProps> = ({ user, tasks, projects, taskStats })
                     </div>
                 </div>
             </div>
+
+            {/* Edit Profile Modal */}
+            {isEditModalOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+                    <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden p-8 animate-in zoom-in-95 duration-200">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="text-xl font-bold text-gray-900">Edit Profile</h3>
+                            <button onClick={() => setIsEditModalOpen(false)} className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400">
+                                <X size={20} />
+                            </button>
+                        </div>
+                        <form onSubmit={handleUpdateProfile} className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">Display Name</label>
+                                <input
+                                    type="text"
+                                    value={editForm.name}
+                                    onChange={(e) => setEditForm(prev => ({ ...prev, name: e.target.value }))}
+                                    required
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all"
+                                    placeholder="Your name"
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">Email Address</label>
+                                <input
+                                    type="email"
+                                    value={user.email}
+                                    disabled
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-100 bg-gray-50 text-gray-500 outline-none cursor-not-allowed"
+                                />
+                                <p className="text-[10px] text-gray-400 mt-1">Email address cannot be changed</p>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-2">Skills</label>
+                                <input
+                                    type="text"
+                                    value={editForm.skills}
+                                    onChange={(e) => setEditForm(prev => ({ ...prev, skills: e.target.value }))}
+                                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500/20 outline-none transition-all"
+                                    placeholder="e.g. React, Node.js, Design (comma separated)"
+                                />
+                            </div>
+
+                            <div className="pt-4 flex gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsEditModalOpen(false)}
+                                    className="flex-1 py-3 bg-gray-50 text-sm font-bold text-gray-700 hover:bg-gray-100 rounded-xl border border-gray-200 transition-all"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={isSaving}
+                                    className="flex-1 py-3 bg-indigo-600 text-white text-sm font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-md shadow-indigo-100 active:scale-95 disabled:opacity-50"
+                                >
+                                    {isSaving ? "Saving..." : "Save Changes"}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

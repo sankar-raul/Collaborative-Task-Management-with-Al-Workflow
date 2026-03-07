@@ -3,11 +3,9 @@ import { api } from "../../utils/api";
 import { useAuth } from "../../context/auth";
 import type { Task } from "../../@types/interface/TasksInterface";
 import type { Project } from "../../@types/interface/ProjectInterface";
-import DashboardHeader from "../user/DashboardHeader";
-import Overview from "../user/Overview";
-import SkillsTab from "../user/SkillsTab";
-import TasksTab from "../user/TasksTab";
-import ProjectsTab from "../user/ProjectsTab";
+import DashboardHeader from "../../components/user/DashboardHeader";
+import Overview from "../../components/user/Overview";
+import SkillsTab from "../../components/user/SkillsTab";
 
 export default function UserDashboard() {
     const { member } = useAuth();
@@ -15,7 +13,6 @@ export default function UserDashboard() {
     const [tasks, setTasks] = useState<Task[]>([]);
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState("overview");
     useEffect(() => {
         const fetchData = async () => {
             if (!member?.id) return;
@@ -23,7 +20,6 @@ export default function UserDashboard() {
                 setLoading(true);
                 const [userRes, tasksRes, projectsRes] = await Promise.all([
                     api.members.getMemberById(member.id),
-
                     api.tasks.getTasksByUser(member.id),
                     api.members.getAssignedProjects()
                 ]);
@@ -63,31 +59,15 @@ export default function UserDashboard() {
         <div className="max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500">
             <DashboardHeader
                 user={user}
-                activeTab={activeTab}
-                setActiveTab={setActiveTab}
             />
 
-            {/* Content Tab Rendering */}
-            {activeTab === 'overview' && (
-                <Overview
-                    user={user}
-                    tasks={tasks}
-                    projects={projects}
-                    taskStats={taskStats}
-                />
-            )}
-
-            {activeTab === 'skills' && (
-                <SkillsTab skills={user.skills || []} />
-            )}
-
-            {activeTab === 'tasks' && (
-                <TasksTab tasks={tasks} />
-            )}
-
-            {activeTab === 'projects' && (
-                <ProjectsTab projects={projects} user={user} />
-            )}
+            <Overview
+                user={user}
+                tasks={tasks}
+                projects={projects}
+                taskStats={taskStats}
+                onUserUpdate={(updatedUser) => setUser(updatedUser)}
+            />
         </div>
     );
 }

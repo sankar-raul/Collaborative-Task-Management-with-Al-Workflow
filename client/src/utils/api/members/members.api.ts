@@ -1,4 +1,4 @@
-import { get } from "../apiMethod";
+import { get, put } from "../apiMethod";
 import { getToken } from "../GetToken";
 import type { GetAllMembersResponse, Member } from "../../../@types/interface/MembersInterface";
 import type { Project } from "../../../@types/interface/ProjectInterface";
@@ -16,4 +16,12 @@ export const getMemberById = async (id: string): Promise<{ success: boolean; dat
 
 export const getAssignedProjects = async (): Promise<{ success: boolean; data: Project[]; total: number }> => {
     return await get(`${ROUTE}/projects`, {}, getToken());
+};
+
+export const searchMembers = async (q: string = "", page: number = 1, limit: number = 100): Promise<GetAllMembersResponse> => {
+    return await get(`${ROUTE}/search`, { q, page, limit }, getToken());
+};
+
+export const updateMe = async (data: Partial<Omit<Member, "_id" | "role" | "createdAt" | "currentWorkload">>): Promise<{ success: boolean; data: Member }> => {
+    return await put(`${ROUTE}/me`, data, getToken());
 };

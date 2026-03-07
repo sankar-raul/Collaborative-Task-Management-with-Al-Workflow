@@ -6,6 +6,7 @@ import {
     LogOut,
     Users,
     UserCircle,
+    Settings,
 } from "lucide-react";
 
 export default function Sidebar() {
@@ -24,20 +25,24 @@ export default function Sidebar() {
                 { name: "Manage Projects", path: "/admin/projects", icon: FolderOpen },
             ];
         } else if (member?.role === "User") {
-            roleLinks = [];
+            roleLinks = [
+                { name: "My Projects", path: "/projects", icon: FolderOpen },
+                { name: "My Tasks", path: "/tasks", icon: LayoutDashboard }, // Using LayoutDashboard for Tasks icon, or could use another
+            ];
         }
 
-        return [
-            ...baseLinks,
-            ...roleLinks,
-            { name: "Profile", path: "/profile", icon: UserCircle }
-        ];
+        const finalLinks = [...baseLinks, ...roleLinks];
+
+        // Show Settings for all roles
+        finalLinks.push({ name: "Settings", path: "/settings", icon: Settings });
+
+        return finalLinks;
     };
 
     const navLinks = getNavLinks();
 
     return (
-        <aside className="w-64 bg-white h-screen flex-col border-r border-gray-100 hidden md:flex sticky top-0">
+        <aside className="w-64 bg-white h-full flex flex-col border-r border-gray-100">
             {/* Brand logo area */}
             <div className="h-16 flex items-center px-6 border-b border-transparent">
                 <div className="flex items-center space-x-2">

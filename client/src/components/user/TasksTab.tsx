@@ -4,9 +4,10 @@ import type { Task } from '../../@types/interface/TasksInterface';
 
 interface TasksTabProps {
     tasks: Task[];
+    onStatusChange?: (taskId: string, newStatus: Task['status']) => void;
 }
 
-const TasksTab: React.FC<TasksTabProps> = ({ tasks }) => {
+const TasksTab: React.FC<TasksTabProps> = ({ tasks, onStatusChange }) => {
     return (
         <div className="space-y-4 animate-in slide-in-from-bottom-4 duration-500">
             <div className="flex justify-between items-center mb-4">
@@ -19,7 +20,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ tasks }) => {
                 <div key={task._id} className="bg-white border border-gray-100 shadow-sm rounded-2xl p-6 hover:shadow-md transition-shadow">
                     <div className="flex justify-between items-start">
                         <div>
-                            <h4 className="font-bold text-gray-900">{task.title}</h4>
+                            <h4 className={`font-bold ${task.status === 'Completed' ? 'text-green-600' : 'text-gray-900'}`}>{task.title}</h4>
                             <p className="text-sm text-gray-500 mt-1">{task.description}</p>
                             <div className="flex items-center gap-4 mt-3">
                                 <span className="text-xs text-gray-400 flex items-center gap-1">
@@ -31,10 +32,25 @@ const TasksTab: React.FC<TasksTabProps> = ({ tasks }) => {
                                 </span>
                             </div>
                         </div>
-                        <span className={`px-3 py-1 text-xs font-bold rounded-full ${task.status === 'Completed' ? 'bg-green-50 text-green-700' : 'bg-indigo-50 text-indigo-700'
-                            }`}>
-                            {task.status}
-                        </span>
+                        {onStatusChange ? (
+                            <select
+                                value={task.status}
+                                onChange={(e) => onStatusChange(task._id, e.target.value as Task['status'])}
+                                className={`px-3 py-1 text-xs font-bold rounded-full border-none outline-none cursor-pointer focus:ring-2 focus:ring-indigo-500/20 transition-all ${task.status === 'Completed' ? 'bg-green-50 text-green-700 hover:bg-green-100' : 'bg-indigo-50 text-indigo-700 hover:bg-indigo-100'
+                                    }`}
+                            >
+                                <option value="To Do">To Do</option>
+                                <option value="Assigned">Assigned</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="In Review">In Review</option>
+                                <option value="Completed">Completed</option>
+                            </select>
+                        ) : (
+                            <span className={`px-3 py-1 text-xs font-bold rounded-full ${task.status === 'Completed' ? 'bg-green-50 text-green-700' : 'bg-indigo-50 text-indigo-700'
+                                }`}>
+                                {task.status}
+                            </span>
+                        )}
                     </div>
                 </div>
             ))}

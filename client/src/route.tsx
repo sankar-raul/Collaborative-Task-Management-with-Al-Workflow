@@ -17,8 +17,10 @@ import { AdminProjectDetails } from "./pages/admin/AdminProjectDetails";
 // Common Page
 import { Notifications } from "./pages/common/Notifications";
 import { Unauthorized } from "./pages/common/Unauthorized";
-import { Profile } from "./pages/common/Profile";
+import Settings from "./pages/settings/Settings";
 import UserProjectDetails from "./pages/user/UserProjectDetails";
+import UserProjects from "./pages/user/UserProjects";
+import UserTasks from "./pages/user/UserTasks";
 
 
 const routes = createBrowserRouter(
@@ -47,8 +49,10 @@ const routes = createBrowserRouter(
 
                 {/* Common Pages */}
                 <Route path="notifications" element={<Notifications />} />
+                <Route path="projects" element={<UserProjects />} />
                 <Route path="projects/:id" element={<UserProjectDetails />} />
-                <Route path="profile" element={<Profile />} />
+                <Route path="tasks" element={<UserTasks />} />
+                <Route path="settings" element={<Settings />} />
 
                 <Route path="users" element={
                     <RoleProtectedRoute allowedRoles={["Admin"]}>

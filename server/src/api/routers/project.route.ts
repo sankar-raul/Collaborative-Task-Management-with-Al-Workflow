@@ -14,6 +14,6 @@ projectRouter.get("/:id/count", adminAuth, getTotalProjectsCount) // Only projec
 projectRouter.post("/:id/members", memberRoleMiddleware("Manager"), addProjectMember); // Only Managers and Admin can add members to a project
 projectRouter.delete("/:id/members", memberRoleMiddleware("Manager"), removeProjectMember); // Only Managers and Admin can remove members from a project
 projectRouter.get("/:id/members", isValidProjectMember, getProjectMembers) // Only project members can view project members
-projectRouter.put("/:id/members", adminAuth, updateProjectMemberRole) // Only Admin can update project member roles
+projectRouter.put("/:id/members", memberRoleMiddleware("Manager"), updateProjectMemberRole) // Only Managers and Admin can update project member roles
 
 export default projectRouter;

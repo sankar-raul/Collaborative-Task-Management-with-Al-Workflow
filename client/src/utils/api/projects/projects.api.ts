@@ -1,6 +1,6 @@
 import type { GetProjectsResponse, Project } from "../../../@types/interface/ProjectInterface";
 import { getToken } from "../GetToken";
-import { get, post, deleteRequest } from "../apiMethod";
+import { get, post, deleteRequest, put } from "../apiMethod";
 const ROUTE = 'projects';
 
 export const getProjects = async (page: number = 1, limit: number = 10): Promise<GetProjectsResponse> => {
@@ -17,4 +17,20 @@ export const getProjectById = async (id: string): Promise<{ success: boolean; da
 
 export const deleteProject = async (id: string): Promise<{ success: boolean; message: string }> => {
     return await deleteRequest(`${ROUTE}/${id}`, getToken());
+};
+
+export const updateProject = async (id: string, projectData: { projectName?: string; description?: string; status?: string }): Promise<{ success: boolean; data: Project; message: string }> => {
+    return await put(`${ROUTE}/${id}`, projectData, getToken());
+};
+
+export const addProjectMember = async (id: string, memberData: { userId: string; role: string }): Promise<{ success: boolean; message: string }> => {
+    return await post(`${ROUTE}/${id}/members`, memberData, getToken());
+};
+
+export const removeProjectMember = async (id: string, userId: string): Promise<{ success: boolean; message: string }> => {
+    return await deleteRequest(`${ROUTE}/${id}/members`, getToken(), { userId });
+};
+
+export const updateProjectMemberRole = async (id: string, memberData: { userId: string; role: string }): Promise<{ success: boolean; message: string }> => {
+    return await put(`${ROUTE}/${id}/members`, memberData, getToken());
 };

@@ -19,13 +19,13 @@ export const UsersProvider = ({ children }: { children: ReactNode }) => {
     const { member } = useAuth(); // We need auth to fetch users
 
     const refreshUsers = async () => {
-        // Only fetch if a user is actually logged in and is an Admin
-        if (!member || member.role !== "Admin") return;
+        // Only fetch if a user is actually logged in
+        if (!member) return;
 
         try {
             setIsLoading(true);
             setError(null);
-            // Fetch a large enough limit to get all users, or handle pagination later
+            // Fetch all members (now supported by server for Managers too)
             const response = await api.members.getAllMembers(1, 100);
             if (response.success) {
                 setSystemUsers(response.data);

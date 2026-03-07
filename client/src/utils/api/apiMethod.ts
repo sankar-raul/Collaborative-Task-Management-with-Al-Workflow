@@ -72,15 +72,17 @@ export const put = async (
 
 export const deleteRequest = async (
   endPoint: string,
-  token?: string
+  token?: string,
+  data?: object
 ): Promise<any> => {
   try {
     if (!token) {
-      const response = await API.delete<any>(endPoint);
+      const response = await API.delete<any>(endPoint, { data });
       return response.data;
     } else {
       const response = await API.delete<any>(endPoint, {
         headers: { ...headers, Authorization: `Bearer ${token}` },
+        data,
       });
       return response.data;
     }

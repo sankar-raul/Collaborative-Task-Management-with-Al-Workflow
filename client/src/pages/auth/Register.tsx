@@ -6,6 +6,7 @@ import { api } from "../../utils/api";
 import { useNavigate } from "react-router-dom";
 import SkillsInput from "../../components/shared/SkillsInput";
 import PromoForSignup from "../../components/shared/PromoForSignup";
+import { useAuth } from "../../context/auth";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -18,6 +19,7 @@ const Register = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const { login } = useAuth();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -35,9 +37,12 @@ const Register = () => {
     try {
       const response = await api.auth.register(formData);
       if (response.success && response.auth?.access_token) {
-        localStorage.setItem("access_token", response.auth.access_token);
-        // Optionally redirect the user or show success
-        navigate("/login");
+        const loginSuccess = await login(formData.email, formData.password);
+        if (loginSuccess) {
+          navigate("/");
+        } else {
+          navigate("/login");
+        }
       }
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -45,6 +50,8 @@ const Register = () => {
       } else {
         setError("Failed to register. Please try again.");
       }
+    } finally {
+      setLoading(false);
     }
   };
 

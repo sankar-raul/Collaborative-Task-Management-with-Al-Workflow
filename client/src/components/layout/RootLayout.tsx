@@ -12,16 +12,21 @@ export default function RootLayout() {
         <div className="min-h-screen bg-gray-50 flex font-sans overflow-hidden">
             {/* Sidebar - Desktop & Mobile overlay */}
             <div
-                className={`${isSidebarOpen ? 'fixed inset-0 z-40 bg-black/50 md:bg-transparent md:static md:inset-auto' : 'hidden md:block'} transition-opacity`}
-                onClick={() => isSidebarOpen && setIsSidebarOpen(false)}
+                className={`fixed inset-y-0 left-0 z-40 transition-transform duration-300 transform md:static md:translate-x-0 ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+                    }`}
             >
-                <div
-                    className="bg-white w-64 h-full"
-                    onClick={(e) => e.stopPropagation()}
-                >
+                <div className="h-full">
                     <Sidebar />
                 </div>
             </div>
+
+            {/* Backdrop for Mobile */}
+            {isSidebarOpen && (
+                <div
+                    className="fixed inset-0 z-30 bg-black/50 md:hidden backdrop-blur-sm transition-opacity"
+                    onClick={toggleSidebar}
+                />
+            )}
 
             {/* Main Content Area */}
             <div className="flex-1 flex flex-col h-screen overflow-hidden">
