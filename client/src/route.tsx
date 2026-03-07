@@ -6,31 +6,35 @@ import ProtectedRoute from "./routes/protectedRoutes";
 import RoleProtectedRoute from "./routes/RoleProtectedRoute";
 import RootLayout from "./components/layout/RootLayout";
 
+import RedirectIfAuthenticated from "./routes/RedirectIfAuthenticated";
+
 // Admin Pages
 import { UsersRoles } from "./pages/admin/UsersRoles";
-import { Analytics } from "./pages/admin/Analytics";
+import { UserDetails } from "./pages/admin/UserDetails";
 import { AdminProjects } from "./pages/admin/AdminProjects";
+import { AdminProjectDetails } from "./pages/admin/AdminProjectDetails";
 
-// Manager Pages
-import { ProjectsTeams } from "./pages/manager/ProjectsTeams";
-import { TeamWorkload } from "./pages/manager/TeamWorkload";
-
-// Developer Pages
-import { MyTasks } from "./pages/developer/MyTasks";
-
-// Common Pages
+// Common Page
 import { Notifications } from "./pages/common/Notifications";
 import { Unauthorized } from "./pages/common/Unauthorized";
 import { Profile } from "./pages/common/Profile";
-import { Messages } from "./pages/common/Messages";
+import UserProjectDetails from "./pages/user/UserProjectDetails";
 
 
 const routes = createBrowserRouter(
     createRoutesFromElements(
         <>
             {/* Auth Routes - without RootLayout */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
+            <Route path="/login" element={
+                <RedirectIfAuthenticated>
+                    <Login />
+                </RedirectIfAuthenticated>
+            } />
+            <Route path="/register" element={
+                <RedirectIfAuthenticated>
+                    <Register />
+                </RedirectIfAuthenticated>
+            } />
 
             {/* Common Protected Routes wrapped in RootLayout */}
             <Route path="/" element={
@@ -43,33 +47,30 @@ const routes = createBrowserRouter(
 
                 {/* Common Pages */}
                 <Route path="notifications" element={<Notifications />} />
-                <Route path="projects" element={<ProjectsTeams />} />
-                <Route path="tasks" element={<MyTasks />} />
-                <Route path="messages" element={<Messages />} />
+                <Route path="projects/:id" element={<UserProjectDetails />} />
                 <Route path="profile" element={<Profile />} />
 
                 <Route path="users" element={
-                    <RoleProtectedRoute allowedRoles={["admin", "manager"]}>
+                    <RoleProtectedRoute allowedRoles={["Admin"]}>
                         <UsersRoles />
+                    </RoleProtectedRoute>
+                } />
+                <Route path="users/:id" element={
+                    <RoleProtectedRoute allowedRoles={["Admin"]}>
+                        <UserDetails />
                     </RoleProtectedRoute>
                 } />
 
                 {/* Admin Only Routes */}
                 <Route path="admin" element={
-                    <RoleProtectedRoute allowedRoles={["admin"]}>
+                    <RoleProtectedRoute allowedRoles={["Admin"]}>
                         <Outlet />
                     </RoleProtectedRoute>
                 }>
                     <Route path="projects" element={<AdminProjects />} />
-                    <Route path="analytics" element={<Analytics />} />
+                    <Route path="projects/:id" element={<AdminProjectDetails />} />
                 </Route>
 
-                {/* Manager Only Routes */}
-                <Route path="manager/workload" element={
-                    <RoleProtectedRoute allowedRoles={["admin", "manager"]}>
-                        <TeamWorkload />
-                    </RoleProtectedRoute>
-                } />
             </Route>
 
             <Route path="/unauthorized" element={<Unauthorized />} />

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Input from "../../components/shared/Input";
 import Button from "../../components/shared/Button";
-import { useAuth } from "../../context/authContext";
+import { useAuth } from "../../context/auth";
 import PromoForLogin from "../../components/shared/PromoForLogin";
 
 const Login = () => {
@@ -10,6 +10,8 @@ const Login = () => {
     email: "",
     password: "",
   });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -19,13 +21,21 @@ const Login = () => {
       ...formData,
       [e.target.name]: e.target.value,
     });
+    setError("");
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Login:", formData);
-    login(formData.email, formData.password);
-    navigate("/");
+    setLoading(true);
+    setError("");
+    const success = await login(formData.email, formData.password);
+    setLoading(false);
+
+    if (success) {
+      navigate("/");
+    } else {
+      setError("Invalid email or password");
+    }
   };
 
   return (
@@ -88,8 +98,14 @@ const Login = () => {
               />
             </div>
 
-            <Button type="submit" fullWidth>
-              Log in
+            {error && (
+              <p className="text-sm text-red-600 text-center font-medium">
+                {error}
+              </p>
+            )}
+
+            <Button type="submit" fullWidth disabled={loading}>
+              {loading ? "Logging in..." : "Log in"}
             </Button>
 
             <p className="text-center text-sm text-gray-500">
@@ -106,7 +122,7 @@ const Login = () => {
       </div>
 
       {/* RIGHT SIDE - TASK MANAGEMENT PROMO */}
-      <PromoForLogin/>
+      <PromoForLogin />
     </div>
   );
 };

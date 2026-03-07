@@ -1,10 +1,12 @@
 export interface IMemeber {
+  id: string;
+  name: string;
   email: string;
-  role: "admin" | "manager" | "developer";
+  role: "Admin" | "User";
 }
 
 export interface IAuthContextType {
   member: IMemeber | null;
-  login: (email: string, password: string) => void;
+  login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
 }

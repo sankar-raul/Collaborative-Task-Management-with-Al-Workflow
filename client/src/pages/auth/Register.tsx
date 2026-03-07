@@ -2,9 +2,9 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import Input from "../../components/shared/Input";
 import Button from "../../components/shared/Button";
-import { post } from "../../utils/api/apiMethod";
+import { api } from "../../utils/api";
 import { useNavigate } from "react-router-dom";
-import SkillsInput from "../../components/shared/skillsInput";
+import SkillsInput from "../../components/shared/SkillsInput";
 import PromoForSignup from "../../components/shared/PromoForSignup";
 
 const Register = () => {
@@ -33,7 +33,7 @@ const Register = () => {
     setError("");
     console.log(formData);
     try {
-      const response = await post("auth/register", formData);
+      const response = await api.auth.register(formData);
       if (response.success && response.auth?.access_token) {
         localStorage.setItem("access_token", response.auth.access_token);
         // Optionally redirect the user or show success
