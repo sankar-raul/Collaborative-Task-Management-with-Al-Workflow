@@ -47,6 +47,27 @@ class MemberService {
             }
         };
     }
+
+        static async updateMember(memberId: string, updateData: Partial<{ name?: string; email?: string; skills?: string[]; availabilityHours?: number }>) {
+            if (!updateData || Object.keys(updateData).length === 0) {
+                throw new Error("No update data provided");
+            }
+            
+            // Remove undefined values
+            const cleanData = Object.fromEntries(
+                Object.entries(updateData).filter(([_, value]) => value !== undefined)
+            );
+            
+            if (Object.keys(cleanData).length === 0) {
+                throw new Error("No valid update data provided");
+            }
+            
+            const member = await UserModel.findByIdAndUpdate(memberId, cleanData, { returnDocument: "after" });
+            if (!member) {
+                throw new Error("Member not found");
+            }
+            return member;
+        }
 }
 
 export default MemberService;

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, Edit2, Trash2, X, FolderOpen, Calendar, Clock, Check, MoreVertical, Eye } from "lucide-react";
+import { Plus, Edit2, Trash2, X, FolderOpen, Calendar, Clock, Check, MoreVertical } from "lucide-react";
 import { useNavigate } from "react-router";
 import { api } from "../../utils/api";
 import { useUsers } from "../../context/users";

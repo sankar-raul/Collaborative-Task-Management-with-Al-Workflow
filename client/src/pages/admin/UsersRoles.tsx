@@ -1,4 +1,4 @@
-import { Mail, Shield, User, Circle } from "lucide-react";
+import { Mail, Shield, User } from "lucide-react";
 
 // ...existing imports...
 import { useNavigate } from "react-router-dom";

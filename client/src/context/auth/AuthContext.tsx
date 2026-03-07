@@ -1,9 +1,8 @@
-import { createContext, useState, type ReactNode } from "react";
-import type { IAuthContextType, IMemeber } from "../../@types/interface/userInterface";
-import { api } from "../../utils/api";
+import { useState, type ReactNode } from "react";
+import type { IMemeber } from "../../@types/interface/userInterface";
 import { jwtDecode } from "jwt-decode";
-
-export const AuthContext = createContext<IAuthContextType | undefined>(undefined);
+import { AuthContext } from "./useAuth";
+import { api } from "@/utils/api";
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [member, setMember] = useState<IMemeber | null>(() => {

@@ -63,7 +63,14 @@ io.use(async (socket, next) => {
 io.on("connection", async (socket) => {
   console.log("Socket connected:", socket.id);
 
+  socket.on("msg", (data) => {
+    console.log("Received message:", data);
+    // Broadcast the message to all connected clients
+    socket.broadcast.emit("msg", data);
+  });
+
   socket.on("disconnect", async () => {
+
     console.log("Socket disconnected:", socket.id);
     await disconnectUser({ user_id: socket.user.userId, socket_id: socket.id })
   });
