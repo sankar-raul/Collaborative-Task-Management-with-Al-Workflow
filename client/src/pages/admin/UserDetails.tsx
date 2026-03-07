@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { api } from "../../utils/api";
-import type { Member } from "../../utils/api/members/members.api";
 import { ArrowLeft, Mail, Shield, User, Clock, CheckCircle, Briefcase } from "lucide-react";
+import type { Member } from "@/@types/interface/MembersInterface";
 
 export const UserDetails = () => {
     const { id } = useParams<{ id: string }>();
