@@ -1,4 +1,6 @@
 import ProjectModel from "@/models/project/project.model";
+import connectMembersToProject from "@/socketService/connectMembersToProject";
+import ProjectNotification from "@/socketService/projectUpdates";
 import { IProject } from "@/types/interface/project.interface";
 import { IProjectMember } from "@/types/interface/projectMember.interface";
 import { IUser } from "@/types/interface/user.interface";
@@ -37,6 +39,11 @@ class ProjectService {
     try {
       const project = new ProjectModel({ projectName, description, members });
       await project.save();
+      await connectMembersToProject(
+        project._id.toString(),
+        project,
+        members.map((m) => m.user.toString()),
+      );
       return project;
     } catch (error) {
       throw error;
@@ -68,6 +75,7 @@ class ProjectService {
       if (!project) {
         throw new Error("Project not found");
       }
+      ProjectNotification.projectUpdated(projectId, project);
       return project;
     } catch (error) {
       throw error;
@@ -80,6 +88,7 @@ class ProjectService {
       if (!project) {
         throw new Error("Project not found");
       }
+      ProjectNotification.projectDeleted(projectId);
       return project;
     } catch (error) {
       console.error("Error deleting project:", error);
@@ -117,6 +126,7 @@ class ProjectService {
       };
       project.members.push(newMember);
       await project.save();
+      ProjectNotification.memberAdded(projectId, newMember);
       await project.populate("members.user", "name email");
       return project;
     } catch (error) {
@@ -138,6 +148,7 @@ class ProjectService {
       }
       project.members.splice(memberIndex, 1);
       await project.save();
+      ProjectNotification.memberRemoved(projectId, userId.toString());
       await project.populate("members.user", "name email");
       return project;
     } catch (error) {
@@ -189,14 +200,30 @@ class ProjectService {
     }
   }
 
+  static async getPrjectMembersWithSkills(projectId: string) {
+    try {
+      const project = await ProjectModel.findById(projectId).populate(
+        "members.user",
+        "name email skills availabilityHours currentWorkload",
+      );
+      if (!project) {
+        throw new Error("Project not found");
+      }
+      return project.members;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   static async getUserProjects(userId: Types.ObjectId) {
     try {
       const projects = await ProjectModel.find({
         "members.user": userId,
       }).populate("members.user", "name email");
-      return projects.map(project => ({
+      return projects.map((project) => ({
         ...project.toObject(),
-        userRole: project.members.find(member => member.user.equals(userId))?.role,
+        userRole: project.members.find((member) => member.user.equals(userId))
+          ?.role,
       }));
     } catch (error) {
       throw error;
@@ -243,19 +270,18 @@ class ProjectService {
   }
 
   static async getProjectByTaskId(taskId: string) {
-  try {
-    const project = await ProjectModel.findOne({ "tasks._id": taskId }).populate(
-      "members.user",
-      "name email",
-    );
-    if (!project) {
-      throw new Error("Project not found for the given task ID");
+    try {
+      const project = await ProjectModel.findOne({
+        "tasks._id": taskId,
+      }).populate("members.user", "name email");
+      if (!project) {
+        throw new Error("Project not found for the given task ID");
+      }
+      return project;
+    } catch (error) {
+      throw error;
     }
-    return project;
-  } catch (error) {
-    throw error;
   }
-};
 }
 
 export default ProjectService;

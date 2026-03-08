@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, Edit2, Trash2, X, FolderOpen, Calendar, Clock, Check, MoreVertical } from "lucide-react";
+import { Plus, FolderOpen, Calendar, Clock } from "lucide-react";
 import { useNavigate } from "react-router";
 import { api } from "../../utils/api";
 import { useUsers } from "../../context/users";
@@ -14,7 +14,7 @@ export const AdminProjects = () => {
     const [error, setError] = useState<string | null>(null);
     const { systemUsers, isLoading: isUsersLoading } = useUsers();
     const [selectedMembers, setSelectedMembers] = useState<{ user: string, role: string }[]>([]);
-    const [openMenuId, setOpenMenuId] = useState<string | null>(null);
+    // const [openMenuId, setOpenMenuId] = useState<string | null>(null);
     const navigate = useNavigate();
 
 

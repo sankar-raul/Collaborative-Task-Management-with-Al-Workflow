@@ -2,6 +2,8 @@ import TaskModel from "@/models/task/task.model";
 import { ITask } from "@/types/interface/task.interface";
 import ProjectService from "./project.service";
 import { Types } from "mongoose";
+import ProjectNotification from "@/socketService/projectUpdates";
+import rankMembers from "@/utils/rankMembers";
 
 class TaskService {
   static async createTask({
@@ -15,8 +17,6 @@ class TaskService {
     deadline = null,
   }: ITask) {
     try {
-      // Implement task creation logic here
-      // For example, you can create a new task document in the database
       const task = new TaskModel({
         title,
         description,
@@ -24,12 +24,21 @@ class TaskService {
         projectId,
         priority,
         requiredSkills,
-        assignedTo,
-        deadline,
+        ...(assignedTo && { assignedTo }),
+        ...(deadline && { deadline }),
       });
+      if (!assignedTo) {
+        const rankedMembers = await rankMembers(task, 1);
+        console.log(rankedMembers)
+        const assignedUser = rankedMembers[0]?.user._id.toString() || null;
+        task.assignedTo = assignedUser;
+      }
       await task.save();
+      await ProjectNotification.taskAssigned(task, task.assignedTo as unknown as string);
+      ProjectNotification.taskCreated(projectId as unknown as string, task);
       return task;
     } catch (error) {
+      console.log(error.message);
       throw error.message || "Error creating task";
     }
   }
@@ -56,6 +65,10 @@ class TaskService {
       if (!task) {
         throw new Error("Task not found");
       }
+      ProjectNotification.taskUpdated(
+        task.projectId as unknown as string,
+        task,
+      );
       return task;
     } catch (error) {
       throw error.message || "Error updating task";
@@ -69,6 +82,10 @@ class TaskService {
       if (!task) {
         throw new Error("Task not found");
       }
+      ProjectNotification.taskDeleted(
+        task.projectId as unknown as string,
+        taskId,
+      );
       return task;
     } catch (error) {
       throw error.messgae || "Error deleting task";
@@ -96,6 +113,8 @@ class TaskService {
       if (!task) {
         throw new Error("Task not found");
       }
+      const asignedUser = userId.toString();
+      await ProjectNotification.taskAssigned(task, asignedUser);
       return task;
     } catch (error) {
       throw error.message || "Error assigning task";
