@@ -11,4 +11,5 @@ export interface ITask {
   projectId: Types.ObjectId;
   status: typeof TASK_STATUS[keyof typeof TASK_STATUS];
   deadline?: Date;
+  eastimatedTime?: number; // in hours
 }

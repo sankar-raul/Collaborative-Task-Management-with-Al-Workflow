@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createTask, getTaskById, updateTask, deleteTask, changeTaskStatus, getTasksByProjectId, getTasksByUserId, getOverdueTasks, assignTask, getAllTasks } from "../controllers/task.controller";
+import { createTask, getTaskById, updateTask, deleteTask, changeTaskStatus, getTasksByProjectId, getMemberRanking, getTasksByUserId, getOverdueTasks, assignTask, getAllTasks } from "../controllers/task.controller";
 import memberRoleMiddlewareTask from "../middleware/memberRoleTask";
 import adminAuth from "../middleware/adminAuth";
 const taskRoute = Router()
@@ -14,5 +14,6 @@ taskRoute.put("/:id", memberRoleMiddlewareTask("Manager"), updateTask) // Update
 taskRoute.delete("/:id", memberRoleMiddlewareTask("Manager"), deleteTask) // Delete a task by ID, only Managers and Admin can delete tasks
 taskRoute.put("/:id/status", changeTaskStatus) // Change task status by ID
 taskRoute.put("/:id/assign", memberRoleMiddlewareTask("Manager"), assignTask) // Assign a task to a user by ID
+taskRoute.get("/:projectId/ranking", memberRoleMiddlewareTask("Manager"), getMemberRanking)
 
 export default taskRoute;

@@ -35,6 +35,27 @@ export const createTask = async (req: Request, res: Response) => {
   }
 };
 
+export const getMemberRanking = async (req: Request, res: Response) => {
+  try {
+    const projectId = req.params.projectId as unknown as ITask["projectId"];
+    const { priority, requiredSkills, eastimatedTime } = req.body as Partial<ITask>;
+    if (!projectId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Project ID is required" });
+    }
+    const rankedMembers = await TaskService.getMemberRanking({
+      priority,
+      requiredSkills,
+      projectId,
+      eastimatedTime,
+    });
+    res.status(200).json({ success: true, data: rankedMembers });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error });
+  }
+}
+
 export const getTaskById = async (req: Request, res: Response) => {
   try {
     const taskId = req.params.id as string;

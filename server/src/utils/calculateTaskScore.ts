@@ -3,17 +3,14 @@ import { IUser } from "@/types/interface/user.interface";
 
 const WORK_HOURS_PER_WEEK = 40;
 const MAX_WORKLOAD = 5;
-
+const PRIORITY_MAP = {
+  Low: 1,
+  Medium: 2,
+  High: 3,
+  Critical: 4,
+};
 export const calculateScore = (task: ITask, user: Partial<IUser>): number => {
-  const priorityMap = {
-    Low: 1,
-    Medium: 2,
-    High: 3,
-    Critical: 4,
-  };
-
-  const priorityScore = priorityMap[task.priority] / 4;
-
+  const priorityScore = PRIORITY_MAP[task.priority] / 4;
   const overlap = task.requiredSkills.filter((skill) =>
     user.skills.includes(skill),
   ).length;
@@ -21,9 +18,9 @@ export const calculateScore = (task: ITask, user: Partial<IUser>): number => {
   const skillMatch = overlap / task.requiredSkills.length;
 
   const workloadScore = 1 - user.currentWorkload / MAX_WORKLOAD;
-
-  const availabilityScore = user.availabilityHours / WORK_HOURS_PER_WEEK;
-  console.log(priorityScore, skillMatch, availabilityScore, workloadScore)
+  const availlableHours = user.availabilityHours - task.eastimatedTime;
+  const availabilityScore = ( user.availabilityHours - task.eastimatedTime ) / WORK_HOURS_PER_WEEK;
+  console.log(priorityScore, skillMatch, availabilityScore, workloadScore);
   return (
     0.35 * priorityScore +
     0.4 * skillMatch +

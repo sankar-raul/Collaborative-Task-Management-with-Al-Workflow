@@ -15,6 +15,7 @@ class TaskService {
     requiredSkills = [],
     assignedTo = null,
     deadline = null,
+    eastimatedTime = 0,
   }: ITask) {
     try {
       const task = new TaskModel({
@@ -24,6 +25,7 @@ class TaskService {
         projectId,
         priority,
         requiredSkills,
+        eastimatedTime,
         ...(assignedTo && { assignedTo }),
         ...(deadline && { deadline }),
       });
@@ -41,6 +43,22 @@ class TaskService {
       console.log(error.message);
       throw error.message || "Error creating task";
     }
+  }
+
+  static async getMemberRanking({ 
+    priority,
+    requiredSkills,
+    projectId,
+    eastimatedTime, // in hours
+  } : Partial<ITask>) {
+    const dummyTask = new TaskModel({
+      priority,
+      requiredSkills,
+      projectId,
+      eastimatedTime,
+    });
+    const rankedMembers = await rankMembers(dummyTask, -1);
+    return rankedMembers;
   }
 
   static async getTaskById(taskId: string) {

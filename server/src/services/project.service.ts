@@ -200,12 +200,14 @@ class ProjectService {
     }
   }
 
-  static async getPrjectMembersWithSkills(projectId: string) {
+  static async getProjectMembersWithSkills(projectId: string) {
     try {
-      const project = await ProjectModel.findById(projectId).populate(
-        "members.user",
-        "name email skills availabilityHours currentWorkload",
-      );
+      const project = await ProjectModel.findById(projectId)
+        .populate(
+          "members.user",
+          "name email skills availabilityHours currentWorkload",
+        )
+        console.log(project)
       if (!project) {
         throw new Error("Project not found");
       }

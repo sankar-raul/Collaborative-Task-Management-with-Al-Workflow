@@ -19,6 +19,7 @@ const taskSchema = new Schema<ITask>(
       required: true,
     },
     deadline: { type: Date },
+    eastimatedTime: { type: Number }, // in hours
   },
   { timestamps: true }
 );
