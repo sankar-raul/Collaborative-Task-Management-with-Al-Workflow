@@ -17,7 +17,6 @@ const memberRoleMiddlewareTask = (
       next();
       return;
     }
-
     try {
       let taskId = req.params.id;
       const projectId = req.body?.projectId;

@@ -37,7 +37,9 @@ export const createTask = async (req: Request, res: Response) => {
 
 export const getMemberRanking = async (req: Request, res: Response) => {
   try {
-    const projectId = req.params.projectId as unknown as ITask["projectId"];
+    const projectId = req.params.id as unknown as ITask["projectId"];
+    console.log(projectId)
+    console.log("op")
     const { priority, requiredSkills, eastimatedTime } = req.query as Partial<ITask>;
     console.log(priority, requiredSkills, eastimatedTime)
     if (!projectId) {
