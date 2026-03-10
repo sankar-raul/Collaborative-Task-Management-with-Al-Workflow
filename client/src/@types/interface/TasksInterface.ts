@@ -8,6 +8,7 @@ export interface Task {
     projectId: string;
     status: "To Do" | "Assigned" | "In Progress" | "In Review" | "Completed";
     deadline?: string;
+    eastimatedTime?: number; // in hours
     createdAt?: string;
     updatedAt?: string;
 }

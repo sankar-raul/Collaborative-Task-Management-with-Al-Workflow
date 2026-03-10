@@ -1,7 +1,9 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { X } from "lucide-react";
 import type { Task } from "../../@types/interface/TasksInterface";
 import SkillsInput from "../shared/SkillsInput";
+import { api } from "@/utils/api";
+import type { Member } from "@/@types/interface/MembersInterface";
 
 interface TaskModalsProps {
   project: any;
@@ -36,6 +38,51 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
   isManager,
   currentUser,
 }) => {
+  const [memberRanking, setMemberRanking] = useState<
+    {
+      user: Member;
+      score: number;
+      totalTasks: number;
+      totalEstimatedTime: number;
+    }[]
+  >([]);
+  const handleRanking = useCallback(
+    async ({ requiredSkills, priority, eastimatedTime }: Partial<Task>) => {
+      if (!project) return;
+      try {
+        const res = await api.tasks.getRanking(project._id, {
+          eastimatedTime,
+          priority,
+          requiredSkills,
+        });
+        if (res.success) {
+          setMemberRanking(res.data);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    },
+    [project],
+  );
+
+  useEffect(() => {
+    (async () => {
+      await handleRanking({
+        requiredSkills: newTask.requiredSkills,
+        priority: newTask.priority,
+        eastimatedTime: newTask.eastimatedTime,
+      });
+    })();
+  }, [
+    newTask.priority,
+    newTask.eastimatedTime,
+    newTask.requiredSkills,
+    handleRanking,
+  ]);
+
+  useEffect(() => {
+    console.log(memberRanking)
+  }, [memberRanking]);
   return (
     <>
       {/* Create Task Modal */}
@@ -84,15 +131,6 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
                   placeholder="Brief task overview..."
                 />
               </div>
-              <SkillsInput
-                skills={newTask.requiredSkills || []}
-                setSkills={(skills) =>
-                  setNewTask((prev) => ({
-                    ...prev,
-                    requiredSkills: skills,
-                  }))
-                }
-              />
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-bold text-gray-700 mb-2">
@@ -124,12 +162,25 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
                     placeholder="Eastimated Hours"
                     value={newTask.eastimatedTime}
                     onChange={(e) =>
-                      setNewTask({ ...newTask, eastimatedTime: e.target.value as any })
+                      setNewTask({
+                        ...newTask,
+                        eastimatedTime: e.target.value as any,
+                      })
                     }
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                   />
                 </div>
               </div>
+
+              <SkillsInput
+                skills={newTask.requiredSkills || []}
+                setSkills={(skills) => {
+                  setNewTask((prev) => ({
+                    ...prev,
+                    requiredSkills: skills,
+                  }));
+                }}
+              />
 
               <div>
                 <label className="block text-sm font-bold text-gray-700 mb-2">
