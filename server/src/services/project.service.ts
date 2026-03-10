@@ -207,7 +207,7 @@ class ProjectService {
           "members.user",
           "name email skills availabilityHours currentWorkload",
         )
-        console.log(project)
+        // console.log(project)
       if (!project) {
         throw new Error("Project not found");
       }

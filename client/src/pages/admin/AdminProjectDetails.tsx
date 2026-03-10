@@ -46,10 +46,11 @@ export const AdminProjectDetails = () => {
         title: "",
         description: "",
         priority: "Medium" as "Low" | "Medium" | "High" | "Critical",
-        requiredSkills: "",
+        requiredSkills: [],
         assignedTo: "",
         deadline: "",
-        status: "To Do" as any
+        status: "To Do" as any,
+        estimatedTime: 0
     });
 
     const wrapAction = (action: (...args: any[]) => Promise<any>) => async (...args: any[]) => {
@@ -207,7 +208,7 @@ export const AdminProjectDetails = () => {
                     e.preventDefault();
                     const taskData = {
                         ...newTask,
-                        requiredSkills: newTask.requiredSkills.split(",").map(s => s.trim()).filter(s => s !== ""),
+                        requiredSkills: newTask.requiredSkills || [],
                         deadline: newTask.deadline ? new Date(newTask.deadline).toISOString() : undefined
                     };
                     const res = await handleCreateTask(taskData);
@@ -217,10 +218,11 @@ export const AdminProjectDetails = () => {
                             title: "",
                             description: "",
                             priority: "Medium",
-                            requiredSkills: "",
+                            requiredSkills: [],
                             assignedTo: "",
                             deadline: "",
-                            status: "To Do"
+                            status: "To Do",
+                            estimatedTime: 0
                         });
                     } else if (res) alert(res.message);
                 }}

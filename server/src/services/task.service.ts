@@ -4,6 +4,7 @@ import ProjectService from "./project.service";
 import { Types } from "mongoose";
 import ProjectNotification from "@/socketService/projectUpdates";
 import rankMembers from "@/utils/rankMembers";
+import UserModel from "@/models/user/user.model";
 
 class TaskService {
   static async createTask({
@@ -29,11 +30,12 @@ class TaskService {
         ...(assignedTo && { assignedTo }),
         ...(deadline && { deadline }),
       });
+      console.log(task)
       if (!assignedTo) {
         const rankedMembers = await rankMembers(task, 1);
         console.log(rankedMembers)
         const assignedUser = rankedMembers[0]?.user._id.toString() || null;
-        task.assignedTo = assignedUser;
+        task.assignedTo = assignedUser as unknown as Types.ObjectId;
       }
       await task.save();
       await ProjectNotification.taskAssigned(task, task.assignedTo as unknown as string);
@@ -58,6 +60,7 @@ class TaskService {
       eastimatedTime,
     });
     const rankedMembers = await rankMembers(dummyTask, -1);
+    // console.log(rankedMembers)
     return rankedMembers;
   }
 

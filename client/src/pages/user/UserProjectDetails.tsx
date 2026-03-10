@@ -46,10 +46,11 @@ const UserProjectDetails = () => {
         title: "",
         description: "",
         priority: "Medium" as "Low" | "Medium" | "High" | "Critical",
-        requiredSkills: "",
+        requiredSkills: [],
         assignedTo: "",
         deadline: "",
-        status: "To Do" as any
+        status: "To Do" as any,
+        estimatedTime: 0
     });
 
     const projectMember = project?.members?.find((m: any) => m.user?._id === member?.id);
@@ -63,7 +64,7 @@ const UserProjectDetails = () => {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-[400px]">
+            <div className="flex items-center justify-center min-h-100">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
             </div>
         );
@@ -201,7 +202,7 @@ const UserProjectDetails = () => {
                     e.preventDefault();
                     const taskData = {
                         ...newTask,
-                        requiredSkills: newTask.requiredSkills.split(",").map(s => s.trim()).filter(s => s !== ""),
+                        requiredSkills: newTask.requiredSkills || [],
                         deadline: newTask.deadline ? new Date(newTask.deadline).toISOString() : undefined
                     };
                     const res = await handleCreateTask(taskData);
@@ -211,10 +212,11 @@ const UserProjectDetails = () => {
                             title: "",
                             description: "",
                             priority: "Medium",
-                            requiredSkills: "",
+                            requiredSkills: [],
                             assignedTo: "",
                             deadline: "",
-                            status: "To Do"
+                            status: "To Do",
+                            estimatedTime: 0
                         });
                     }
                 }}

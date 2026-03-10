@@ -123,6 +123,7 @@ export const useProjectData = ({ projectId }: UseProjectDataProps) => {
 
     const handleCreateTask = async (taskData: any) => {
         if (!projectId) return;
+        console.log("creating")
         try {
             setActionLoading(true);
             const res = await api.tasks.createTask({ ...taskData, projectId });

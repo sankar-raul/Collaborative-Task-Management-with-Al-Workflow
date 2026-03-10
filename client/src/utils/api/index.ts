@@ -1,7 +1,7 @@
 import { login, me, register } from "./auth/auth.api";
 import { getAllMembers, getMemberById, getAssignedProjects, searchMembers, updateMe } from "./members/members.api";
 import { getProjects, createProject, getProjectById, deleteProject, updateProject, addProjectMember, removeProjectMember, updateProjectMemberRole } from "./projects/projects.api";
-import { assignTask, changeTaskStatus, createTask, deleteTask, getAllTasks, getOverdueTasks, getTaskById, getTasksByProject, getTasksByUser, updateTask } from "./tasks/tasks.api";
+import { assignTask, changeTaskStatus, createTask, deleteTask, getAllTasks, getOverdueTasks, getRanking, getTaskById, getTasksByProject, getTasksByUser, updateTask } from "./tasks/tasks.api";
 
 export const api = {
     auth: {
@@ -36,6 +36,7 @@ export const api = {
         deleteTask,
         changeTaskStatus,
         assignTask,
-        getOverdueTasks
+        getOverdueTasks,
+        getRanking
     }
 };

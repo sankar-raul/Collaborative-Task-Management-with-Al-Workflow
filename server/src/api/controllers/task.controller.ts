@@ -38,7 +38,8 @@ export const createTask = async (req: Request, res: Response) => {
 export const getMemberRanking = async (req: Request, res: Response) => {
   try {
     const projectId = req.params.projectId as unknown as ITask["projectId"];
-    const { priority, requiredSkills, eastimatedTime } = req.body as Partial<ITask>;
+    const { priority, requiredSkills, eastimatedTime } = req.query as Partial<ITask>;
+    console.log(priority, requiredSkills, eastimatedTime)
     if (!projectId) {
       return res
         .status(400)
@@ -46,9 +47,9 @@ export const getMemberRanking = async (req: Request, res: Response) => {
     }
     const rankedMembers = await TaskService.getMemberRanking({
       priority,
-      requiredSkills,
+      requiredSkills: requiredSkills?.toString().split(",") || [],
       projectId,
-      eastimatedTime,
+      eastimatedTime: Number(eastimatedTime),
     });
     res.status(200).json({ success: true, data: rankedMembers });
   } catch (error) {

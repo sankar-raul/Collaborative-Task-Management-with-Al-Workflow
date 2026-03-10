@@ -1,3 +1,4 @@
+import type { Member } from "@/@types/interface/MembersInterface";
 import type { Task } from "../../../@types/interface/TasksInterface";
 import { get, post, put, deleteRequest } from "../apiMethod";
 import { getToken } from "../GetToken";
@@ -15,8 +16,28 @@ export const createTask = async (taskData: {
     assignedTo?: string;
     deadline?: string;
     status: "To Do" | "Assigned" | "In Progress" | "In Review" | "Completed";
+    eastimatedTime?: number;
 }) => {
     return await post(`${ROUTE}`, taskData, getToken());
+};
+
+export const getRanking = async (projectId: string, query: {
+    priority?: string;
+    requiredSkills?: string[];
+    eastimatedTime?: number;
+}): Promise<{
+    success: boolean;
+    data: {
+        user: Member;
+        score: number;
+        totalTasks: number;
+        totalEstimatedTime: number;
+    }[];
+}> => {
+    return await get(`${ROUTE}/${projectId}/ranking`, {
+        ...query,
+        requiredSkills: query.requiredSkills ? query.requiredSkills.join(",") : undefined
+    }, getToken());
 };
 
 /* ---------------- GET ALL TASKS ---------------- */
