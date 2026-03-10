@@ -116,7 +116,7 @@ class TaskService {
   static async getTasksByProjectId(projectId: string) {
     try {
       // Implement logic to fetch all tasks for a specific project
-      const tasks = await TaskModel.find({ projectId });
+      const tasks = await TaskModel.find({ projectId }).sort({ createdAt: -1 });
       return tasks;
     } catch (error) {
       throw error.message || "Error fetching tasks for project";

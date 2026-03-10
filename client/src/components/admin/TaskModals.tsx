@@ -46,6 +46,8 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
       totalEstimatedTime: number;
     }[]
   >([]);
+  const [isManualSelection, setIsManualSelection] = useState(false);
+  
   const handleRanking = useCallback(
     async ({ requiredSkills, priority, eastimatedTime }: Partial<Task>) => {
       if (!project) return;
@@ -66,6 +68,11 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
   );
 
   useEffect(() => {
+    if (
+        !newTask.priority ||
+        !newTask.eastimatedTime ||
+        (!newTask.requiredSkills || newTask.requiredSkills.length === 0)
+    ) return;
     (async () => {
       await handleRanking({
         requiredSkills: newTask.requiredSkills,
@@ -81,15 +88,30 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
   ]);
 
   useEffect(() => {
-    console.log(memberRanking)
+    // Auto-select the highest-ranked member when ranking changes (only if not manually selected)
+    if (memberRanking.length > 0 && !isManualSelection) {
+      setNewTask((prev: any) => ({
+        ...prev,
+        assignedTo: memberRanking[0].user._id,
+      }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [memberRanking]);
+
+  // Reset manual selection flag when modal opens
+  useEffect(() => {
+    if (isCreateModalOpen) {
+      setIsManualSelection(false);
+    }
+  }, [isCreateModalOpen]);
+
   return (
     <>
       {/* Create Task Modal */}
       {isCreateModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/10 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
-            <div className="px-8 py-6 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/10 backdrop-blur-sm animate-in fade-in duration-200 max-h-dvh">
+          <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 max-h-full overflow-y-auto scroll-smooth">
+            <div className="px-8 sticky top-0 bg-white py-6 border-b border-gray-100 flex justify-between items-center">
               <h3 className="text-xl font-bold text-gray-900">
                 Create New Task
               </h3>
@@ -183,23 +205,109 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
               />
 
               <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">
+                <label className="block text-sm font-bold text-gray-700 mb-3">
                   Assign To Member
+                  {memberRanking.length > 0 && (
+                    <span className="text-xs font-normal text-gray-500 ml-2">
+                      (Ranked by AI - Best match selected)
+                    </span>
+                  )}
                 </label>
-                <select
-                  value={newTask.assignedTo}
-                  onChange={(e) =>
-                    setNewTask({ ...newTask, assignedTo: e.target.value })
-                  }
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                >
-                  <option value="">Select Member</option>
-                  {project?.members?.map((m: any) => (
-                    <option key={m.user?._id} value={m.user?._id}>
-                      {m.user?.name} ({m.role})
-                    </option>
-                  ))}
-                </select>
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  {memberRanking.length > 0 ? (
+                    memberRanking.map((ranking, index) => (
+                      <label
+                        key={ranking.user._id}
+                        className={`flex items-start p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                          newTask.assignedTo === ranking.user._id
+                            ? "border-indigo-500 bg-indigo-50"
+                            : "border-gray-200 hover:border-indigo-300 bg-white"
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="assignedTo"
+                          value={ranking.user._id}
+                          checked={newTask.assignedTo === ranking.user._id}
+                          onChange={(e) => {
+                            setNewTask({ ...newTask, assignedTo: e.target.value });
+                            setIsManualSelection(true);
+                          }}
+                          className="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500"
+                        />
+                        <div className="ml-3 flex-1">
+                          <div className="flex items-center gap-2">
+                            {index === 0 && (
+                              <span className="text-yellow-500">⭐</span>
+                            )}
+                            <span className="font-semibold text-gray-900">
+                              {ranking.user.name}
+                            </span>
+                            <span className="text-sm font-bold text-indigo-600">
+                              Score: {ranking.score?.toFixed(2) || 0} %
+                            </span>
+                          </div>
+                          <div className="text-xs text-gray-500 mt-1">
+                            Current Tasks: {ranking.totalTasks} | Total Est. Time: {ranking.totalEstimatedTime}h
+                          </div>
+                          {ranking.user.skills && ranking.user.skills.length > 0 && (
+                            <div className="mt-2">
+                              <div className="flex flex-wrap gap-1">
+                                {ranking.user.skills.map((skill: string) => {
+                                  const isMatched = newTask.requiredSkills?.includes(skill);
+                                  return (
+                                    <span
+                                      key={skill}
+                                      className={`text-xs px-2 py-1 rounded-full ${
+                                        isMatched
+                                          ? "bg-green-100 text-green-700 font-semibold border border-green-300"
+                                          : "bg-gray-100 text-gray-600"
+                                      }`}
+                                    >
+                                      {isMatched && "✓ "}
+                                      {skill}
+                                    </span>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </label>
+                    ))
+                  ) : (
+                    project?.members?.map((m: any) => (
+                      <label
+                        key={m.user?._id}
+                        className={`flex items-center p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                          newTask.assignedTo === m.user?._id
+                            ? "border-indigo-500 bg-indigo-50"
+                            : "border-gray-200 hover:border-indigo-300 bg-white"
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="assignedTo"
+                          value={m.user?._id}
+                          checked={newTask.assignedTo === m.user?._id}
+                          onChange={(e) => {
+                            setNewTask({ ...newTask, assignedTo: e.target.value });
+                            setIsManualSelection(true);
+                          }}
+                          className="h-4 w-4 text-indigo-600 focus:ring-indigo-500"
+                        />
+                        <div className="ml-3">
+                          <span className="font-semibold text-gray-900">
+                            {m.user?.name}
+                          </span>
+                          <span className="text-sm text-gray-500 ml-2">
+                            ({m.role})
+                          </span>
+                        </div>
+                      </label>
+                    ))
+                  )}
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
