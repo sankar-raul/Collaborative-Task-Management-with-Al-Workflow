@@ -20,7 +20,7 @@ export const calculateScore = (task: ITask, user: Partial<IUser>, userTaskDetail
 
   const skillMatch = overlap / task.requiredSkills.length;
 
-  const workloadScore = 1 - userTaskDetails.totalTasks / MAX_WORKLOAD;
+  const workloadScore = 1 - (userTaskDetails?.totalTasks || 0) / MAX_WORKLOAD;
   const availlableHours = user.availabilityHours - userTaskDetails?.totalEstimatedTime || 0;
   const availabilityScore = (availlableHours - task.eastimatedTime) / WORK_HOURS_PER_WEEK;
   return (

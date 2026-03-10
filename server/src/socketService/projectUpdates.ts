@@ -41,6 +41,10 @@ class ProjectNotification {
     io.to(`project_${projectId}`).emit("memberRemoved", { memberId });
   }
 
+  static memberRoleUpdated(projectId: string, member: IProjectMember) {
+    io.to(`project_${projectId}`).emit("memberRoleUpdated", member);
+  }
+
   static projectUpdated(projectId: string, project: IProject) {
     io.to(`project_${projectId}`).emit("projectUpdated", { projectId });
   }

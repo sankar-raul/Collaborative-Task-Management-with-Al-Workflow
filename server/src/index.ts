@@ -44,7 +44,18 @@ app.use("/api/tasks", hardAuth, taskRoute);
 const server = http.createServer(app);
 
 export const io = new Server(server, {
-  cors: { origin: "*" },
+      cors: {
+        origin: (origin, callback) => {
+            if (config.EVIRONMENT == "development") {
+                callback(null, true)
+            } else if (origin == "https://tether-xi.vercel.app") {
+                callback(null, true)
+            } else {
+                callback(new Error('Operation not allowed'))
+            }
+        },
+        credentials: true
+      },
 });
 
 io.use(async (socket, next) => {

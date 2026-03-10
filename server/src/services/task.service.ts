@@ -153,6 +153,10 @@ class TaskService {
       if (!task) {
         throw new Error("Task not found");
       }
+      ProjectNotification.taskStatusUpdated(
+        task.projectId as unknown as string,
+        task,
+      );
       return task;
     } catch (error) {
       throw error.message || "Error changing task status";

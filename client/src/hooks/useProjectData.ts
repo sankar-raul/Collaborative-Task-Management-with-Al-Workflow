@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { api } from "../utils/api";
 import type { Project } from "../@types/interface/ProjectInterface";
 import type { Task } from "../@types/interface/TasksInterface";
+import { useProjectSocket } from "./useProjectSocket";
 
 interface UseProjectDataProps {
     projectId: string | undefined;
@@ -36,6 +37,35 @@ export const useProjectData = ({ projectId }: UseProjectDataProps) => {
         };
         initialFetch();
     }, [fetchProjectAndTasks]);
+
+    // Socket.IO event listeners with toast notifications
+    useProjectSocket({
+        projectId,
+        onTaskCreated: (task) => {
+            setTasks((prevTasks) => [task, ...prevTasks]);
+        },
+        onTaskUpdated: (task) => {
+            setTasks((prevTasks) =>
+                prevTasks.map((t) => (t._id === task._id ? task : t))
+            );
+        },
+        onTaskDeleted: (taskId) => {
+            setTasks((prevTasks) => prevTasks.filter((t) => t._id !== taskId));
+        },
+        onMemberAdded: () => {
+            fetchProjectAndTasks();
+        },
+        onMemberRemoved: () => {
+            fetchProjectAndTasks();
+        },
+        onMemberRoleUpdated: () => {
+            fetchProjectAndTasks();
+        },
+        onProjectUpdated: () => {
+            fetchProjectAndTasks();
+        },
+        enableToasts: true,
+    });
 
     const handleAddMember = async (userId: string, role: string) => {
         if (!projectId) return;

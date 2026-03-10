@@ -4,6 +4,7 @@ import type { Task } from "../../@types/interface/TasksInterface";
 import SkillsInput from "../shared/SkillsInput";
 import { api } from "@/utils/api";
 import type { Member } from "@/@types/interface/MembersInterface";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface TaskModalsProps {
   project: any;
@@ -108,20 +109,35 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
   return (
     <>
       {/* Create Task Modal */}
-      {isCreateModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/10 backdrop-blur-sm animate-in fade-in duration-200 max-h-dvh">
-          <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200 max-h-full overflow-y-auto scroll-smooth">
-            <div className="px-8 sticky top-0 bg-white py-6 border-b border-gray-100 flex justify-between items-center">
-              <h3 className="text-xl font-bold text-gray-900">
-                Create New Task
-              </h3>
-              <button
-                onClick={() => setIsCreateModalOpen(false)}
-                className="p-2 hover:bg-white rounded-full transition-colors text-gray-400 hover:text-gray-600"
-              >
-                <X size={20} />
-              </button>
-            </div>
+      <AnimatePresence>
+        {isCreateModalOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-white/10 backdrop-blur-sm max-h-dvh"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden max-h-full overflow-y-auto scroll-smooth"
+            >
+              <div className="px-8 sticky top-0 bg-white py-6 border-b border-gray-100 flex justify-between items-center">
+                <h3 className="text-xl font-bold text-gray-900">
+                  Create New Task
+                </h3>
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setIsCreateModalOpen(false)}
+                  className="p-2 hover:bg-white rounded-full transition-colors text-gray-400 hover:text-gray-600"
+                >
+                  <X size={20} />
+                </motion.button>
+              </div>
 
             <form onSubmit={handleCreateTask} className="p-8 space-y-5">
               <div>
@@ -327,41 +343,61 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
               </div>
 
               <div className="flex gap-4 pt-4">
-                <button
+                <motion.button
                   type="button"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => setIsCreateModalOpen(false)}
                   className="flex-1 px-6 py-3 border border-gray-200 text-gray-600 font-bold rounded-xl hover:bg-gray-50 transition-colors"
                 >
                   Cancel
-                </button>
-                <button
+                </motion.button>
+                <motion.button
                   type="submit"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   disabled={actionLoading}
                   className="flex-1 px-6 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-md shadow-indigo-100 disabled:opacity-50"
                 >
                   {actionLoading ? "Creating..." : "Create Task"}
-                </button>
+                </motion.button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Edit Task Modal */}
-      {isEditTaskModalOpen && selectedTask && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden p-8 animate-in zoom-in-95 duration-200">
-            <div className="flex justify-between items-center mb-6">
-              <h3 className="text-xl font-bold text-gray-900">Edit Task</h3>
-              <button
-                onClick={() => {
-                  setIsEditTaskModalOpen(false);
-                  setSelectedTask(null);
+      <AnimatePresence>
+        {isEditTaskModalOpen && selectedTask && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.9, opacity: 0, y: 20 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden p-8"
+            >
+              <div className="flex justify-between items-center mb-6">
+                <h3 className="text-xl font-bold text-gray-900">Edit Task</h3>
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    setIsEditTaskModalOpen(false);
+                    setSelectedTask(null);
                 }}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400"
               >
                 <X size={20} />
-              </button>
+              </motion.button>
             </div>
             <form
               onSubmit={(e) => {
@@ -473,8 +509,10 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
                 />
               </div>
               <div className="flex gap-4 pt-4">
-                <button
+                <motion.button
                   type="button"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => {
                     setIsEditTaskModalOpen(false);
                     setSelectedTask(null);
@@ -482,19 +520,22 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
                   className="flex-1 py-3 text-sm font-bold text-gray-500 hover:bg-gray-50 rounded-xl transition-colors"
                 >
                   Cancel
-                </button>
-                <button
+                </motion.button>
+                <motion.button
                   type="submit"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   disabled={actionLoading}
                   className="flex-1 py-3 bg-indigo-600 text-white text-sm font-bold rounded-xl hover:bg-indigo-700 transition-colors disabled:opacity-50"
                 >
                   {actionLoading ? "Saving..." : "Save Changes"}
-                </button>
+                </motion.button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 };

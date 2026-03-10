@@ -126,6 +126,10 @@ class ProjectService {
       };
       project.members.push(newMember);
       await project.save();
+      
+      // Connect the new member to the project socket room
+      await connectMembersToProject(projectId, project, [userId.toString()]);
+      
       ProjectNotification.memberAdded(projectId, newMember);
       await project.populate("members.user", "name email");
       return project;
@@ -178,6 +182,7 @@ class ProjectService {
       }
       member.role = newRole;
       await project.save();
+      ProjectNotification.memberRoleUpdated(projectId, member);
       await project.populate("members.user", "name email");
       return project;
     } catch (error) {

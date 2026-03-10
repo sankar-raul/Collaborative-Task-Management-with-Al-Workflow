@@ -1,5 +1,8 @@
 import { Bell, Search, Menu } from "lucide-react";
 import { useAuth } from "../../context/auth";
+import { useState } from "react";
+import { NotificationPanel } from "./NotificationPanel";
+import { useToast } from "@/context/toast";
 
 interface HeaderProps {
     onMenuClick: () => void;
@@ -7,6 +10,8 @@ interface HeaderProps {
 
 export default function Header({ onMenuClick }: HeaderProps) {
     const { member } = useAuth();
+    const { notifications } = useToast();
+    const [isNotificationOpen, setIsNotificationOpen] = useState(false);
 
     const getDisplayRole = (role?: string) => {
         switch (role) {
@@ -42,13 +47,26 @@ export default function Header({ onMenuClick }: HeaderProps) {
             </div>
 
             <div className="flex items-center space-x-6">
-                <button className="relative text-gray-500 hover:text-gray-700 transition-colors">
-                    <Bell className="w-6 h-6" />
-                    <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-[#00bdae] border-2 border-white rounded-full"></span>
-                </button>
+                <div className="relative">
+                    <button 
+                        onClick={() => setIsNotificationOpen(!isNotificationOpen)}
+                        className="relative text-gray-500 md:cursor-pointer hover:text-gray-700 transition-colors"
+                    >
+                        <Bell className="w-6 h-6" />
+                        {notifications.length > 0 && (
+                            <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+                                {notifications.length > 9 ? '9+' : notifications.length}
+                            </span>
+                        )}
+                    </button>
+                    <NotificationPanel 
+                        isOpen={isNotificationOpen} 
+                        onClose={() => setIsNotificationOpen(false)} 
+                    />
+                </div>
 
                 <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-[#1e5eb5] to-[#14478f] text-white rounded-full flex items-center justify-center font-bold text-sm shadow-sm ring-2 ring-white">
+                    <div className="w-10 h-10 bg-linear-to-br from-[#1e5eb5] to-[#14478f] text-white rounded-full flex items-center justify-center font-bold text-sm shadow-sm ring-2 ring-white">
                         {member?.name?.substring(0, 2).toUpperCase() || 'U'}
                     </div>
                     <div className="hidden md:flex flex-col items-start pr-2">
