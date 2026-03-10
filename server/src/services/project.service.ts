@@ -221,7 +221,7 @@ class ProjectService {
     try {
       const projects = await ProjectModel.find({
         "members.user": userId,
-      }).populate("members.user", "name email");
+      }).populate("members.user", "name email").sort({ updatedAt: -1 });
       return projects.map((project) => ({
         ...project.toObject(),
         userRole: project.members.find((member) => member.user.equals(userId))

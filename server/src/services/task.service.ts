@@ -162,7 +162,7 @@ class TaskService {
   static async getTasksByUserId(userId: string) {
     try {
       // Implement logic to fetch all tasks assigned to a specific user
-      const tasks = await TaskModel.find({ assignedTo: userId });
+      const tasks = await TaskModel.find({ assignedTo: userId }).sort({ createdAt: -1 });
       return tasks;
     } catch (error) {
       throw error.message || "Error fetching tasks for user";
