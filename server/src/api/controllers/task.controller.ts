@@ -13,6 +13,7 @@ export const createTask = async (req: Request, res: Response) => {
       priority,
       status,
       assignedTo,
+      eastimatedTime,
     } = req.body || ({} as Partial<ITask>);
     if (!title || !projectId) {
       return res
@@ -28,6 +29,7 @@ export const createTask = async (req: Request, res: Response) => {
       priority,
       status,
       assignedTo,
+      eastimatedTime
     });
     res.status(201).json({ success: true, data: task });
   } catch (error) {

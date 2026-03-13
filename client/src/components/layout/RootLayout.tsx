@@ -33,7 +33,7 @@ export default function RootLayout() {
                 <Header onMenuClick={toggleSidebar} />
 
                 <main className="flex-1 overflow-y-auto w-full px-4 sm:px-6 lg:px-8 py-8">
-                    <div className="max-w-7xl mx-auto w-full">
+                    <div className="max-w-7xl mx-auto w-full h-full">
                         {/* Renders the child route components */}
                         <Outlet />
                     </div>

@@ -129,7 +129,7 @@ class TaskService {
       const task = await TaskModel.findByIdAndUpdate(
         taskId,
         { assignedTo: userId },
-        { new: true },
+        { returnDocument: "after" },
       );
       if (!task) {
         throw new Error("Task not found");
@@ -166,7 +166,7 @@ class TaskService {
   static async getTasksByUserId(userId: string) {
     try {
       // Implement logic to fetch all tasks assigned to a specific user
-      const tasks = await TaskModel.find({ assignedTo: userId }).sort({ createdAt: -1 });
+      const tasks = await TaskModel.find({ assignedTo: userId }).sort({ updatedAt: -1 });
       return tasks;
     } catch (error) {
       throw error.message || "Error fetching tasks for user";
