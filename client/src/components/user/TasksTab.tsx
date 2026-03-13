@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
-import { Calendar, Briefcase, Clock3, GripVertical, Circle } from 'lucide-react';
+import { Briefcase, GripVertical, Circle, X, Calendar, Clock3 } from 'lucide-react';
 import type { Task } from '../../@types/interface/TasksInterface';
+import TaskCard from '../shared/TaskCard';
 
 interface TasksTabProps {
     tasks: Task[];
@@ -46,16 +47,10 @@ const STATUS_COLUMNS: Array<{
         }
     ];
 
-const PRIORITY_CLASS: Record<Task['priority'], string> = {
-    Low: 'bg-gray-100 text-gray-700',
-    Medium: 'bg-blue-50 text-blue-700',
-    High: 'bg-red-50 text-red-700',
-    Critical: 'bg-orange-50 text-orange-700'
-};
-
 const TasksTab: React.FC<TasksTabProps> = ({ tasks, onStatusChange }) => {
     const [draggedTaskId, setDraggedTaskId] = useState<string | null>(null);
     const [activeDropStatus, setActiveDropStatus] = useState<BoardStatus | null>(null);
+    const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
     const boardTasks = useMemo(() => {
         const byStatus: Record<BoardStatus, Task[]> = {
@@ -123,7 +118,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ tasks, onStatusChange }) => {
                                     event.preventDefault();
                                     handleDrop(column.key);
                                 }}
-                                className={`rounded-3xl select-none bg-white border p-4 transition-colors min-h-110 [::-webkit-scrollbar]:bg-red-400 overflow-y-auto scroll-smooth ${
+                                className={`rounded-3xl select-none bg-white border p-4 transition-colors min-h-110 overflow-y-auto scroll-smooth ${
                                     activeDropStatus === column.key
                                         ? 'border-indigo-300 shadow-md shadow-indigo-100/60'
                                         : 'border-gray-100 shadow-sm'
@@ -144,48 +139,20 @@ const TasksTab: React.FC<TasksTabProps> = ({ tasks, onStatusChange }) => {
 
                                 <div className="mt-4 space-y-3 ">
                                     {columnTasks.map((task) => (
-                                        <article
+                                        <TaskCard
                                             key={task._id}
+                                            task={task}
+                                            statusBadgeClass={column.badgeClass}
+                                            onTitleClick={setSelectedTask}
                                             draggable={Boolean(onStatusChange)}
+                                            isDragging={draggedTaskId === task._id}
+                                            showDragHandle={Boolean(onStatusChange)}
                                             onDragStart={() => setDraggedTaskId(task._id)}
                                             onDragEnd={() => {
                                                 setDraggedTaskId(null);
                                                 setActiveDropStatus(null);
                                             }}
-                                            className={`rounded-2xl border bg-white p-4 transition-all ${
-                                                draggedTaskId === task._id ? 'border-indigo-200 shadow-md opacity-60' : 'border-gray-100 shadow-sm hover:shadow-md'
-                                            } ${onStatusChange ? 'cursor-grab active:cursor-grabbing' : ''}`}
-                                        >
-                                            <div className="flex items-start justify-between gap-3">
-                                                <div>
-                                                    <p className="font-bold text-gray-900">{task.title}</p>
-                                                    {task.description && (
-                                                        <p className="text-sm text-gray-500 mt-1 line-clamp-2">{task.description}</p>
-                                                    )}
-                                                </div>
-                                                {onStatusChange && <GripVertical className="w-4 h-4 text-gray-300 mt-0.5" />}
-                                            </div>
-
-                                            <div className="mt-3 flex flex-wrap items-center gap-2">
-                                                <span className={`text-[10px] font-bold uppercase px-2 py-1 rounded-md ${PRIORITY_CLASS[task.priority]}`}>
-                                                    {task.priority}
-                                                </span>
-                                                <span className={`text-[10px] font-bold uppercase px-2 py-1 rounded-md ${column.badgeClass}`}>
-                                                    {task.status}
-                                                </span>
-                                            </div>
-
-                                            <div className="mt-3 flex items-center justify-between text-xs text-gray-500">
-                                                <span className="inline-flex items-center gap-1">
-                                                    <Calendar className="w-3 h-3" />
-                                                    {task.deadline ? new Date(task.deadline).toLocaleDateString() : 'No deadline'}
-                                                </span>
-                                                <span className="inline-flex items-center gap-1">
-                                                    <Clock3 className="w-3 h-3" />
-                                                    {task.eastimatedTime ? `${task.eastimatedTime}h` : 'No estimate'}
-                                                </span>
-                                            </div>
-                                        </article>
+                                        />
                                     ))}
 
                                     {columnTasks.length === 0 && (
@@ -211,6 +178,87 @@ const TasksTab: React.FC<TasksTabProps> = ({ tasks, onStatusChange }) => {
                 <div className="text-xs text-gray-500 flex items-center gap-2 bg-indigo-50/70 border border-indigo-100 rounded-2xl px-4 py-3">
                     <GripVertical className="w-4 h-4 text-indigo-500" />
                     Drag a task card and drop it into another column to change status.
+                </div>
+            )}
+
+            {selectedTask && (
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200"
+                    onClick={() => setSelectedTask(null)}
+                >
+                    <div
+                        className="w-full max-w-xl bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden animate-in zoom-in-95 duration-200"
+                        onClick={(event) => event.stopPropagation()}
+                    >
+                        <div className="px-6 py-5 border-b border-gray-100 flex items-start justify-between gap-4">
+                            <div>
+                                <p className="text-xs font-bold uppercase tracking-wide text-indigo-600">Task Details</p>
+                                <h4 className="text-xl font-bold text-gray-900 mt-1">{selectedTask.title}</h4>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setSelectedTask(null)}
+                                className="p-2 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        <div className="p-6 space-y-5 text-sm text-gray-600 max-h-[75vh] overflow-y-auto">
+                            <div>
+                                <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">Description</p>
+                                <p className="text-gray-700 leading-relaxed">
+                                    {selectedTask.description || 'No description provided.'}
+                                </p>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div className="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3">
+                                    <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">Priority</p>
+                                    <p className="font-semibold text-gray-900 mt-1">{selectedTask.priority}</p>
+                                </div>
+                                <div className="rounded-2xl border border-gray-100 bg-gray-50 px-4 py-3">
+                                    <p className="text-xs font-semibold uppercase tracking-wide text-gray-400">Status</p>
+                                    <p className="font-semibold text-gray-900 mt-1">{selectedTask.status}</p>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div className="rounded-2xl border border-gray-100 bg-white px-4 py-3">
+                                    <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">Deadline</p>
+                                    <p className="inline-flex items-center gap-2 text-gray-700">
+                                        <Calendar className="w-4 h-4 text-indigo-500" />
+                                        {selectedTask.deadline ? new Date(selectedTask.deadline).toLocaleString() : 'No deadline'}
+                                    </p>
+                                </div>
+                                <div className="rounded-2xl border border-gray-100 bg-white px-4 py-3">
+                                    <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">Estimated Time</p>
+                                    <p className="inline-flex items-center gap-2 text-gray-700">
+                                        <Clock3 className="w-4 h-4 text-indigo-500" />
+                                        {selectedTask.eastimatedTime ? `${selectedTask.eastimatedTime} hours` : 'No estimate'}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div>
+                                <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">Required Skills</p>
+                                {selectedTask.requiredSkills?.length ? (
+                                    <div className="flex flex-wrap gap-2">
+                                        {selectedTask.requiredSkills.map((skill) => (
+                                            <span
+                                                key={skill}
+                                                className="px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-indigo-700 border border-indigo-100"
+                                            >
+                                                {skill}
+                                            </span>
+                                        ))}
+                                    </div>
+                                ) : (
+                                    <p className="text-gray-500">No required skills listed.</p>
+                                )}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             )}
         </div>
