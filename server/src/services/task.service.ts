@@ -142,6 +142,21 @@ class TaskService {
     }
   }
 
+  static async createAndAssignTask(taskData: ITask[]) {
+    try {
+      const tasks = await TaskModel.insertMany(taskData);
+      for (const task of tasks) {
+        if (task.assignedTo) {
+          await ProjectNotification.taskAssigned(task, task.assignedTo.toString());
+        }
+        ProjectNotification.taskCreated(task.projectId.toString(), task);
+      }
+      return tasks;
+    } catch (error) {
+      throw error.message || "Error creating and assigning task";
+    }
+  }
+
   static async changeTaskStatus(taskId: string, status: string) {
     try {
       // Implement logic to change the status of a task
