@@ -10,13 +10,14 @@ interface TaskItemProps {
     showActions?: boolean;
 }
 
-export const TaskItem: React.FC<TaskItemProps> = ({ task, project, onEdit, onDelete, showActions = true }) => {
+export const TaskItem: React.FC<TaskItemProps> = ({ task, onEdit, onDelete, showActions = true }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuRef = useRef<HTMLDivElement>(null);
 
-    const assignedMember = project?.members?.find(
-        (m: any) => m.user?._id === task.assignedTo
-    );
+    const assignedUserName =
+        task.assignedTo && typeof task.assignedTo === "object"
+            ? task.assignedTo.name
+            : "Unassigned";
 
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
@@ -132,7 +133,7 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task, project, onEdit, onDel
                     <div>
                         <p className="text-[8px] font-black text-muted-foreground/30 uppercase tracking-[0.25em] leading-none mb-1">Operator</p>
                         <p className="text-[11px] font-bold text-foreground">
-                            {assignedMember?.user?.name || "Unassigned"}
+                            {assignedUserName}
                         </p>
                     </div>
                 </div>
