@@ -5,6 +5,7 @@ import { AuthProvider } from './context/auth'
 import { UsersProvider } from './context/users'
 import { SocketProvider } from './context/socket'
 import { ToastProvider } from './context/toast'
+import { ThemeProvider } from './context/ThemeProvider'
 
 function App() {
   return (
@@ -13,7 +14,9 @@ function App() {
         <ToastProvider>
           <SocketProvider>
             <UsersProvider>
-              <RouterProvider router={routes} />
+              <ThemeProvider>
+                <RouterProvider router={routes} />
+              </ThemeProvider>
             </UsersProvider>
           </SocketProvider>
         </ToastProvider>

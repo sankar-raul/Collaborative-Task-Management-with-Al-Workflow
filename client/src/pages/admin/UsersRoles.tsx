@@ -1,9 +1,8 @@
-import { Mail, Shield, User } from "lucide-react";
-
-// ...existing imports...
+import { Mail, Shield, User, Calendar, CheckCircle, XCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/auth";
 import { useUsers } from "../../context/users";
+import { api } from "../../utils/api";
 
 export const UsersRoles = () => {
     const { systemUsers, isLoading: loading, error } = useUsers();
@@ -13,7 +12,7 @@ export const UsersRoles = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                <div className="animate-spin rounded-full h-10 w-10 border-4 border-primary/20 border-b-primary"></div>
             </div>
         );
     }
@@ -21,7 +20,7 @@ export const UsersRoles = () => {
     if (error) {
         return (
             <div className="p-8 max-w-7xl mx-auto">
-                <div className="bg-red-50 text-red-600 p-4 rounded-lg">
+                <div className="bg-rose-500/10 text-rose-500 p-6 rounded-2xl border border-rose-500/20 font-bold">
                     {error}
                 </div>
             </div>
@@ -29,60 +28,110 @@ export const UsersRoles = () => {
     }
 
     return (
-        <div className="p-8 max-w-7xl mx-auto">
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Users & Roles</h1>
-                <p className="text-gray-600">View all registered users in the system and their assigned roles.</p>
+        <div className="p-8 max-w-7xl mx-auto space-y-10 animate-in fade-in duration-500">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                <div>
+                    <h1 className="text-3xl font-bold text-foreground tracking-tight mb-1">Users & Roles</h1>
+                    <p className="text-muted-foreground font-medium text-base">Manage team access levels and organizational hierarchy.</p>
+                </div>
+                <button
+                    className="flex items-center px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-primary/20 font-bold text-sm"
+                >
+                    Add New User
+                </button>
             </div>
 
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="bg-card rounded-3xl border border-border shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full text-left border-collapse">
                         <thead>
-                            <tr className="bg-gray-50 border-b border-gray-100">
-                                <th className="px-6 py-4 font-semibold text-gray-600 text-sm uppercase tracking-wider">User</th>
-                                <th className="px-6 py-4 font-semibold text-gray-600 text-sm uppercase tracking-wider">Contact</th>
-                                <th className="px-6 py-4 font-semibold text-gray-600 text-sm uppercase tracking-wider">Role</th>
-                                <th className="px-6 py-4 font-semibold text-gray-600 text-sm uppercase tracking-wider">Joined Date</th>
-                                <th className="px-6 py-4 font-semibold text-gray-600 text-sm uppercase tracking-wider text-right">Actions</th>
+                            <tr className="bg-muted/50 border-b border-border">
+                                <th className="px-8 py-5 font-bold text-muted-foreground text-[11px] uppercase tracking-wider">User</th>
+                                <th className="px-8 py-5 font-bold text-muted-foreground text-[11px] uppercase tracking-wider">Email Address</th>
+                                <th className="px-8 py-5 font-bold text-muted-foreground text-[11px] uppercase tracking-wider">Role</th>
+                                <th className="px-8 py-5 font-bold text-muted-foreground text-[11px] uppercase tracking-wider">Joined Date</th>
+                                <th className="px-8 py-5 font-bold text-muted-foreground text-[11px] uppercase tracking-wider text-right">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-100">
+                        <tbody className="divide-y divide-border">
                             {systemUsers.filter(user => user._id !== member?.id).map((user) => (
-                                <tr key={user._id} className="hover:bg-gray-50 transition-colors">
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center">
-                                            <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold mr-3">
+                                <tr key={user._id} className="hover:bg-muted/30 transition-colors group">
+                                    <td className="px-8 py-5">
+                                        <div className="flex items-center gap-4">
+                                            <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-bold text-sm border border-primary/20 group-hover:scale-105 transition-transform">
                                                 {user.name.charAt(0).toUpperCase()}
                                             </div>
-                                            <div>
-                                                <div className="font-medium text-gray-900">{user.name}</div>
+                                            <div className="font-semibold text-foreground">{user.name}</div>
+                                        </div>
+                                    </td>
+                                    <td className="px-8 py-5 text-sm text-muted-foreground font-medium">
+                                        {user.email}
+                                    </td>
+                                    <td className="px-8 py-5">
+                                        {user.role === 'Admin' ? (
+                                            <div className="flex items-center w-fit px-3 py-1 rounded-lg bg-rose-500/10 text-rose-600 text-[10px] font-bold uppercase tracking-wider border border-rose-500/20">
+                                                <Shield className="w-3 h-3 mr-2" />
+                                                Admin
                                             </div>
+                                        ) : (
+                                            <div className="flex items-center w-fit px-3 py-1 rounded-lg bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider border border-primary/20">
+                                                <User className="w-3 h-3 mr-2" />
+                                                Member
+                                            </div>
+                                        )}
+                                    </td>
+                                    <td className="px-8 py-5 text-sm text-muted-foreground font-medium">
+                                        <div className="flex items-center gap-2">
+                                            <Calendar className="w-4 h-4 opacity-40" />
+                                            {new Date(user.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                                         </div>
                                     </td>
-                                    <td className="px-6 py-4 text-gray-600">
-                                        <div className="flex items-center">
-                                            <Mail className="w-4 h-4 mr-2 text-gray-400" />
-                                            {user.email}
+                                    <td className="px-8 py-5 text-right">
+                                        <div className="flex items-center justify-end gap-2">
+                                            {!user.isApproved && (
+                                                <>
+                                                    <button
+                                                        onClick={async () => {
+                                                            if (confirm(`Approve access for ${user.name}?`)) {
+                                                                try {
+                                                                    await api.members.approveMember(user._id);
+                                                                    window.location.reload();
+                                                                } catch (err: any) {
+                                                                    alert(err.message);
+                                                                }
+                                                            }
+                                                        }}
+                                                        className="p-2 text-emerald-600 hover:bg-emerald-500/10 rounded-lg transition-all border border-emerald-500/20"
+                                                        title="Approve User"
+                                                    >
+                                                        <CheckCircle size={18} />
+                                                    </button>
+                                                    <button
+                                                        onClick={async () => {
+                                                            if (confirm(`Reject and delete ${user.name}?`)) {
+                                                                try {
+                                                                    await api.members.rejectMember(user._id);
+                                                                    window.location.reload();
+                                                                } catch (err: any) {
+                                                                    alert(err.message);
+                                                                }
+                                                            }
+                                                        }}
+                                                        className="p-2 text-rose-600 hover:bg-rose-500/10 rounded-lg transition-all border border-rose-500/20"
+                                                        title="Reject User"
+                                                    >
+                                                        <XCircle size={18} />
+                                                    </button>
+                                                </>
+                                            )}
+                                            <button
+                                                onClick={() => navigate(`/users/${user._id}`)}
+                                                className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-all border border-border"
+                                                title="View Profile"
+                                            >
+                                                <User size={18} />
+                                            </button>
                                         </div>
-                                    </td>
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center text-gray-600 capitalize">
-                                            {user.role === 'Admin' && <Shield className="w-4 h-4 mr-2 text-red-500" />}
-                                            {user.role === 'User' && <User className="w-4 h-4 mr-2 text-blue-500" />}
-                                            {user.role}
-                                        </div>
-                                    </td>
-                                    <td className="px-6 py-4 text-gray-500 text-sm">
-                                        {new Date(user.createdAt).toLocaleDateString() || 'N/A'}
-                                    </td>
-                                    <td className="px-6 py-4 text-right">
-                                        <button
-                                            onClick={() => navigate(`/users/${user._id}`)}
-                                            className="px-4 py-2 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 hover:text-indigo-700 rounded-lg text-sm font-medium transition-colors"
-                                        >
-                                            View Details
-                                        </button>
                                     </td>
                                 </tr>
                             ))}

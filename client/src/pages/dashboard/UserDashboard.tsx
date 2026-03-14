@@ -5,7 +5,6 @@ import type { Task } from "../../@types/interface/TasksInterface";
 import type { Project } from "../../@types/interface/ProjectInterface";
 import DashboardHeader from "../../components/user/DashboardHeader";
 import Overview from "../../components/user/Overview";
-import SkillsTab from "../../components/user/SkillsTab";
 
 export default function UserDashboard() {
     const { member } = useAuth();
@@ -42,7 +41,7 @@ export default function UserDashboard() {
     if (loading || !user) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
             </div>
         );
     }

@@ -1,9 +1,9 @@
-import { Plus, Trash2, Users } from "lucide-react";
+import { Plus, Trash2, Users, Shield, User } from "lucide-react";
 
 interface TeamMembersListProps {
     members: any[];
     onAdd?: () => void;
-    onRemove?: (userId: string) => void;
+    onRemove?: (member: any) => void;
     onUpdateRole?: (userId: string, role: string) => void;
     isManager: boolean;
     actionLoading: boolean;
@@ -20,15 +20,18 @@ export const TeamMembersList = ({
     currentUserId
 }: TeamMembersListProps) => {
     return (
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 h-fit">
-            <div className="flex justify-between items-center mb-6">
-                <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                    <Users className="w-5 h-5 text-indigo-600" /> Team Members
-                </h3>
+        <div className="bg-card rounded-3xl border border-border shadow-sm overflow-hidden animate-in fade-in duration-500">
+            <div className="px-8 py-6 border-b border-border flex justify-between items-center bg-muted/30">
+                <div>
+                    <h3 className="text-lg font-bold text-foreground flex items-center gap-3">
+                        <Users className="w-5 h-5 text-primary" /> Project Members
+                    </h3>
+                    <p className="text-xs text-muted-foreground mt-0.5 font-medium">Collaborators and access roles.</p>
+                </div>
                 {isManager && onAdd && (
                     <button
                         onClick={onAdd}
-                        className="p-2 bg-indigo-600 text-white hover:bg-indigo-700 rounded-xl transition-all shadow-md shadow-indigo-100"
+                        className="w-9 h-9 flex items-center justify-center bg-primary text-primary-foreground hover:opacity-90 rounded-lg transition-all shadow-sm active:scale-95 border border-primary/20"
                         title="Add Member"
                     >
                         <Plus size={18} />
@@ -36,56 +39,74 @@ export const TeamMembersList = ({
                 )}
             </div>
 
-            <div className="space-y-4">
-                {members?.length ? (
-                    members.map((member: any, i: number) => (
-                        <div
-                            key={i}
-                            className="flex items-center justify-between p-3 bg-gray-50/50 border border-gray-50 rounded-2xl hover:border-indigo-100 transition-all group"
-                        >
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white text-sm font-bold shadow-sm">
-                                    {member.user?.name?.charAt(0)?.toUpperCase() || "U"}
-                                </div>
-                                <div className="flex-1 overflow-hidden">
-                                    <p className="text-sm font-bold text-gray-900 truncate">
-                                        {member.user?.name || "Unknown"}
-                                    </p>
-
-                                    {isManager && onUpdateRole ? (
-                                        <select
-                                            value={member.role}
-                                            onChange={(e) => onUpdateRole(member.user?._id, e.target.value)}
-                                            disabled={actionLoading || member.user?._id === currentUserId}
-                                            className={`text-[10px] uppercase tracking-wider font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded border-none focus:ring-0 outline-none ${member.user?._id === currentUserId ? 'cursor-not-allowed opacity-70' : 'cursor-pointer'}`}
-                                        >
-                                            <option value="Manager">Manager</option>
-                                            <option value="User">User</option>
-                                        </select>
-                                    ) : (
-                                        <p className="text-[10px] uppercase tracking-wider font-bold text-gray-500 bg-gray-100 px-2 py-0.5 rounded w-fit">
-                                            {member.role}
-                                        </p>
-                                    )}
-                                </div>
-                            </div>
-                            {isManager && onRemove && member.user?._id !== currentUserId && (
-                                <button
-                                    onClick={() => onRemove(member)}
-                                    className="p-1.5 text-gray-300 hover:text-red-600 hover:bg-red-50 rounded-lg opacity-0 group-hover:opacity-100 transition-all"
-                                    title="Remove Member"
-                                >
-                                    <Trash2 size={16} />
-                                </button>
-                            )}
-                        </div>
-                    ))
-                ) : (
-                    <div className="text-center py-8 text-gray-400 text-sm italic">
-                        No members assigned
-                    </div>
-                )}
+            <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse">
+                    <thead>
+                        <tr className="bg-muted/10 border-b border-border">
+                            <th className="px-6 py-4 font-bold text-muted-foreground text-[10px] uppercase tracking-wider">Member</th>
+                            <th className="px-6 py-4 font-bold text-muted-foreground text-[10px] uppercase tracking-wider">Role</th>
+                            <th className="px-6 py-4 font-bold text-muted-foreground text-[10px] uppercase tracking-wider text-right">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border">
+                        {members?.length ? (
+                            members.map((member: any, i: number) => (
+                                <tr key={i} className="hover:bg-muted/20 transition-colors group">
+                                    <td className="px-6 py-4">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-xs font-bold border border-primary/20 transition-transform group-hover:scale-105">
+                                                {member.user?.name?.charAt(0)?.toUpperCase() || "U"}
+                                            </div>
+                                            <div className="font-semibold text-foreground text-sm">
+                                                {member.user?.name || "Unknown"}
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td className="px-6 py-4">
+                                        {isManager && onUpdateRole ? (
+                                            <select
+                                                value={member.role}
+                                                onChange={(e) => onUpdateRole(member.user?._id, e.target.value)}
+                                                disabled={actionLoading || member.user?._id === currentUserId}
+                                                className={`text-[10px] font-bold text-primary bg-primary/5 px-2.5 py-1.5 rounded-lg border border-primary/10 focus:ring-0 outline-none transition-all ${member.user?._id === currentUserId ? 'cursor-not-allowed opacity-40' : 'cursor-pointer hover:bg-primary/10'}`}
+                                            >
+                                                <option value="Manager">Manager</option>
+                                                <option value="User">User</option>
+                                            </select>
+                                        ) : (
+                                            <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border transition-all ${
+                                                member.role === 'Manager' 
+                                                    ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' 
+                                                    : 'bg-primary/10 text-primary border-primary/20'
+                                            }`}>
+                                                {member.role}
+                                            </span>
+                                        )}
+                                    </td>
+                                    <td className="px-6 py-4 text-right">
+                                        {isManager && onRemove && member.user?._id !== currentUserId && (
+                                            <button
+                                                onClick={() => onRemove(member)}
+                                                className="p-2 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all"
+                                                title="Remove"
+                                            >
+                                                <Trash2 size={16} />
+                                            </button>
+                                        )}
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan={3} className="px-6 py-10 text-center text-muted-foreground/40 text-xs font-medium italic">
+                                    No members identified
+                                </td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
             </div>
         </div>
     );
 };
+

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router";
-import { ArrowLeft, Plus } from "lucide-react";
+import { ArrowLeft, Plus, LayoutGrid, Users, Settings } from "lucide-react";
 
 import { useUsers } from "../../context/users";
 import { ProjectModals } from "../../components/admin/ProjectModals";
@@ -62,36 +62,36 @@ export const AdminProjectDetails = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                <div className="animate-spin rounded-full h-10 w-10 border-4 border-primary/20 border-b-primary"></div>
             </div>
         );
     }
 
     if (error || !project) {
         return (
-            <div className="p-8 max-w-6xl mx-auto">
+            <div className="p-8 max-w-6xl mx-auto space-y-6">
                 <button
                     onClick={() => navigate("/admin/projects")}
-                    className="flex items-center text-gray-600 hover:text-gray-900 mb-6"
+                    className="flex items-center text-muted-foreground hover:text-foreground font-black text-xs uppercase tracking-widest transition-all"
                 >
-                    <ArrowLeft className="w-5 h-5 mr-2" />
-                    Back to Projects
+                    <ArrowLeft className="w-5 h-5 mr-3" />
+                    Return to Projects
                 </button>
-                <div className="p-6 bg-red-50 text-red-600 rounded-lg">
-                    {error || "Project not found"}
+                <div className="p-10 bg-rose-500/10 text-rose-500 rounded-[2rem] border border-rose-500/20 font-bold shadow-sm">
+                    {error || "Project resource not found or decommissioned."}
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="p-8 max-w-[1400px] mx-auto min-h-screen">
+        <div className="p-8 max-w-[1400px] mx-auto min-h-screen space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
             <button
                 onClick={() => navigate("/admin/projects")}
-                className="flex items-center text-gray-500 hover:text-gray-900 mb-6 text-sm font-medium"
+                className="flex items-center text-muted-foreground hover:text-foreground font-bold text-[10px] uppercase tracking-[0.2em] transition-all group"
             >
-                <ArrowLeft className="w-4 h-4 mr-1.5" />
-                Back to Projects
+                <ArrowLeft className="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" />
+                Project Master Registry
             </button>
 
             <ProjectHeader
@@ -102,23 +102,34 @@ export const AdminProjectDetails = () => {
                 onDelete={() => setIsDeleteProjectModalOpen(true)}
             />
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                <div className="lg:col-span-2 space-y-6">
-                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8">
-                        <div className="flex justify-between items-center mb-8">
-                            <h3 className="text-lg font-bold text-gray-900">Recent Tasks</h3>
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+                <div className="lg:col-span-8 space-y-8">
+                    <div className="bg-card rounded-3xl border border-border shadow-sm p-8">
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
+                            <div className="flex items-center gap-4">
+                                <div className="p-3 bg-orange-500/10 rounded-2xl border border-orange-500/20">
+                                    <LayoutGrid className="w-6 h-6 text-orange-600" />
+                                </div>
+                                <div>
+                                    <h3 className="text-2xl font-bold text-foreground tracking-tight">Project Backlog</h3>
+                                    <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground/60 mt-0.5">Vector Management Protocol</p>
+                                </div>
+                            </div>
                             <button
                                 onClick={() => setIsCreateModalOpen(true)}
-                                className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-lg shadow-indigo-100 active:scale-95"
+                                className="flex items-center gap-3 bg-orange-500 hover:bg-orange-600 active:scale-95 text-white px-6 py-3.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all shadow-lg shadow-orange-500/20"
                             >
-                                <Plus size={18} /> Create Task
+                                <Plus size={18} /> Deploy New Task
                             </button>
                         </div>
 
                         {tasks.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center py-16 text-center text-gray-500">
-                                <p className="text-sm font-bold text-gray-900">No tasks yet</p>
-                                <p className="text-xs mt-1">Start by creating a task for the team</p>
+                            <div className="flex flex-col items-center justify-center py-20 text-center border-2 border-dashed border-border/40 rounded-3xl bg-muted/20">
+                                <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mb-5">
+                                    <Settings className="w-8 h-8 text-muted-foreground/30 animate-spin-slow" />
+                                </div>
+                                <p className="text-lg font-bold text-foreground mb-1 tracking-tight">Operational Registry Clear</p>
+                                <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">Initialize the first vector to begin deployment</p>
                             </div>
                         ) : (
                             <div className="space-y-4">
@@ -139,7 +150,7 @@ export const AdminProjectDetails = () => {
                     </div>
                 </div>
 
-                <div className="lg:col-span-1">
+                <div className="lg:col-span-4 space-y-8">
                     <TeamMembersList
                         members={project.members}
                         isManager={true}

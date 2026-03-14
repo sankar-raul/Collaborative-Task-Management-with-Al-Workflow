@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Users, FolderKanban, ClipboardList, Eye, Calendar } from "lucide-react";
+import { Users, FolderKanban, ClipboardList, Eye, Calendar, Cpu } from "lucide-react";
 import { useUsers } from "../../context/users";
 import { useNavigate } from "react-router";
 import { useAuth } from "../../context/auth";
@@ -43,7 +43,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatsCard
                     title="Total Users"
                     value={totalUsers}
@@ -60,8 +60,15 @@ export default function AdminDashboard() {
                 />
                 <StatsCard
                     title="Total Tasks"
-                    value={148}
+                    value={0}
                     icon={ClipboardList}
+                    colorClass="text-emerald-600"
+                    bgClass="bg-emerald-100"
+                />
+                 <StatsCard
+                    title="Total Stacks"
+                    value={1}
+                    icon={Cpu}
                     colorClass="text-emerald-600"
                     bgClass="bg-emerald-100"
                 />

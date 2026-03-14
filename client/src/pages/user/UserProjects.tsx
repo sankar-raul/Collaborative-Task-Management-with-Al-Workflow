@@ -34,7 +34,7 @@ export default function UserProjects() {
     if (loading || !user) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
             </div>
         );
     }
@@ -42,8 +42,8 @@ export default function UserProjects() {
     return (
         <div className="max-w-7xl mx-auto space-y-6 animate-in fade-in duration-500">
             <div className="mb-6">
-                <h1 className="text-2xl font-black text-gray-900 tracking-tight">My Projects</h1>
-                <p className="text-gray-500 text-sm">View and manage your project memberships.</p>
+                <h1 className="text-3xl font-black text-foreground tracking-tight">My Projects</h1>
+                <p className="text-muted-foreground font-medium mt-1">View and manage your project memberships.</p>
             </div>
             <ProjectsTab projects={projects} user={user} />
         </div>

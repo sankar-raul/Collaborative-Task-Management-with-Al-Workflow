@@ -16,21 +16,23 @@ const Settings = () => {
             default:
                 return (
                     <div className="flex-1 p-8">
-                        <h2 className="text-2xl font-semibold mb-6">
+                        <h2 className="text-2xl font-black text-foreground mb-6 tracking-tight">
                             {activeTab} Settings
                         </h2>
-                        <p className="text-gray-500">This section is under construction.</p>
+                        <div className="p-12 bg-secondary/30 rounded-3xl border border-dashed border-border/60 text-center">
+                            <p className="text-muted-foreground font-medium italic">This section is currently under development.</p>
+                        </div>
                     </div>
                 );
         }
     };
 
     return (
-        <div className="flex flex-col md:flex-row bg-white h-full min-h-screen">
+        <div className="flex flex-col md:flex-row bg-card h-full min-h-[calc(100vh-theme(spacing.16))] border border-border/50 rounded-3xl overflow-hidden shadow-xs">
             <SettingsSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
             {/* Main Content Area */}
-            <div className="flex-1 border-l border-gray-100 bg-gray-50/30 overflow-y-auto">
+            <div className="flex-1 border-l border-border bg-background focus:outline-none overflow-y-auto">
                 {renderContent()}
             </div>
         </div>

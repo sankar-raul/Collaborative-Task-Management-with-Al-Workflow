@@ -27,71 +27,80 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-            <div className="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
-                <div className="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/80">
-                    <h2 className="text-xl font-bold text-gray-900">Create New Project</h2>
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-6 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
+            <div className="bg-card rounded-[2.5rem] w-full max-w-lg shadow-2xl overflow-hidden border border-border/50 animate-in zoom-in-95 duration-300">
+                <div className="px-10 py-8 border-b border-border/50 flex justify-between items-center bg-secondary/30 relative">
+                    <div className="absolute top-0 left-0 w-1 h-full bg-orange-500" />
+                    <div>
+                        <h2 className="text-2xl font-bold text-foreground tracking-tight">Initiate Project</h2>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mt-1">Operational Protocol Alpha</p>
+                    </div>
                     <button
                         onClick={onClose}
-                        className="text-gray-400 hover:text-gray-600 hover:bg-gray-200 p-1 rounded-md transition-colors"
+                        className="text-muted-foreground/40 hover:text-foreground hover:bg-secondary p-2.5 rounded-2xl transition-all border border-transparent hover:border-border/60"
                     >
-                        <X className="w-5 h-5" />
+                        <X size={20} />
                     </button>
                 </div>
 
-                <form onSubmit={onSubmit} className="p-6 space-y-5">
-                    <div>
-                        <label htmlFor="projectName" className="block text-sm font-semibold text-gray-700 mb-1.5">Project Name</label>
+                <form onSubmit={onSubmit} className="p-10 space-y-6 max-h-[75vh] overflow-y-auto custom-scrollbar">
+                    <div className="space-y-2">
+                        <label htmlFor="projectName" className="flex items-center text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/80 ml-1">Designation</label>
                         <input
                             type="text"
                             id="projectName"
                             name="projectName"
                             required
-                            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1e5eb5]/50 focus:border-[#1e5eb5] outline-none transition-all placeholder-gray-400"
-                            placeholder="e.g. Server Migration V2"
+                            className="w-full px-6 py-4 bg-secondary/50 border border-border/50 rounded-2xl focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition-all font-bold text-foreground placeholder:text-muted-foreground/30"
+                            placeholder="e.g. Neural Nexus Deployment"
                         />
                     </div>
 
-                    <div>
-                        <label htmlFor="description" className="block text-sm font-semibold text-gray-700 mb-1.5">Description</label>
+                    <div className="space-y-2">
+                        <label htmlFor="description" className="flex items-center text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/80 ml-1">Mission Briefing</label>
                         <textarea
                             id="description"
                             name="description"
                             rows={3}
-                            className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1e5eb5]/50 focus:border-[#1e5eb5] outline-none transition-all resize-none placeholder-gray-400"
-                            placeholder="Brief overview of the project scope..."
+                            className="w-full px-6 py-4 bg-secondary/50 border border-border/50 rounded-2xl focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition-all resize-none font-bold text-foreground h-32"
+                            placeholder="Outline the core objectives..."
                         />
                     </div>
 
                     {/* Member Selection */}
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-1.5">Assign Members</label>
-                        <div className="border border-gray-300 rounded-lg max-h-48 overflow-y-auto bg-white hidden-scrollbar">
+                    <div className="space-y-4">
+                        <label className="flex items-center text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/80 ml-1">Assign Task Force</label>
+                        <div className="border border-border rounded-3xl overflow-hidden bg-secondary/20 h-64 overflow-y-auto custom-scrollbar">
                             {isUsersLoading ? (
-                                <div className="p-4 text-center text-gray-500 text-sm animate-pulse">Loading members...</div>
+                                <div className="p-10 text-center animate-pulse flex flex-col items-center">
+                                    <div className="w-8 h-8 border-4 border-orange-500/20 border-t-orange-500 rounded-full animate-spin mb-4" />
+                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Scanning Grid...</p>
+                                </div>
                             ) : systemUsers.filter(u => u.role === "User").length === 0 ? (
-                                <div className="p-4 text-center text-gray-500 text-sm">No regular users available.</div>
+                                <div className="p-10 text-center">
+                                    <p className="text-xs text-muted-foreground font-medium italic">No personnel available for deployment.</p>
+                                </div>
                             ) : (
-                                <div className="divide-y divide-gray-100">
+                                <div className="divide-y divide-border/40">
                                     {systemUsers.filter(u => u.role === "User").map(user => {
-                                        const memberData = selectedMembers.find(m => m.user === user._id);
+                                        const memberData = selectedMembers?.find((m: any) => m.user === user._id);
                                         const isSelected = !!memberData;
                                         return (
                                             <div
                                                 key={user._id}
                                                 onClick={() => toggleMemberSelection(user._id)}
-                                                className={`flex items-center p-3 cursor-pointer transition-colors ${isSelected ? 'bg-indigo-50/50' : 'hover:bg-gray-50'}`}
+                                                className={`flex items-center p-4 cursor-pointer transition-all ${isSelected ? 'bg-orange-500/5' : 'hover:bg-muted/50'}`}
                                             >
-                                                <div className={`w-5 h-5 rounded border mr-3 flex items-center justify-center transition-colors ${isSelected ? 'bg-[#1e5eb5] border-[#1e5eb5]' : 'border-gray-300'}`}>
-                                                    {isSelected && <Check className="w-3.5 h-3.5 text-white" />}
+                                                <div className={`w-5 h-5 rounded-lg border mr-4 flex items-center justify-center transition-all ${isSelected ? 'bg-orange-500 border-orange-500 shadow-lg shadow-orange-500/20' : 'border-border/60 bg-white'}`}>
+                                                    {isSelected && <Check className="w-3 h-3 text-white" />}
                                                 </div>
                                                 <div className="flex items-center flex-1">
-                                                    <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs mr-3">
+                                                    <div className="w-9 h-9 rounded-xl bg-orange-500/10 text-orange-600 flex items-center justify-center font-bold text-xs mr-3 border border-orange-500/20">
                                                         {user.name.charAt(0).toUpperCase()}
                                                     </div>
                                                     <div>
-                                                        <div className="text-sm font-medium text-gray-900">{user.name}</div>
-                                                        <div className="text-xs text-gray-500">{user.email}</div>
+                                                        <div className="text-sm font-bold text-foreground">{user.name}</div>
+                                                        <div className="text-[10px] text-muted-foreground/60 font-medium">{user.email}</div>
                                                     </div>
                                                 </div>
                                                 {isSelected ? (
@@ -102,13 +111,13 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                                                             updateMemberRole(user._id, e.target.value);
                                                         }}
                                                         onClick={(e) => e.stopPropagation()}
-                                                        className="text-xs border border-gray-300 rounded px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-[#1e5eb5] shadow-sm"
+                                                        className="text-[10px] font-bold bg-white border border-border px-2.5 py-1.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500/20 outline-none transition-all shadow-sm text-foreground"
                                                     >
                                                         <option value="Manager">Manager</option>
                                                         <option value="User">User</option>
                                                     </select>
                                                 ) : (
-                                                    <div className="text-xs text-gray-400 capitalize bg-gray-100 px-2 py-0.5 rounded">{user.role}</div>
+                                                    <div className="text-[9px] font-bold text-muted-foreground/40 bg-muted/50 px-2 py-1 rounded-lg uppercase tracking-wider">{user.role}</div>
                                                 )}
                                             </div>
                                         );
@@ -116,30 +125,27 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                                 </div>
                             )}
                         </div>
-                        <div className="text-xs text-gray-500 mt-2 flex items-center">
-                            Selected: <span className="font-semibold text-gray-900 ml-1">{selectedMembers.length} member(s)</span>
+                        <div className="flex justify-between items-center px-2">
+                             <div className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60">
+                                Enlistment Queue: <span className="text-orange-600 ml-1">{selectedMembers?.length || 0} Operators</span>
+                            </div>
                         </div>
                     </div>
 
-                    <div className="pt-2 flex justify-end space-x-3">
+                    <div className="pt-4 flex gap-4">
                         <button
                             type="button"
                             onClick={onClose}
-                            className="px-5 py-2.5 text-gray-600 bg-white border border-gray-300 hover:bg-gray-50 rounded-lg transition-colors font-medium"
+                            className="flex-1 py-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground bg-secondary/50 hover:bg-secondary rounded-2xl transition-all border border-border/50"
                         >
-                            Cancel
+                            Abort
                         </button>
                         <button
                             type="submit"
                             disabled={submitting}
-                            className="px-5 py-2.5 bg-[#1e5eb5] text-white rounded-lg hover:bg-[#1a51a0] disabled:opacity-70 transition-colors font-medium flex items-center shadow-sm"
+                            className="flex-[2] py-4 bg-orange-500 text-white rounded-2xl hover:bg-orange-600 disabled:opacity-50 transition-all font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-orange-500/20 active:scale-95"
                         >
-                            {submitting ? (
-                                <>
-                                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mr-2" />
-                                    Creating...
-                                </>
-                            ) : "Create Project"}
+                            {submitting ? "Processing..." : "Commit Deployment"}
                         </button>
                     </div>
                 </form>
