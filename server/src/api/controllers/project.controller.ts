@@ -5,12 +5,12 @@ import { Types } from "mongoose";
 
 export const createProject = async (req: Request, res: Response) => {
     try {
-        const { projectName, description="", members=[] } = req.body || {};
+        const { projectName, description="", members=[], deadline } = req.body || {};
         if (!projectName) {
             res.status(400).json({ success: false, message: "Project name is required" });
             return;
         }
-        const project = await ProjectService.createProject({ projectName, description, members });
+        const project = await ProjectService.createProject({ projectName, description, members, deadline });
         res.status(201).json({ 
             success: true, 
             message: "Project created successfully",
