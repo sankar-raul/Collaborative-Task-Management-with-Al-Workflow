@@ -53,9 +53,6 @@ class AIService {
       throw new Error(
         "AI task generation failed: team must be a non-empty array",
       );
-    const skills = await TechStackModel.findOne({ _id: techStack })
-    if (!skills) {
-      throw new Error(`AI task generation failed: tech stack "${techStack}" not found`)
     }
    
 
@@ -93,61 +90,6 @@ Rules:
 
 Return response in JSON format only.
 `;
-Available Team Skills:
-${JSON.stringify(skills)}
-
-IMPORTANT RULES
----------------
-1. Carefully analyze the project description.
-2. Break the project into logical development tasks.
-3. Tasks should cover all stages such as:
-   - Planning
-   - UI/Frontend Development
-   - Backend Development
-   - Database
-   - API Integration
-   - Testing
-   - Deployment
-
-4. ONLY use skills from the "Available Team Skills" list when generating tasks.
-
-5. Each task must include the most relevant skill required to complete it.
-
-6. If multiple skills are needed, include them in the skillsRequired array.
-
-7. Tasks should be realistic for a software development team.
-
-8. Distribute the tasks logically across the project timeline before the deadline.
-
-9. Estimated hours should be realistic for a developer.
-
-10. Tasks should be granular enough so they can be assigned individually.
-
-OUTPUT FORMAT
--------------
-Return ONLY valid JSON with the following structure.
-
-{
-  "tasks": [
-    {
-      "title": "Task title",
-      "description": "Detailed explanation of what needs to be done",
-      "estimatedHours": number,
-      "skillsRequired": ["skill1","skill2"],
-      "deadline": "YYYY-MM-DD"
-    }
-  ]
-}
-
-STRICT OUTPUT RULES
--------------------
-- Return ONLY JSON.
-- Do NOT include markdown.
-- Do NOT include explanations.
-- Do NOT include text outside the JSON.
-- Ensure the JSON is valid and properly formatted.
-`;
-
 
       const result = await model.generateContent(prompt);
       const responseText = result?.response?.text?.();
