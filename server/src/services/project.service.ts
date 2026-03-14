@@ -11,7 +11,7 @@ class ProjectService {
     try {
       const skip = (page - 1) * limit;
       const [projects, total] = await Promise.all([
-        ProjectModel.find()
+        ProjectModel.find().sort({ updatedAt: -1 })
           .skip(skip)
           .limit(limit)
           .populate("members.user", "name email isApproved"),
