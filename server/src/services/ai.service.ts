@@ -114,8 +114,8 @@ Return ONLY valid JSON with the following structure.
     {
       "title": "Task title",
       "description": "Detailed explanation of what needs to be done",
-      "estimatedTime": number,
-      "skillsRequired": ["skill1","skill2"],
+      "eastimatedTime": number,
+      "requiredSkills": ["skill1","skill2"],
       "deadline": "YYYY-MM-DD",
       "priority": "Low" | "Medium" | "High" | "Critical"
     }
