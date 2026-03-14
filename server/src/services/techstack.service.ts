@@ -34,6 +34,16 @@ class TechStackService {
         }
     }
 
+    static async update(id: string, data: Partial<ITechstack>) {
+        try {
+            const stack = await TechStackModel.findByIdAndUpdate(id, data, { new: true });
+            if (!stack) throw new Error("Techstack not found");
+            return stack;
+        } catch (error) {
+            throw error;
+        }
+    }
+
 }
 
 export default TechStackService

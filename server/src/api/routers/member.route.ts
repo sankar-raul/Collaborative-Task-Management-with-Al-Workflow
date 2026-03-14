@@ -11,7 +11,7 @@ memberRoute.get("/me", getMyDetails) // get the details of the logged in user
 memberRoute.put("/me", updateMember) // update the details of the logged in user
 memberRoute.get("/search", searchMembers) // search for users by name or email with pagination
 memberRoute.get("/:id", getMemberById) // get the details of a specific user by id
-memberRoute.patch("/:id/approve", managerAdminAuth, approveMember) // approve a user
-memberRoute.delete("/:id/reject", managerAdminAuth, rejectMember) // reject a user
+memberRoute.put("/:id/approve", managerAdminAuth, approveMember) // approve a user
+memberRoute.put("/:id/reject", managerAdminAuth, rejectMember) // reject a user
 
 export default memberRoute;

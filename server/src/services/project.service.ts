@@ -14,7 +14,7 @@ class ProjectService {
         ProjectModel.find()
           .skip(skip)
           .limit(limit)
-          .populate("members.user", "name email"),
+          .populate("members.user", "name email isApproved"),
         ProjectModel.countDocuments(),
       ]);
       return {
@@ -55,7 +55,7 @@ class ProjectService {
     try {
       const project = await ProjectModel.findById(projectId).populate(
         "members.user",
-        "name email",
+        "name email isApproved",
       );
       if (!project) {
         throw new Error("Project not found");
@@ -72,7 +72,7 @@ class ProjectService {
         projectId,
         updateData,
         { returnDocument: "after" },
-      ).populate("members.user", "name email");
+      ).populate("members.user", "name email isApproved");
       if (!project) {
         throw new Error("Project not found");
       }
@@ -132,7 +132,7 @@ class ProjectService {
       await connectMembersToProject(projectId, project, [userId.toString()]);
       
       ProjectNotification.memberAdded(projectId, newMember);
-      await project.populate("members.user", "name email");
+      await project.populate("members.user", "name email isApproved");
       return project;
     } catch (error) {
       throw error;
@@ -154,7 +154,7 @@ class ProjectService {
       project.members.splice(memberIndex, 1);
       await project.save();
       ProjectNotification.memberRemoved(projectId, userId.toString());
-      await project.populate("members.user", "name email");
+      await project.populate("members.user", "name email isApproved");
       return project;
     } catch (error) {
       throw error;
@@ -184,7 +184,7 @@ class ProjectService {
       member.role = newRole;
       await project.save();
       ProjectNotification.memberRoleUpdated(projectId, member);
-      await project.populate("members.user", "name email");
+      await project.populate("members.user", "name email isApproved");
       return project;
     } catch (error) {
       throw error;
@@ -195,7 +195,7 @@ class ProjectService {
     try {
       const project = await ProjectModel.findById(projectId).populate(
         "members.user",
-        "name email",
+        "name email isApproved",
       );
       if (!project) {
         throw new Error("Project not found");
@@ -211,7 +211,7 @@ class ProjectService {
       const project = await ProjectModel.findById(projectId)
         .populate(
           "members.user",
-          "name email skills availabilityHours currentWorkload",
+          "name email skills availabilityHours currentWorkload isApproved",
         )
         // console.log(project)
       if (!project) {
@@ -227,7 +227,7 @@ class ProjectService {
     try {
       const projects = await ProjectModel.find({
         "members.user": userId,
-      }).populate("members.user", "name email").sort({ updatedAt: -1 });
+      }).populate("members.user", "name email isApproved").sort({ updatedAt: -1 });
       return projects.map((project) => ({
         ...project.toObject(),
         userRole: project.members.find((member) => member.user.equals(userId))
@@ -281,7 +281,7 @@ class ProjectService {
     try {
       const project = await ProjectModel.findOne({
         "tasks._id": taskId,
-      }).populate("members.user", "name email");
+      }).populate("members.user", "name email isApproved");
       if (!project) {
         throw new Error("Project not found for the given task ID");
       }
