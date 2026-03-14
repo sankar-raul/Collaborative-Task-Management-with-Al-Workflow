@@ -104,6 +104,8 @@ IMPORTANT RULES
 
 10. Tasks should be granular enough so they can be assigned individually.
 
+11. Tasks deadline should be before deadline of the project and after current date.
+
 OUTPUT FORMAT
 -------------
 Return ONLY valid JSON with the following structure.
