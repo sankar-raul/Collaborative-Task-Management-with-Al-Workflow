@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { ArrowLeft, Plus, LayoutGrid, Users, Settings } from "lucide-react";
+import { api } from "../../utils/api";
 
 import { useUsers } from "../../context/users";
 import { ProjectModals } from "../../components/admin/ProjectModals";
@@ -161,6 +162,15 @@ export const AdminProjectDetails = () => {
                             setIsDeleteMemberModalOpen(true);
                         }}
                         onUpdateRole={wrapAction(handleUpdateMemberRole)}
+                        onApprove={async (id) => {
+                            const res = await api.members.approveMember(id);
+                            if (res.success) window.location.reload(); // Quick fix to refresh data if useProjectData doesn't expose refresh
+                        }}
+                        onReject={async (id) => {
+                            if (!window.confirm("Reject this member's registration?")) return;
+                            const res = await api.members.rejectMember(id);
+                            if (res.success) window.location.reload();
+                        }}
                     />
                 </div>
             </div>

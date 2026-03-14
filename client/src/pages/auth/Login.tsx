@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { Brain, ArrowRight, Moon } from "lucide-react";
 import Input from "../../components/shared/Input";
 import Button from "../../components/shared/Button";
 import { useAuth } from "../../context/auth";
-import PromoForLogin from "../../components/shared/PromoForLogin";
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -39,93 +39,139 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-background">
+    <div className="min-h-screen flex bg-[#fdfaf8] relative overflow-hidden font-sans">
+      {/* Theme Toggle placeholder */}
+      <div className="absolute top-8 right-10 z-50">
+        <button className="p-2.5 bg-white rounded-full shadow-sm border border-border/40 hover:bg-secondary/50 transition-all text-muted-foreground/60">
+          <Moon size={18} />
+        </button>
+      </div>
 
-      {/* LEFT SIDE - LOGIN FORM */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 md:p-12 bg-card">
-        <div className="w-full max-w-md space-y-10">
-
+      {/* LEFT SIDE - CONTENT */}
+      <div className="hidden lg:flex lg:w-3/5 items-center justify-center p-20 relative">
+        <div className="max-w-xl space-y-12 animate-in fade-in slide-in-from-left-8 duration-700">
           {/* Logo */}
-          <div className="flex items-center space-x-4">
-            <div className="w-14 h-14 bg-primary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20">
-              <svg
-                className="w-8 h-8 text-primary-foreground"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path d="M3 13h8V3H3v10zm10 8h8V11h-8v10zM3 21h8v-6H3v6zm10-18v6h8V3h-8z" />
-              </svg>
+          <div className="flex flex-col items-center gap-4 text-center">
+            <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/25">
+              <Brain className="w-7 h-7 text-white" />
             </div>
-            <h1 className="text-2xl font-black text-foreground tracking-tighter">
+            <h1 className="text-2xl font-semibold text-foreground tracking-tight">
               AI TaskFlow
             </h1>
           </div>
 
-          {/* Heading */}
-          <div className="space-y-3">
-            <h2 className="text-3xl md:text-4xl font-black text-foreground tracking-tight">
-              Welcome Back
+          <div className="space-y-4 text-center">
+            <h2 className="text-5xl font-semibold text-foreground leading-tight tracking-tight">
+              Master your team's<br />
+              <span className="text-muted-foreground font-medium">AI workflow.</span>
             </h2>
-            <p className="text-muted-foreground font-medium text-lg leading-relaxed">
-              Sign in to manage your team workflows efficiently
+            <p className="text-lg text-muted-foreground font-normal leading-relaxed max-w-lg mx-auto">
+              Manage tasks with intelligent assignment, real-time collaboration, and AI-driven insights. Streamline your productivity today.
             </p>
           </div>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            <Input
-              label="Email Address"
-              type="email"
-              name="email"
-              placeholder="you@company.com"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="py-3 px-4 rounded-xl"
-            />
-
-            <div className="space-y-2">
-              <label className="block text-sm font-bold text-foreground/70 mb-2">
-                Password
-              </label>
-              <input
-                type="password"
-                name="password"
-                placeholder="Enter your password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                className="w-full px-5 py-3.5 rounded-xl border border-border bg-secondary/30 text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all font-medium"
-              />
+          {/* Social Proof */}
+          <div className="flex flex-col items-center gap-4 pt-10 border-t border-border/40 mx-auto w-max">
+            <div className="flex -space-x-3">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="w-12 h-12 rounded-full border-4 border-[#fdfaf8] bg-secondary flex items-center justify-center overflow-hidden grayscale hover:grayscale-0 transition-all cursor-pointer">
+                  <img src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${i + 10}`} alt="User" />
+                </div>
+              ))}
             </div>
+            <div className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/60">
+              Join <span className="text-primary">10,000+</span> Professionals
+            </div>
+          </div>
+        </div>
+      </div>
 
+      {/* RIGHT SIDE - FORM CARD */}
+      <div className="w-full lg:w-2/5 flex items-center justify-center p-8 lg:p-16 relative bg-white lg:bg-transparent">
+        <div className="w-full max-w-md bg-white p-12 lg:rounded-3xl lg:shadow-xl lg:shadow-black/[0.02] lg:border border-border/50 animate-in fade-in zoom-in-95 duration-700 space-y-12">
+          <div className="space-y-2 text-center lg:text-left">
+            <h3 className="text-2xl font-semibold text-foreground tracking-tight">
+              Welcome back
+            </h3>
+            <p className="text-sm font-medium text-muted-foreground/60">
+              Enter your credentials to access your account
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-8">
             {error && (
-              <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl">
-                <p className="text-xs text-rose-500 text-center font-bold uppercase tracking-wider">
+              <div className="p-4 bg-rose-500/5 border border-rose-500/10 rounded-2xl">
+                <p className="text-xs text-rose-500 text-center font-bold uppercase tracking-widest">
                   {error}
                 </p>
               </div>
             )}
 
-            <Button type="submit" fullWidth disabled={loading} className="py-4 text-base font-black shadow-xl shadow-primary/20">
-              {loading ? "Authenticating..." : "Log In to Account"}
-            </Button>
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground/80 ml-1">
+                  Email address
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="name@example.com"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-6 py-4 bg-secondary/30 border border-border/20 rounded-xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all font-medium text-sm text-foreground placeholder:text-muted-foreground/30"
+                />
+              </div>
 
-            <p className="text-center text-sm text-muted-foreground font-medium pt-2">
-              Don't have an account?{" "}
-              <Link
-                to="/register"
-                className="text-primary font-black hover:opacity-80 transition-opacity ml-1"
-              >
-                Join the Team
-              </Link>
-            </p>
+              <div className="space-y-2">
+                <div className="flex justify-between items-center ml-1">
+                  <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground/80">
+                    Password
+                  </label>
+                  <Link to="/forgot-password" title="Coming soon!" className="text-[10px] font-semibold uppercase tracking-widest text-primary hover:text-primary/80 transition-colors">
+                    Forgot password?
+                  </Link>
+                </div>
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="••••••••"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-6 py-4 bg-secondary/30 border border-border/20 rounded-xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all font-medium text-sm text-foreground placeholder:text-muted-foreground/30"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-4 bg-primary text-white rounded-xl hover:bg-primary/95 disabled:opacity-50 transition-all font-semibold uppercase tracking-widest text-[10px] shadow-sm active:scale-[0.98] flex items-center justify-center gap-2 group"
+            >
+              {loading ? (
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                <>
+                  Sign In <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                </>
+              )}
+            </button>
+
+            <div className="text-center pt-2">
+              <p className="text-xs font-bold text-muted-foreground/60 tracking-tight">
+                Don't have an account?{" "}
+                <Link
+                  to="/register"
+                  className="text-primary hover:text-primary-dark transition-colors font-semibold ml-1"
+                >
+                  Sign up
+                </Link>
+              </p>
+            </div>
           </form>
         </div>
       </div>
-
-      {/* RIGHT SIDE - TASK MANAGEMENT PROMO */}
-      <PromoForLogin />
     </div>
   );
 };

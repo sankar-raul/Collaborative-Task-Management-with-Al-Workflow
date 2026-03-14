@@ -61,24 +61,20 @@ const SkillsInput = ({ skills, setSkills }: SkillsInputProps) => {
 
   return (
     <div className="relative" ref={dropdownRef}>
-      <label className="block text-sm font-medium text-gray-600 mb-2">
-        Skills (separate with spaces)
-      </label>
-
       <div
-        className="flex flex-wrap items-center gap-2 p-2 w-full min-h-[12.5 max-h-30 overflow-y-auto rounded-lg border border-gray-300 bg-white focus-within:ring-2 focus-within:ring-indigo-500"
+        className="flex flex-wrap items-center gap-2 px-6 py-4 w-full min-h-[56px] rounded-xl border border-border/20 bg-secondary/30 focus-within:ring-4 focus-within:ring-primary/10 focus-within:border-primary transition-all cursor-text"
         onClick={() => document.getElementById("skill-input")?.focus()}
       >
         {skills.map((skill) => (
           <span
             key={skill}
-            className="flex items-center px-3 py-1 bg-indigo-100 text-indigo-800 text-sm font-medium rounded-full"
+            className="flex items-center px-3 py-1 bg-primary/10 text-primary text-[11px] font-semibold rounded-full border border-primary/20"
           >
             {skill}
             <button
               type="button"
               onClick={() => removeSkill(skill)}
-              className="ml-2 text-indigo-500 hover:text-indigo-900 font-bold"
+              className="ml-2 text-primary/60 hover:text-primary font-bold"
             >
               &times;
             </button>
@@ -96,7 +92,7 @@ const SkillsInput = ({ skills, setSkills }: SkillsInputProps) => {
           onKeyDown={handleKeyDown}
           onFocus={() => setShowSuggestions(true)}
           placeholder={skills.length === 0 ? "e.g., react nodejs" : ""}
-          className="flex-1 min-w-30 bg-transparent outline-none text-gray-900 placeholder-gray-400 py-1"
+          className="flex-1 min-w-[120px] bg-transparent outline-none text-foreground placeholder:text-muted-foreground/30 font-medium text-sm py-1"
           autoComplete="off"
         />
       </div>
@@ -107,7 +103,7 @@ const SkillsInput = ({ skills, setSkills }: SkillsInputProps) => {
             <div
               key={suggestion}
               onClick={() => addSkill(suggestion)}
-              className="px-4 py-2 cursor-pointer hover:bg-indigo-50 text-sm font-medium"
+              className="px-4 py-2 cursor-pointer hover:bg-primary/5 text-sm font-medium text-foreground transition-colors"
             >
               {suggestion}
             </div>

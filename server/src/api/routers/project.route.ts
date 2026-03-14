@@ -18,7 +18,7 @@ projectRouter.get("/:id/members", isValidProjectMember, getProjectMembers) // On
 projectRouter.put("/:id/members", memberRoleMiddleware("Manager"), updateProjectMemberRole) // Only Managers and Admin can update project member roles
 
 
-projectRouter.post("/create", upload.single("pdf"), createProjectFromPdf);
+projectRouter.post("/pdfupload", upload.single("pdf"), createProjectFromPdf);
 projectRouter.post("/createByAI", createProjectByAI);
 
 
