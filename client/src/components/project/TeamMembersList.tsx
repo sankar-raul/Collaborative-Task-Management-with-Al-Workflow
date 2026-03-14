@@ -80,11 +80,10 @@ export const TeamMembersList = ({
                                                 <option value="User">User</option>
                                             </select>
                                         ) : (
-                                            <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border transition-all ${
-                                                member.role === 'Manager' 
-                                                    ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' 
-                                                    : 'bg-primary/10 text-primary border-primary/20'
-                                            }`}>
+                                            <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border transition-all ${member.role === 'Manager'
+                                                ? 'bg-amber-500/10 text-amber-600 border-amber-500/20'
+                                                : 'bg-primary/10 text-primary border-primary/20'
+                                                }`}>
                                                 {member.role}
                                             </span>
                                         )}
@@ -96,7 +95,7 @@ export const TeamMembersList = ({
                                                     <button
                                                         onClick={() => onApprove(member.user?._id)}
                                                         disabled={actionLoading || loadingId === member.user?._id}
-                                                        className="px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-all disabled:opacity-50"
+                                                        className="px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-all "
                                                     >
                                                         Approve
                                                     </button>
@@ -113,7 +112,7 @@ export const TeamMembersList = ({
                                             {isManager && onRemove && member.user?._id !== currentUserId && (
                                                 <button
                                                     onClick={() => onRemove(member)}
-                                                    className="p-2 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all"
+                                                    className="p-2 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 rounded-lg opacity-100 transition-all"
                                                     title="Remove"
                                                 >
                                                     <Trash2 size={16} />

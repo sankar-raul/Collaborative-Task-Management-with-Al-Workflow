@@ -192,6 +192,7 @@ export const AdminProjectDetails = () => {
                     const res = await handleUpdateProject({
                         projectName: formData.get("projectName") as string,
                         description: formData.get("description") as string,
+                        deadline: formData.get("deadline") as string,
                     });
                     if (res && res.success) setIsEditProjectModalOpen(false);
                     else if (res) alert(res.message);

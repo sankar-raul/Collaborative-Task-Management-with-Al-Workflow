@@ -9,12 +9,22 @@ import type { Project } from "../../@types/interface/ProjectInterface";
 
 export default function AdminDashboard() {
     const [projects, setProjects] = useState<Project[]>([]);
+    const [stats, setStats] = useState({
+        tasks: 0,
+        stacks: 0
+    });
+
     const fetchData = async () => {
         try {
-            // setLoading(true);
-            const projectsRes = await api.projects.getProjects(1, 100);
+            const [projectsRes, stacksRes, tasksRes] = await Promise.all([
+                api.projects.getProjects(1, 100),
+                api.stack.getAllStacks(),
+                api.tasks.getAllTasks()
+            ]);
 
             if (projectsRes.success) setProjects(projectsRes.data);
+            if (stacksRes.success) setStats(prev => ({ ...prev, stacks: stacksRes.data.length }));
+            if (tasksRes.success) setStats(prev => ({ ...prev, tasks: tasksRes.data.length }));
 
         } catch (err: any) {
             console.log(err.message || "Failed to load dashboard data");
@@ -73,7 +83,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <StatsCard
                     title="Total Users"
                     value={totalUsers}
@@ -89,15 +99,8 @@ export default function AdminDashboard() {
                     bgClass="bg-indigo-500/10"
                 />
                 <StatsCard
-                    title="Total Tasks"
-                    value={0}
-                    icon={ClipboardList}
-                    colorClass="text-emerald-500 dark:text-emerald-400"
-                    bgClass="bg-emerald-500/10"
-                />
-                 <StatsCard
                     title="Total Stacks"
-                    value={1}
+                    value={stats.stacks}
                     icon={Cpu}
                     colorClass="text-orange-500 dark:text-orange-400"
                     bgClass="bg-orange-500/10"

@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
-import { Plus, FolderOpen, Calendar, Clock, LayoutGrid, List } from "lucide-react";
+import { Plus, FolderOpen, Calendar, Clock, LayoutGrid, List, MoreVertical, Edit2, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router";
 import { api } from "../../utils/api";
 import { useUsers } from "../../context/users";
+import { ProjectModals } from "../../components/admin/ProjectModals";
 import type { Project } from "../../@types/interface/ProjectInterface";
 import type { TechStack } from "../../@types/interface/StackInterface";
 import { CreateProjectModal } from "../../components/admin/CreateProjectModal";
@@ -16,6 +17,13 @@ export const AdminProjects = () => {
     const [error, setError] = useState<string | null>(null);
     const { systemUsers, isLoading: isUsersLoading } = useUsers();
     const [selectedMembers, setSelectedMembers] = useState<{ user: string, role: string }[]>([]);
+    
+    // Management State
+    const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
+
     const navigate = useNavigate();
 
     const fetchData = async () => {
@@ -42,10 +50,10 @@ export const AdminProjects = () => {
         setSubmitting(true);
         try {
             const { isAI, ...projectData } = data;
-            const res = isAI 
+            const res = isAI
                 ? await api.projects.createProjectByAI(projectData)
                 : await api.projects.createProject(projectData);
-            
+
             if (res.success) {
                 await fetchData();
                 setIsCreateModalOpen(false);
@@ -134,15 +142,55 @@ export const AdminProjects = () => {
                                 <div className="w-12 h-12 bg-orange-500/10 rounded-xl flex items-center justify-center text-orange-600 border border-orange-500/20 group-hover:scale-110 transition-transform">
                                     <FolderOpen className="w-6 h-6" />
                                 </div>
-                                <span className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border ${
-                                    (project.status || 'IN_PROGRESS') === 'COMPLETED' 
-                                        ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' 
-                                        : 'bg-orange-500/10 text-orange-600 border-orange-500/20'
-                                }`}>
-                                    {(project.status || 'IN_PROGRESS').replace("_", " ")}
-                                </span>
+                                <div className="flex items-center gap-2">
+                                    <span className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border ${(project.status || 'IN_PROGRESS') === 'COMPLETED'
+                                            ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
+                                            : 'bg-orange-500/10 text-orange-600 border-orange-500/20'
+                                        }`}>
+                                        {(project.status || 'IN_PROGRESS').replace("_", " ")}
+                                    </span>
+                                    
+                                    <div className="relative">
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setActiveMenuId(activeMenuId === project._id ? null : project._id);
+                                            }}
+                                            className="p-2 text-muted-foreground/40 hover:text-foreground hover:bg-secondary rounded-xl transition-all border border-transparent hover:border-border/60"
+                                        >
+                                            <MoreVertical size={16} />
+                                        </button>
+
+                                        {activeMenuId === project._id && (
+                                            <div className="absolute right-0 top-full mt-2 w-48 bg-card rounded-2xl shadow-xl border border-border p-1.5 z-40 animate-in fade-in zoom-in-95 duration-200">
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setSelectedProject(project);
+                                                        setIsEditModalOpen(true);
+                                                        setActiveMenuId(null);
+                                                    }}
+                                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-foreground hover:bg-primary hover:text-primary-foreground rounded-xl transition-all"
+                                                >
+                                                    <Edit2 size={14} className="text-primary group-hover:text-primary-foreground" /> Mod Project
+                                                </button>
+                                                <button
+                                                    onClick={(e) => {
+                                                        e.stopPropagation();
+                                                        setSelectedProject(project);
+                                                        setIsDeleteModalOpen(true);
+                                                        setActiveMenuId(null);
+                                                    }}
+                                                    className="w-full flex items-center gap-3 px-4 py-2.5 text-[10px] font-black uppercase tracking-widest text-rose-500 hover:bg-rose-500 hover:text-white rounded-xl transition-all"
+                                                >
+                                                    <Trash2 size={14} /> Kill Ops
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
-                            
+
                             <h3 className="text-xl font-bold text-foreground mb-3 tracking-tight group-hover:text-orange-600 transition-colors line-clamp-1">
                                 {project.projectName}
                             </h3>
@@ -164,6 +212,54 @@ export const AdminProjects = () => {
                     ))}
                 </div>
             )}
+
+            <ProjectModals
+                project={selectedProject}
+                isEditProjectModalOpen={isEditModalOpen}
+                setIsEditProjectModalOpen={setIsEditModalOpen}
+                isDeleteProjectModalOpen={isDeleteModalOpen}
+                setIsDeleteProjectModalOpen={setIsDeleteModalOpen}
+                isAddMemberModalOpen={false}
+                setIsAddMemberModalOpen={() => {}}
+                isDeleteMemberModalOpen={false}
+                setIsDeleteMemberModalOpen={() => {}}
+                memberToDelete={null}
+                handleUpdateProject={async (e) => {
+                    e.preventDefault();
+                    if (!selectedProject) return;
+                    setSubmitting(true);
+                    try {
+                        const formData = new FormData(e.currentTarget);
+                        const res = await api.projects.updateProject(selectedProject._id, {
+                            projectName: formData.get("projectName") as string,
+                            description: formData.get("description") as string,
+                        });
+                        if (res.success) {
+                            await fetchData();
+                            setIsEditModalOpen(false);
+                            setSelectedProject(null);
+                        } else alert(res.message);
+                    } catch (err: any) { alert(err.message); }
+                    finally { setSubmitting(false); }
+                }}
+                handleDeleteProject={async () => {
+                    if (!selectedProject) return;
+                    setSubmitting(true);
+                    try {
+                        const res = await api.projects.deleteProject(selectedProject._id);
+                        if (res.success) {
+                            await fetchData();
+                            setIsDeleteModalOpen(false);
+                            setSelectedProject(null);
+                        } else alert(res.message);
+                    } catch (err: any) { alert(err.message); }
+                    finally { setSubmitting(false); }
+                }}
+                handleAddMember={async () => {}}
+                handleRemoveMember={async () => {}}
+                actionLoading={submitting}
+                systemUsers={systemUsers}
+            />
 
             <CreateProjectModal
                 isOpen={isCreateModalOpen}

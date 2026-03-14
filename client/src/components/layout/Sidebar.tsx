@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { LayoutDashboard, LogOut, Settings, ChevronLeft, ChevronRight, Users, FolderOpen, Briefcase } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { useAuth } from "../../context/auth";
 
 interface SidebarProps {
@@ -7,15 +8,21 @@ interface SidebarProps {
   onToggle?: () => void;
 }
 
+interface SidebarNavLink {
+  name: string;
+  path: string;
+  icon: LucideIcon;
+}
+
 export default function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
   const { member, logout } = useAuth();
 
   const getNavLinks = () => {
-    const baseLinks = [
+    const baseLinks: SidebarNavLink[] = [
       { name: "Dashboard", path: "/", icon: LayoutDashboard },
     ];
 
-    let roleLinks: any[] = [];
+    let roleLinks: SidebarNavLink[] = [];
 
     if (member?.role === "Admin") {
       roleLinks = [

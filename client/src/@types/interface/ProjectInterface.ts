@@ -8,6 +8,7 @@ export interface Project {
     createdBy: any;
     createdAt: string;
     updatedAt: string;
+    deadline?: string;
 }
 
 export interface PaginationData {

@@ -11,6 +11,7 @@ const projectSchema = new Schema<IProject>(
         role: { type: String, enum: ["Manager", "User"], required: true },
       },
     ],
+    deadline: { type: String },
   },
   { timestamps: true }
 );
