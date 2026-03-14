@@ -1,5 +1,5 @@
 import React from "react";
-import { X, Check, Upload, FileText, ArrowRight, ArrowLeft, Calendar, Layers } from "lucide-react";
+import { X, Check, Upload, FileText, ArrowRight, ArrowLeft, Calendar, Layers, Search } from "lucide-react";
 import { api } from "../../utils/api";
 import { type TechStack } from "../../@types/interface/StackInterface";
 
@@ -32,6 +32,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
     const [uploadingPdf, setUploadingPdf] = React.useState(false);
     const [parsedText, setParsedText] = React.useState("");
     const [fileError, setFileError] = React.useState("");
+    const [memberSearch, setMemberSearch] = React.useState("");
     const [formData, setFormData] = React.useState({
         projectName: "",
         description: "",
@@ -153,7 +154,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                         </div>
                     ) : (
                         <form onSubmit={handleFormSubmit} className="space-y-8 animate-in slide-in-from-right-4 duration-300">
-                            {parsedText && (
+                            {/* {parsedText && (
                                 <div className="p-6 bg-orange-500/5 border border-orange-500/10 rounded-2xl space-y-3">
                                     <div className="flex items-center gap-2 text-[10px] font-bold text-orange-600 uppercase tracking-widest">
                                         <FileText size={14} />
@@ -163,7 +164,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                                         "{parsedText}"
                                     </p>
                                 </div>
-                            )}
+                            )} */}
 
                             <div className="grid grid-cols-2 gap-6">
                                 <div className="space-y-2 col-span-2">
@@ -223,16 +224,32 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
 
                             {/* Member Selection */}
                             <div className="space-y-4">
-                                <label className="flex items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80 ml-1">Assign Task Force</label>
+                                <div className="flex justify-between items-center px-1">
+                                    <label className="flex items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">Assign Task Force</label>
+                                    <div className="relative group/search">
+                                        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/40 group-focus-within/search:text-orange-500 transition-colors" />
+                                        <input
+                                            type="text"
+                                            value={memberSearch}
+                                            onChange={(e) => setMemberSearch(e.target.value)}
+                                            placeholder="Search personnel..."
+                                            className="pl-9 pr-4 py-1.5 bg-secondary/30 border border-border/50 rounded-xl text-[10px] font-bold text-foreground outline-none focus:ring-2 focus:ring-orange-500/10 focus:border-orange-500 w-48 transition-all"
+                                        />
+                                    </div>
+                                </div>
                                 <div className="border border-border rounded-2xl overflow-hidden bg-secondary/20 h-48 overflow-y-auto custom-scrollbar">
                                     {isUsersLoading ? (
                                         <div className="p-8 text-center animate-pulse flex flex-col items-center">
                                             <div className="w-6 h-6 border-2 border-orange-500/20 border-t-orange-500 rounded-full animate-spin mb-4" />
                                             <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Scanning Grid...</p>
                                         </div>
+                                    ) : systemUsers.filter(u => u.role === "User" && (u.name.toLowerCase().includes(memberSearch.toLowerCase()) || u.email.toLowerCase().includes(memberSearch.toLowerCase()))).length === 0 ? (
+                                        <div className="p-10 text-center">
+                                            <p className="text-xs text-muted-foreground font-medium italic">No personnel found.</p>
+                                        </div>
                                     ) : (
                                         <div className="divide-y divide-border/40">
-                                            {systemUsers.filter(u => u.role === "User").map(user => {
+                                            {systemUsers.filter(u => u.role === "User" && (u.name.toLowerCase().includes(memberSearch.toLowerCase()) || u.email.toLowerCase().includes(memberSearch.toLowerCase()))).map(user => {
                                                 const memberData = selectedMembers?.find((m: any) => m.user === user._id);
                                                 const isSelected = !!memberData;
                                                 return (
@@ -254,18 +271,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                                                             </div>
                                                         </div>
                                                         {isSelected && (
-                                                            <select
-                                                                value={memberData.role}
-                                                                onChange={(e) => {
-                                                                    e.stopPropagation();
-                                                                    updateMemberRole(user._id, e.target.value);
-                                                                }}
-                                                                onClick={(e) => e.stopPropagation()}
-                                                                className="text-[9px] font-bold bg-white border border-border px-2 py-1 rounded-md focus:outline-none"
-                                                            >
-                                                                <option value="Manager">Manager</option>
-                                                                <option value="User">User</option>
-                                                            </select>
+                                                            <p className="text-[9px] font-bold bg-white border border-border px-2 py-1 rounded-md focus:outline-none">Manager</p>
                                                         )}
                                                     </div>
                                                 );

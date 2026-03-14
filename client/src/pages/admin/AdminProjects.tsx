@@ -59,7 +59,7 @@ export const AdminProjects = () => {
         setSelectedMembers(prev =>
             prev.some(m => m.user === userId)
                 ? prev.filter(m => m.user !== userId)
-                : [...prev, { user: userId, role: "User" }]
+                : [...prev, { user: userId, role: "Manager" }]
         );
     };
 
