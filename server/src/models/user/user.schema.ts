@@ -11,6 +11,7 @@ const userSchema = new Schema<IUser>(
       enum: ["Admin", "Manager", "User"],
       required: true,
     },
+    isApproved: { type: Boolean, default: false },
     skills: [{ type: String }],
     availabilityHours: { type: Number, required: true },
     currentWorkload: { type: Number, required: true },

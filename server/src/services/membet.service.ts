@@ -91,6 +91,29 @@ class MemberService {
     }
     return member;
   }
+
+  static async approveUser(userId: string) {
+    const user = await UserModel.findByIdAndUpdate(
+      userId,
+      { isApproved: true },
+      { returnDocument: "after" },
+    );
+    if (!user) {
+      throw new Error("User not found");
+    } else if (user.isApproved) {
+      throw new Error("User is already approved");
+    }
+    return user;
+  }
+
+  static async rejectUser(userId: string) {
+    const user = await UserModel.findByIdAndDelete(userId);
+    if (!user) {
+      throw new Error("User not found");
+    } else if (user.isApproved) {
+      throw new Error("Cannot reject an already approved user");
+    }
+  }
 }
 
 export default MemberService;

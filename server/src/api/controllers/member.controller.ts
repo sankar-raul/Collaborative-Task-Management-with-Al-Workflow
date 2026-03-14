@@ -113,3 +113,20 @@ export const updateMember = async (req: Request, res: Response) => {
     return;
   }
 };
+
+export const approveUser = async (req: Request, res: Response) => {
+    try {
+
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+        return;
+    }};
+
+export const rejectUser = async (req: Request, res: Response) => {
+    try {
+
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message });
+        return;
+    }
+};
