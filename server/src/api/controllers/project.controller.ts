@@ -1,5 +1,7 @@
 import { ROLE } from "@/constants/role.constant";
+import { parsePDF } from "@/services/pdfParser.service";
 import ProjectService from "@/services/project.service";
+import { MulterRequest } from "@/types/express";
 import { Request, Response } from "express";
 import { Types } from "mongoose";
 
@@ -155,5 +157,38 @@ export const getTotalProjectsCount = async (req: Request, res: Response) => {
     } catch (error) {
         res.status(500).json({ success: false, message: error.message });
         return;
+    }
+};
+
+
+export const createProjectFromPdf = async (req: MulterRequest, res: Response) => {
+    try {
+        const file = req.file
+
+        if (!file) {
+            return res.status(400).json({
+                success: false,
+                message: "PDF file is required"
+            });
+        }
+
+        const parsed = await parsePDF(file.buffer);
+
+        const project = {
+            name: req.body.name,
+            description: req.body.description,
+            documentText: parsed.text
+        };
+
+        // Save project to DB
+        // const newProject = await Project.create(project);
+
+        res.json({
+            success: true,
+            parsedText: parsed.text.slice(0, 500) // preview
+        });
+
+    } catch (error) {
+        res.status(500).json({ success: false, message: `Error creating project: ${error.message}` });
     }
 };
