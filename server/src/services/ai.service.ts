@@ -68,7 +68,6 @@ Rules:
 3. Each task must contain:
    - title
    - description
-   - assignedTo
    - estimatedHours
    - skillsRequired
    - deadline
