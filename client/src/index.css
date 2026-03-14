@@ -52,41 +52,41 @@
 
 /* dark theme */
 .dark {
-  --color-background: hsl(0 0% 5%);
-  --color-foreground: hsl(0 0% 98%);
+  --color-background: hsl(230 25% 4%);
+  --color-foreground: hsl(210 40% 98%);
 
-  --color-card: hsl(0 0% 7%);
-  --color-card-foreground: hsl(0 0% 98%);
+  --color-card: hsl(230 25% 7%);
+  --color-card-foreground: hsl(210 40% 98%);
 
-  --color-popover: hsl(0 0% 7%);
-  --color-popover-foreground: hsl(0 0% 98%);
+  --color-popover: hsl(230 25% 7%);
+  --color-popover-foreground: hsl(210 40% 98%);
 
   --color-primary: hsl(25 95% 60%);
-  --color-primary-foreground: hsl(0 0% 5%);
+  --color-primary-foreground: hsl(230 25% 4%);
 
-  --color-secondary: hsl(0 0% 12%);
-  --color-secondary-foreground: hsl(0 0% 98%);
+  --color-secondary: hsl(230 20% 12%);
+  --color-secondary-foreground: hsl(210 40% 98%);
 
-  --color-muted: hsl(0 0% 12%);
-  --color-muted-foreground: hsl(0 0% 65%);
+  --color-muted: hsl(230 20% 12%);
+  --color-muted-foreground: hsl(215 20% 65%);
 
-  --color-accent: hsl(0 0% 12%);
-  --color-accent-foreground: hsl(0 0% 98%);
+  --color-accent: hsl(230 20% 15%);
+  --color-accent-foreground: hsl(210 40% 98%);
 
   --color-destructive: hsl(0 63% 31%);
-  --color-destructive-foreground: hsl(0 0% 98%);
+  --color-destructive-foreground: hsl(210 40% 98%);
 
-  --color-border: hsl(0 0% 15%);
-  --color-input: hsl(0 0% 15%);
+  --color-border: hsl(230 20% 15%);
+  --color-input: hsl(230 20% 15%);
   --color-ring: hsl(25 95% 60%);
 
-  --color-sidebar: hsl(0 0% 5%);
-  --color-sidebar-foreground: hsl(0 0% 98%);
-  --color-sidebar-border: hsl(0 0% 15%);
+  --color-sidebar: hsl(230 25% 4%);
+  --color-sidebar-foreground: hsl(210 40% 98%);
+  --color-sidebar-border: hsl(230 20% 15%);
   --color-sidebar-primary: hsl(25 95% 60%);
-  --color-sidebar-primary-foreground: hsl(0 0% 5%);
-  --color-sidebar-accent: hsl(0 0% 12%);
-  --color-sidebar-accent-foreground: hsl(0 0% 98%);
+  --color-sidebar-primary-foreground: hsl(230 25% 4%);
+  --color-sidebar-accent: hsl(230 20% 12%);
+  --color-sidebar-accent-foreground: hsl(210 40% 98%);
 }
 
 /* base styles */
