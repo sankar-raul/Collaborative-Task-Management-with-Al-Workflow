@@ -69,9 +69,10 @@ class ProjectService {
     projectName,
     description = "",
     members = [],
+    deadline
   }: IProject) {
     try {
-      const project = new ProjectModel({ projectName, description, members });
+      const project = new ProjectModel({ projectName, description, members, deadline});
       await project.save();
       await connectMembersToProject(
         project._id.toString(),
