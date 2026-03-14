@@ -7,20 +7,8 @@ export const getProjects = async (page: number = 1, limit: number = 10): Promise
     return await get(`${ROUTE}`, { page, limit }, getToken());
 };
 
-export const createProject = async (projectData: { 
-    projectName: string; 
-    description?: string; 
-    members?: { user: string; role: string }[];
-    deadline?: string;
-    techStackId?: string;
-}): Promise<{ success: boolean; data: Project; message: string }> => {
+export const createProject = async (projectData: { projectName: string; description?: string; members?: { user: string; role: string }[] }): Promise<{ success: boolean; data: Project; message: string }> => {
     return await post(`${ROUTE}`, projectData, getToken());
-};
-
-export const uploadPdf = async (file: File): Promise<{ success: boolean; parsedText: string; message?: string }> => {
-    const formData = new FormData();
-    formData.append("pdf", file);
-    return await post(`${ROUTE}/pdfupload`, formData, getToken());
 };
 
 export const getProjectById = async (id: string): Promise<{ success: boolean; data: Project; message?: string }> => {

@@ -1,19 +1,16 @@
 import React from "react";
-import { X, Check, Upload, FileText, ArrowRight, ArrowLeft, Calendar, Layers } from "lucide-react";
-import { api } from "../../utils/api";
-import { type TechStack } from "../../@types/interface/StackInterface";
+import { X, Check } from "lucide-react";
 
 interface CreateProjectModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSubmit: (data: any) => Promise<void>;
+    onSubmit: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
     submitting: boolean;
     systemUsers: any[];
     isUsersLoading: boolean;
     selectedMembers: { user: string; role: string }[];
     toggleMemberSelection: (userId: string) => void;
     updateMemberRole: (userId: string, role: string) => void;
-    techStacks: TechStack[];
 }
 
 export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
@@ -26,77 +23,16 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
     selectedMembers,
     toggleMemberSelection,
     updateMemberRole,
-    techStacks,
 }) => {
-    const [step, setStep] = React.useState(1);
-    const [uploadingPdf, setUploadingPdf] = React.useState(false);
-    const [parsedText, setParsedText] = React.useState("");
-    const [fileError, setFileError] = React.useState("");
-    const [formData, setFormData] = React.useState({
-        projectName: "",
-        description: "",
-        deadline: "",
-        techStackId: ""
-    });
-
     if (!isOpen) return null;
-
-    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        if (file.type !== "application/pdf") {
-            setFileError("Only PDF files are allowed.");
-            return;
-        }
-
-        if (file.size > 2 * 1024 * 1024) {
-            setFileError("File size must be less than 2MB.");
-            return;
-        }
-
-        setFileError("");
-        setUploadingPdf(true);
-        try {
-            const res = await api.projects.uploadPdf(file);
-            if (res.success) {
-                setParsedText(res.parsedText);
-                setFormData(prev => ({ ...prev, description: res.parsedText }));
-                setStep(2);
-            } else {
-                setFileError(res.message || "Failed to parse PDF.");
-            }
-        } catch (err: any) {
-            setFileError(err.message || "An error occurred during upload.");
-        } finally {
-            setUploadingPdf(false);
-        }
-    };
-
-    const handleFormSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        onSubmit({
-            ...formData,
-            members: selectedMembers
-        });
-    };
 
     return (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-6 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
-            <div className="bg-card rounded-xl w-full max-w-2xl shadow-2xl overflow-hidden border border-border/50 animate-in zoom-in-95 duration-300">
+            <div className="bg-card rounded-xl w-full max-w-lg shadow-2xl overflow-hidden border border-border/50 animate-in zoom-in-95 duration-300">
                 <div className="p-6 border-b border-border/50 flex justify-between items-center bg-secondary/30 relative">
-                    <div className="flex items-center gap-4">
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${step === 1 ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/20' : 'bg-emerald-500 text-white'}`}>
-                            {step === 1 ? <Upload size={20} /> : <Check size={20} />}
-                        </div>
-                        <div>
-                            <h2 className="text-xl font-bold text-foreground tracking-tight">
-                                {step === 1 ? "Phase I: Data Ingestion" : "Phase II: Configuration"}
-                            </h2>
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
-                                {step === 1 ? "Upload Project Protocol (PDF)" : "Configure Mission Parameters"}
-                            </p>
-                        </div>
+                    <div>
+                        <h2 className="text-2xl font-bold text-foreground tracking-tight">Initiate Project</h2>
+                        <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mt-1">Operational Protocol Alpha</p>
                     </div>
                     <button
                         onClick={onClose}
@@ -106,205 +42,112 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                     </button>
                 </div>
 
-                <div className="p-8 max-h-[80vh] overflow-y-auto custom-scrollbar">
-                    {step === 1 ? (
-                        <div className="space-y-8 animate-in slide-in-from-left-4 duration-300">
-                            <div className="flex flex-col items-center justify-center p-12 border-2 border-dashed border-border/60 rounded-[2rem] bg-secondary/20 hover:bg-secondary/30 transition-all group relative overflow-hidden">
-                                {uploadingPdf ? (
-                                    <div className="flex flex-col items-center text-center space-y-4">
-                                        <div className="w-12 h-12 border-4 border-orange-500/20 border-t-orange-500 rounded-full animate-spin" />
-                                        <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest animate-pulse">Decrypting Protocol...</p>
-                                    </div>
-                                ) : (
-                                    <>
-                                        <div className="w-16 h-16 bg-orange-500/10 rounded-2xl flex items-center justify-center text-orange-500 mb-6 group-hover:scale-110 transition-transform">
-                                            <Upload size={32} />
-                                        </div>
-                                        <h3 className="text-lg font-bold text-foreground mb-2">Upload Mission Briefing</h3>
-                                        <p className="text-xs text-muted-foreground text-center max-w-xs mb-8 font-medium">
-                                            Provide the project documentation in PDF format (Max 2MB). Our AI will analyze the content for deployment.
-                                        </p>
-                                        <input
-                                            type="file"
-                                            accept=".pdf"
-                                            onChange={handleFileChange}
-                                            className="absolute inset-0 opacity-0 cursor-pointer"
-                                        />
-                                        <button className="px-8 py-3 bg-orange-500 text-white rounded-xl font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-orange-500/20 pointer-events-none">
-                                            Select File
-                                        </button>
-                                    </>
-                                )}
-                            </div>
-                            {fileError && (
-                                <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl text-rose-500 text-xs font-bold flex items-center gap-3">
-                                    <X size={16} />
-                                    {fileError}
+                <form onSubmit={onSubmit} className="p-10 space-y-6 max-h-[75vh] overflow-y-auto custom-scrollbar">
+                    <div className="space-y-2">
+                        <label htmlFor="projectName" className="flex items-center text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/80 ml-1">Designation</label>
+                        <input
+                            type="text"
+                            id="projectName"
+                            name="projectName"
+                            required
+                            className="w-full px-6 py-4 bg-secondary/50 border border-border/50 rounded-2xl focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition-all font-bold text-foreground placeholder:text-muted-foreground/30"
+                            placeholder="e.g. Neural Nexus Deployment"
+                        />
+                    </div>
+
+                    <div className="space-y-2">
+                        <label htmlFor="description" className="flex items-center text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/80 ml-1">Mission Briefing</label>
+                        <textarea
+                            id="description"
+                            name="description"
+                            rows={3}
+                            className="w-full px-6 py-4 bg-secondary/50 border border-border/50 rounded-2xl focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition-all resize-none font-bold text-foreground h-32"
+                            placeholder="Outline the core objectives..."
+                        />
+                    </div>
+
+                    {/* Member Selection */}
+                    <div className="space-y-4">
+                        <label className="flex items-center text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground/80 ml-1">Assign Task Force</label>
+                        <div className="border border-border rounded-3xl overflow-hidden bg-secondary/20 h-64 overflow-y-auto custom-scrollbar">
+                            {isUsersLoading ? (
+                                <div className="p-10 text-center animate-pulse flex flex-col items-center">
+                                    <div className="w-8 h-8 border-4 border-orange-500/20 border-t-orange-500 rounded-full animate-spin mb-4" />
+                                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Scanning Grid...</p>
+                                </div>
+                            ) : systemUsers.filter(u => u.role === "User").length === 0 ? (
+                                <div className="p-10 text-center">
+                                    <p className="text-xs text-muted-foreground font-medium italic">No personnel available for deployment.</p>
+                                </div>
+                            ) : (
+                                <div className="divide-y divide-border/40">
+                                    {systemUsers.filter(u => u.role === "User").map(user => {
+                                        const memberData = selectedMembers?.find((m: any) => m.user === user._id);
+                                        const isSelected = !!memberData;
+                                        return (
+                                            <div
+                                                key={user._id}
+                                                onClick={() => toggleMemberSelection(user._id)}
+                                                className={`flex items-center p-4 cursor-pointer transition-all ${isSelected ? 'bg-orange-500/5' : 'hover:bg-muted/50'}`}
+                                            >
+                                                <div className={`w-5 h-5 rounded-lg border mr-4 flex items-center justify-center transition-all ${isSelected ? 'bg-orange-500 border-orange-500 shadow-lg shadow-orange-500/20' : 'border-border/60 bg-white'}`}>
+                                                    {isSelected && <Check className="w-3 h-3 text-white" />}
+                                                </div>
+                                                <div className="flex items-center flex-1">
+                                                    <div className="w-9 h-9 rounded-xl bg-orange-500/10 text-orange-600 flex items-center justify-center font-bold text-xs mr-3 border border-orange-500/20">
+                                                        {user.name.charAt(0).toUpperCase()}
+                                                    </div>
+                                                    <div>
+                                                        <div className="text-sm font-bold text-foreground">{user.name}</div>
+                                                        <div className="text-[10px] text-muted-foreground/60 font-medium">{user.email}</div>
+                                                    </div>
+                                                </div>
+                                                {isSelected ? (
+                                                    <select
+                                                        value={memberData.role}
+                                                        onChange={(e) => {
+                                                            e.stopPropagation();
+                                                            updateMemberRole(user._id, e.target.value);
+                                                        }}
+                                                        onClick={(e) => e.stopPropagation()}
+                                                        className="text-[10px] font-bold bg-white border border-border px-2.5 py-1.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500/20 outline-none transition-all shadow-sm text-foreground"
+                                                    >
+                                                        <option value="Manager">Manager</option>
+                                                        <option value="User">User</option>
+                                                    </select>
+                                                ) : (
+                                                    <div className="text-[9px] font-bold text-muted-foreground/40 bg-muted/50 px-2 py-1 rounded-lg uppercase tracking-wider">{user.role}</div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             )}
-                            <div className="flex justify-center">
-                                <button
-                                    onClick={() => setStep(2)}
-                                    className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 hover:text-orange-500 transition-colors"
-                                >
-                                    Skip to Manual Entry
-                                </button>
+                        </div>
+                        <div className="flex justify-between items-center px-2">
+                            <div className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60">
+                                Enlistment Queue: <span className="text-orange-600 ml-1">{selectedMembers?.length || 0} Operators</span>
                             </div>
                         </div>
-                    ) : (
-                        <form onSubmit={handleFormSubmit} className="space-y-8 animate-in slide-in-from-right-4 duration-300">
-                            {parsedText && (
-                                <div className="p-6 bg-orange-500/5 border border-orange-500/10 rounded-2xl space-y-3">
-                                    <div className="flex items-center gap-2 text-[10px] font-bold text-orange-600 uppercase tracking-widest">
-                                        <FileText size={14} />
-                                        Extracted Intelligence
-                                    </div>
-                                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3 italic">
-                                        "{parsedText}"
-                                    </p>
-                                </div>
-                            )}
+                    </div>
 
-                            <div className="grid grid-cols-2 gap-6">
-                                <div className="space-y-2 col-span-2">
-                                    <label className="flex items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80 ml-1">Designation</label>
-                                    <input
-                                        type="text"
-                                        required
-                                        value={formData.projectName}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, projectName: e.target.value }))}
-                                        className="w-full px-5 py-3.5 bg-secondary/50 border border-border/50 rounded-xl focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition-all font-bold text-foreground placeholder:text-muted-foreground/30 text-sm"
-                                        placeholder="Project Alpha"
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <label className="flex items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80 ml-1">
-                                        <Calendar size={12} className="mr-2" />
-                                        Deadline
-                                    </label>
-                                    <input
-                                        type="date"
-                                        required
-                                        value={formData.deadline}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, deadline: e.target.value }))}
-                                        className="w-full px-5 py-3.5 bg-secondary/50 border border-border/50 rounded-xl focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition-all font-bold text-foreground text-sm"
-                                    />
-                                </div>
-
-                                <div className="space-y-2">
-                                    <label className="flex items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80 ml-1">
-                                        <Layers size={12} className="mr-2" />
-                                        Tech Stack
-                                    </label>
-                                    <select
-                                        required
-                                        value={formData.techStackId}
-                                        onChange={(e) => setFormData(prev => ({ ...prev, techStackId: e.target.value }))}
-                                        className="w-full px-5 py-3.5 bg-secondary/50 border border-border/50 rounded-xl focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition-all font-bold text-foreground text-sm"
-                                    >
-                                        <option value="">Select Stack</option>
-                                        {techStacks.map(stack => (
-                                            <option key={stack._id} value={stack._id}>{stack.name}</option>
-                                        ))}
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div className="space-y-2">
-                                <label className="flex items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80 ml-1">Mission briefing</label>
-                                <textarea
-                                    value={formData.description}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                                    className="w-full px-5 py-3.5 bg-secondary/50 border border-border/50 rounded-xl focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition-all font-medium text-foreground text-sm min-h-[100px] resize-none"
-                                    placeholder="Describe the mission objectives..."
-                                />
-                            </div>
-
-                            {/* Member Selection */}
-                            <div className="space-y-4">
-                                <label className="flex items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80 ml-1">Assign Task Force</label>
-                                <div className="border border-border rounded-2xl overflow-hidden bg-secondary/20 h-48 overflow-y-auto custom-scrollbar">
-                                    {isUsersLoading ? (
-                                        <div className="p-8 text-center animate-pulse flex flex-col items-center">
-                                            <div className="w-6 h-6 border-2 border-orange-500/20 border-t-orange-500 rounded-full animate-spin mb-4" />
-                                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">Scanning Grid...</p>
-                                        </div>
-                                    ) : (
-                                        <div className="divide-y divide-border/40">
-                                            {systemUsers.filter(u => u.role === "User").map(user => {
-                                                const memberData = selectedMembers?.find((m: any) => m.user === user._id);
-                                                const isSelected = !!memberData;
-                                                return (
-                                                    <div
-                                                        key={user._id}
-                                                        onClick={() => toggleMemberSelection(user._id)}
-                                                        className={`flex items-center p-3 cursor-pointer transition-all ${isSelected ? 'bg-orange-500/5' : 'hover:bg-muted/50'}`}
-                                                    >
-                                                        <div className={`w-4 h-4 rounded border mr-3 flex items-center justify-center transition-all ${isSelected ? 'bg-orange-500 border-orange-500 shadow-sm shadow-orange-500/20' : 'border-border/60 bg-white'}`}>
-                                                            {isSelected && <Check className="w-2.5 h-2.5 text-white" />}
-                                                        </div>
-                                                        <div className="flex items-center flex-1">
-                                                            <div className="w-8 h-8 rounded-lg bg-orange-500/10 text-orange-600 flex items-center justify-center font-bold text-[10px] mr-3 border border-orange-500/20">
-                                                                {user.name.charAt(0).toUpperCase()}
-                                                            </div>
-                                                            <div>
-                                                                <div className="text-xs font-bold text-foreground">{user.name}</div>
-                                                                <div className="text-[9px] text-muted-foreground/60 font-medium">{user.email}</div>
-                                                            </div>
-                                                        </div>
-                                                        {isSelected && (
-                                                            <select
-                                                                value={memberData.role}
-                                                                onChange={(e) => {
-                                                                    e.stopPropagation();
-                                                                    updateMemberRole(user._id, e.target.value);
-                                                                }}
-                                                                onClick={(e) => e.stopPropagation()}
-                                                                className="text-[9px] font-bold bg-white border border-border px-2 py-1 rounded-md focus:outline-none"
-                                                            >
-                                                                <option value="Manager">Manager</option>
-                                                                <option value="User">User</option>
-                                                            </select>
-                                                        )}
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
-
-                            <div className="flex gap-4 pt-4">
-                                <button
-                                    type="button"
-                                    onClick={() => setStep(1)}
-                                    className="flex-1 py-3.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground bg-secondary/50 hover:bg-secondary rounded-xl transition-all border border-border/50 flex items-center justify-center gap-2"
-                                >
-                                    <ArrowLeft size={14} />
-                                    Phase I
-                                </button>
-                                <button
-                                    type="submit"
-                                    disabled={submitting}
-                                    className="flex-[2] py-3.5 bg-orange-500 text-white rounded-xl hover:bg-orange-600 disabled:opacity-50 transition-all font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-orange-500/20 active:scale-95 flex items-center justify-center gap-2"
-                                >
-                                    {submitting ? (
-                                        <>
-                                            <div className="w-3 h-3 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                                            Processing...
-                                        </>
-                                    ) : (
-                                        <>
-                                            Commit Deployment
-                                            <ArrowRight size={14} />
-                                        </>
-                                    )}
-                                </button>
-                            </div>
-                        </form>
-                    )}
-                </div>
+                    <div className="pt-4 flex gap-4">
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="flex-1 py-4 text-[10px] font-bold uppercase tracking-widest text-muted-foreground hover:text-foreground bg-secondary/50 hover:bg-secondary rounded-2xl transition-all border border-border/50"
+                        >
+                            Abort
+                        </button>
+                        <button
+                            type="submit"
+                            disabled={submitting}
+                            className="flex-[2] py-4 bg-orange-500 text-white rounded-2xl hover:bg-orange-600 disabled:opacity-50 transition-all font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-orange-500/20 active:scale-95"
+                        >
+                            {submitting ? "Processing..." : "Commit Deployment"}
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     );
