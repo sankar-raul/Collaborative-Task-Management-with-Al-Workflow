@@ -5,9 +5,12 @@ interface TeamMembersListProps {
     onAdd?: () => void;
     onRemove?: (member: any) => void;
     onUpdateRole?: (userId: string, role: string) => void;
+    onApprove?: (userId: string) => void;
+    onReject?: (userId: string) => void;
     isManager: boolean;
     actionLoading: boolean;
     currentUserId?: string;
+    loadingId?: string | null;
 }
 
 export const TeamMembersList = ({
@@ -15,9 +18,12 @@ export const TeamMembersList = ({
     onAdd,
     onRemove,
     onUpdateRole,
+    onApprove,
+    onReject,
     isManager,
     actionLoading,
-    currentUserId
+    currentUserId,
+    loadingId
 }: TeamMembersListProps) => {
     return (
         <div className="bg-card rounded-3xl border border-border shadow-sm overflow-hidden animate-in fade-in duration-500">
@@ -84,15 +90,36 @@ export const TeamMembersList = ({
                                         )}
                                     </td>
                                     <td className="px-6 py-4 text-right">
-                                        {isManager && onRemove && member.user?._id !== currentUserId && (
-                                            <button
-                                                onClick={() => onRemove(member)}
-                                                className="p-2 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all"
-                                                title="Remove"
-                                            >
-                                                <Trash2 size={16} />
-                                            </button>
-                                        )}
+                                        <div className="flex items-center justify-end gap-2">
+                                            {isManager && member.user?.isApproved === false && onApprove && onReject && (
+                                                <div className="flex items-center gap-2 mr-2">
+                                                    <button
+                                                        onClick={() => onApprove(member.user?._id)}
+                                                        disabled={actionLoading || loadingId === member.user?._id}
+                                                        className="px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-all disabled:opacity-50"
+                                                    >
+                                                        Approve
+                                                    </button>
+                                                    <button
+                                                        onClick={() => onReject(member.user?._id)}
+                                                        disabled={actionLoading || loadingId === member.user?._id}
+                                                        className="px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest bg-rose-500/10 text-rose-500 rounded-lg hover:bg-rose-500/20 transition-all disabled:opacity-50"
+                                                    >
+                                                        Reject
+                                                    </button>
+                                                </div>
+                                            )}
+
+                                            {isManager && onRemove && member.user?._id !== currentUserId && (
+                                                <button
+                                                    onClick={() => onRemove(member)}
+                                                    className="p-2 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all"
+                                                    title="Remove"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            )}
+                                        </div>
                                     </td>
                                 </tr>
                             ))

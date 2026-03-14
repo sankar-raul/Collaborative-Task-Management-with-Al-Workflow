@@ -34,3 +34,14 @@ export const getTechstacks = async (req: Request, res: Response) => {
         res.status(500).json({ success: false, message: error.message })
     }
 }
+
+export const updateTechstack = async (req: Request, res: Response) => {
+    const id = req.params.id as string
+    const data = req.body as Partial<ITechstack>
+    try {
+        const stack = await TechStackService.update(id, data)
+        res.status(200).json({ success: true, data: stack })
+    } catch (error) {
+        res.status(500).json({ success: false, message: error.message })
+    }
+}

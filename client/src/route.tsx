@@ -13,6 +13,7 @@ import { UsersRoles } from "./pages/admin/UsersRoles";
 import { UserDetails } from "./pages/admin/UserDetails";
 import { AdminProjects } from "./pages/admin/AdminProjects";
 import { AdminProjectDetails } from "./pages/admin/AdminProjectDetails";
+import { AdminStack } from "./pages/admin/AdminStack";
 
 // Common Page
 import { Notifications } from "./pages/common/Notifications";
@@ -73,6 +74,7 @@ const routes = createBrowserRouter(
                 }>
                     <Route path="projects" element={<AdminProjects />} />
                     <Route path="projects/:id" element={<AdminProjectDetails />} />
+                    <Route path="stack" element={<AdminStack />} />
                 </Route>
 
             </Route>

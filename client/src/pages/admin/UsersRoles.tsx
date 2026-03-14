@@ -88,7 +88,7 @@ export const UsersRoles = () => {
                                     </td>
                                     <td className="px-8 py-5 text-right">
                                         <div className="flex items-center justify-end gap-2">
-                                            {!user.isApproved && (
+                                            {user.isApproved === false && (
                                                 <>
                                                     <button
                                                         onClick={async () => {
@@ -126,7 +126,7 @@ export const UsersRoles = () => {
                                             )}
                                             <button
                                                 onClick={() => navigate(`/users/${user._id}`)}
-                                                className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-all border border-border"
+                                                className="p-2 text-indigo-600 hover:bg-indigo-500/10 rounded-lg transition-all border border-indigo-500/20"
                                                 title="View Profile"
                                             >
                                                 <User size={18} />

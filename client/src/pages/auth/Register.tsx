@@ -1,12 +1,11 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { Brain, ArrowRight, CheckCircle2, Moon } from "lucide-react";
 import Input from "../../components/shared/Input";
 import Button from "../../components/shared/Button";
 import { api } from "../../utils/api";
-import { useNavigate } from "react-router-dom";
-import SkillsInput from "../../components/shared/SkillsInput";
-import PromoForSignup from "../../components/shared/PromoForSignup";
 import { useAuth } from "../../context/auth";
+import SkillsInput from "../../components/shared/SkillsInput";
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -56,122 +55,170 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex bg-background">
+    <div className="min-h-screen flex bg-[#fdfaf8] relative overflow-hidden font-sans">
 
-      {/* LEFT SIDE - REGISTER FORM */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 md:p-12 bg-card overflow-y-auto">
-        <div className="w-full max-w-md space-y-10 py-8">
-
+      {/* LEFT SIDE - CONTENT */}
+      <div className="hidden lg:flex lg:w-3/5 items-center justify-center relative">
+        <div className="max-w-xl space-y-12 animate-in fade-in slide-in-from-left-8 duration-700">
           {/* Logo */}
-          <div className="flex items-center space-x-4">
-            <div className="w-14 h-14 bg-primary rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20">
-              <svg
-                className="w-8 h-8 text-primary-foreground"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path d="M3 13h8V3H3v10zm10 8h8V11h-8v10zM3 21h8v-6H3v6zm10-18v6h8V3h-8z" />
-              </svg>
+          <div className="flex flex-col items-center gap-4 ">
+            <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/25">
+              <Brain className="w-7 h-7 text-white" />
             </div>
-            <h1 className="text-2xl font-black text-foreground tracking-tighter">
+            <h1 className="text-2xl font-semibold text-foreground tracking-tight">
               AI TaskFlow
             </h1>
           </div>
 
-          {/* Heading */}
-          <div className="space-y-3">
-            <h2 className="text-3xl md:text-4xl font-black text-foreground tracking-tight">
-              Create an Account
+          <div className="space-y-4 text-center">
+            <h2 className="text-5xl font-semibold text-foreground leading-tight tracking-tight">
+              Join the AI-powered<br />
+              <span className="text-muted-foreground font-medium">productivity wave.</span>
             </h2>
-            <p className="text-muted-foreground font-medium text-lg leading-relaxed">
-              Join your team and start managing workflows efficiently
+            <p className="text-lg text-muted-foreground font-normal leading-relaxed max-w-lg mx-auto">
+              Create an account to experience smart task delegation, real-time progress syncing, and a workspace that grows with your team's ambition.
             </p>
           </div>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Feature List */}
+          <div className="space-y-5 pt-4 border-t border-border/40 mx-auto w-max">
+            <div className="grid grid-cols-1 gap-5">
+              {[
+                { title: "Adaptive Workflows", desc: "Tasks that adjust to your team's skill level." },
+                { title: "Detailed Analytics", desc: "Track your strengths and bottlenecks." },
+                { title: "AI Explanations", desc: "Understand the 'why' behind every assignment." }
+              ].map((feature, i) => (
+                <div key={i} className="flex items-start gap-4 group cursor-default text-left">
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center group-hover:bg-emerald-500/20 transition-colors mt-1">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                  </div>
+                  <div>
+                    <h4 className="text-sm font-semibold text-foreground tracking-tight">{feature.title}</h4>
+                    <p className="text-[11px] font-medium text-muted-foreground/60 mt-0.5">{feature.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* RIGHT SIDE - FORM CARD */}
+      <div className="w-full lg:w-2/5 flex items-center justify-center p-8  relative bg-white lg:bg-transparent overflow-y-auto">
+        <div className="w-full max-w-lg bg-white p-5 lg:rounded-xl lg:shadow-xl lg:shadow-black/[0.02] lg:border border-border/50 animate-in fade-in zoom-in-95 duration-700 space-y-12 my-12">
+          <div className="space-y-2 text-center lg:text-left">
+            <h3 className="text-2xl font-semibold text-foreground tracking-tight">
+              Create an account
+            </h3>
+            <p className="text-sm font-medium text-muted-foreground/60">
+              Enter your details to generate your account
+            </p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-8">
             {error && (
-              <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl">
-                <p className="text-xs text-rose-500 text-center font-bold uppercase tracking-wider">
+              <div className="p-4 bg-rose-500/5 border border-rose-500/10 rounded-2xl">
+                <p className="text-xs text-rose-500 text-center font-bold uppercase tracking-widest">
                   {error}
                 </p>
               </div>
             )}
 
-            <Input
-              label="Full Name"
-              type="text"
-              name="name"
-              placeholder="Jane Doe"
-              value={formData.name}
-              onChange={handleChange}
-              className="py-3 px-4 rounded-xl"
-              required
-            />
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground/80 ml-1">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="John Doe"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-6 py-4 bg-secondary/30 border border-border/20 rounded-xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all font-medium text-sm text-foreground placeholder:text-muted-foreground/30"
+                />
+              </div>
 
-            <Input
-              label="Email Address"
-              type="email"
-              name="email"
-              placeholder="you@company.com"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="py-3 px-4 rounded-xl"
-            />
+              <div className="space-y-2">
+                <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground/80 ml-1">
+                  Email address
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="name@example.com"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  className="w-full px-6 py-4 bg-secondary/30 border border-border/20 rounded-xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all font-medium text-sm text-foreground placeholder:text-muted-foreground/30"
+                />
+              </div>
 
-            <div>
-              <label className="block text-sm font-bold text-foreground/70 mb-2">
-                Password
-              </label>
-              <Input
-                type="password"
-                name="password"
-                placeholder="Create a strong password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                minLength={8}
-                className="py-3 px-4 rounded-xl"
-              />
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground/80 ml-1">
+                    Password
+                  </label>
+                  <input
+                    type="password"
+                    name="password"
+                    placeholder="••••••••"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                    minLength={8}
+                    className="w-full px-6 py-4 bg-secondary/30 border border-border/20 rounded-xl focus:ring-4 focus:ring-primary/10 focus:border-primary outline-none transition-all font-medium text-sm text-foreground placeholder:text-muted-foreground/30"
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground/80 ml-1">
+                    Skills Matrix
+                  </label>
+                  <SkillsInput
+                    skills={formData.skills}
+                    setSkills={(skills) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        skills,
+                      }))
+                    }
+                  />
+                </div>
+              </div>
             </div>
 
-            {/* Skills / Topics Section */}
-            <div className="space-y-2">
-              <SkillsInput
-                skills={formData.skills}
-                setSkills={(skills) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    skills,
-                  }))
-                }
-              />
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-4 bg-primary text-white rounded-xl hover:bg-primary/95 disabled:opacity-50 transition-all font-semibold uppercase tracking-widest text-[10px] shadow-sm active:scale-[0.98] flex items-center justify-center gap-2 group"
+            >
+              {loading ? (
+                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                <>
+                  Create Account <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                </>
+              )}
+            </button>
+            <div className="text-center pt-2">
+              <p className="text-xs font-bold text-muted-foreground/60 tracking-tight">
+                Already have an account?{" "}
+                <Link
+                  to="/login"
+                  className="text-primary hover:text-primary-dark transition-colors font-semibold ml-1"
+                >
+                  Log In
+                </Link>
+              </p>
             </div>
 
-            <div className="pt-4">
-              <Button type="submit" fullWidth disabled={loading} className="py-4 text-base font-black shadow-xl shadow-primary/20">
-                {loading ? "Creating Account..." : "Join AI TaskFlow"}
-              </Button>
-            </div>
-
-            <p className="text-center text-sm text-muted-foreground font-medium pt-2">
-              Already have an account?{" "}
-              <Link
-                to="/login"
-                className="text-primary font-black hover:opacity-80 transition-opacity ml-1"
-              >
-                Log In
-              </Link>
-            </p>
           </form>
         </div>
       </div>
-
-      {/* RIGHT SIDE - TASK MANAGEMENT PROMO */}
-      <PromoForSignup />
     </div>
   );
 };
 
-export default Register;
+export default Register;

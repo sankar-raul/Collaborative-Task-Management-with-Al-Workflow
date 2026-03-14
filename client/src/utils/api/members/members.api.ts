@@ -27,9 +27,9 @@ export const updateMe = async (data: Partial<Omit<Member, "_id" | "role" | "crea
 };
 
 export const approveMember = async (id: string): Promise<{ success: boolean; data: Member }> => {
-    return await patch(`${ROUTE}/${id}/approve`, {}, getToken());
+    return await put(`${ROUTE}/${id}/approve`, {}, getToken());
 };
 
 export const rejectMember = async (id: string): Promise<{ success: boolean; data: Member }> => {
-    return await deleteRequest(`${ROUTE}/${id}/reject`, getToken());
+    return await put(`${ROUTE}/${id}/reject`, {}, getToken());
 };

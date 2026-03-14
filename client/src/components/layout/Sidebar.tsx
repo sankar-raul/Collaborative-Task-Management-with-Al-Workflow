@@ -21,6 +21,7 @@ export default function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
       roleLinks = [
         { name: "Users & Roles", path: "/users", icon: Users },
         { name: "Manage Projects", path: "/admin/projects", icon: FolderOpen },
+        { name: "Tech Stack", path: "/admin/stack", icon: Briefcase }, // Briefcase as a placeholder or use Database if available
       ];
     } else if (member?.role === "User") {
       roleLinks = [

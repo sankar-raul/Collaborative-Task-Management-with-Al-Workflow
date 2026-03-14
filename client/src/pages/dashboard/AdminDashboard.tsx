@@ -25,10 +25,40 @@ export default function AdminDashboard() {
         fetchData();
     }, []);
 
-    // Delete user
-    const { systemUsers } = useUsers();
+    const { systemUsers, refreshUsers } = useUsers();
     const navigate = useNavigate();
     const { member } = useAuth();
+    const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
+
+    const handleApprove = async (id: string) => {
+        try {
+            setActionLoadingId(id);
+            const res = await api.members.approveMember(id);
+            if (res.success) {
+                await refreshUsers();
+            }
+        } catch (err: any) {
+            console.error(err.message);
+        } finally {
+            setActionLoadingId(null);
+        }
+    };
+
+    const handleReject = async (id: string) => {
+        if (!window.confirm("Are you sure you want to reject and delete this user?")) return;
+        try {
+            setActionLoadingId(id);
+            const res = await api.members.rejectMember(id);
+            if (res.success) {
+                await refreshUsers();
+            }
+        } catch (err: any) {
+            console.error(err.message);
+        } finally {
+            setActionLoadingId(null);
+        }
+    };
+
     const totalUsers: number = systemUsers.filter(user => user._id !== member?.id).length;
     return (
         <div className="space-y-6">
@@ -115,13 +145,32 @@ export default function AdminDashboard() {
 
 
                                     <div className="flex items-center space-x-3">
+                                        {/* Approval status - only show for unapproved users */}
+                                        {user.isApproved === false && (
+                                            <div className="flex items-center gap-2">
+                                                <button
+                                                    onClick={() => handleApprove(user._id)}
+                                                    disabled={actionLoadingId === user._id}
+                                                    className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-all shadow-sm shadow-emerald-500/10 active:scale-95 disabled:opacity-50"
+                                                >
+                                                    {actionLoadingId === user._id ? "..." : "Approve"}
+                                                </button>
+                                                <button
+                                                    onClick={() => handleReject(user._id)}
+                                                    disabled={actionLoadingId === user._id}
+                                                    className="px-3 py-1.5 text-[10px] font-bold uppercase tracking-widest bg-rose-500/10 text-rose-500 rounded-lg hover:bg-rose-500/20 transition-all active:scale-95 disabled:opacity-50"
+                                                >
+                                                    Reject
+                                                </button>
+                                            </div>
+                                        )}
 
                                         {/* Role */}
                                         <span
                                             className={`px-3 py-1 text-xs font-semibold rounded-full
                             ${user.role === "Admin"
                                                     ? "bg-red-100 text-red-600"
-                                                    : user.role === "manager"
+                                                    : user.role === "Manager"
                                                         ? "bg-yellow-100 text-yellow-700"
                                                         : "bg-purple-100 text-purple-700"
                                                 }`}
