@@ -16,6 +16,7 @@ import adminAuth from "./api/middleware/adminAuth";
 import memberRoute from "./api/routers/member.route";
 import taskRoute from "./api/routers/task.route";
 import joinToProjects from "./socketService/joinToProjects";
+import techstackRouter from "./api/routers/techstack.route";
 
 const PORT = config.PORT || 8080;
 
@@ -38,8 +39,7 @@ app.use("/api/projects", hardAuth, projectRouter);
 app.use("/api/admin", adminAuth, adminRoute);
 app.use("/api/members", hardAuth, memberRoute);
 app.use("/api/tasks", hardAuth, taskRoute);
-// app.use("/api/comments", require("./api/routers/comment.route").default);
-// app.use("/api/notifications", require("./api/routers/notification.route").default);
+app.use("/api/techstacks", techstackRouter);
 
 const server = http.createServer(app);
 

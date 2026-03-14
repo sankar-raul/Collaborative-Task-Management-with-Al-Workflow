@@ -44,6 +44,7 @@ class ProjectService {
         project,
         members.map((m) => m.user.toString()),
       );
+      // call create project ai service here
       return project;
     } catch (error) {
       throw error;
