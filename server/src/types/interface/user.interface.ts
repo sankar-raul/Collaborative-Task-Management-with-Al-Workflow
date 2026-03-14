@@ -1,4 +1,5 @@
 import { ROLE } from "@/constants/role.constant";
+import { Types } from "mongoose";
 
 export interface IUser {
   name: string;
@@ -9,4 +10,5 @@ export interface IUser {
   availabilityHours: number;
   currentWorkload: number;
   isApproved?: boolean;
+  stacks?: Types.ObjectId[];
 }

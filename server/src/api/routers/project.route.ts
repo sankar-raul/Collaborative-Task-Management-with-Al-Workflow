@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createProject, getProjects, getProjectById, updateProject, deleteProject, addProjectMember, removeProjectMember, getProjectMembers, updateProjectMemberRole, getTotalProjectsCount, createProjectFromPdf } from "../controllers/project.controller";
+import { createProject, getProjects, getProjectById, updateProject, deleteProject, addProjectMember, removeProjectMember, getProjectMembers, updateProjectMemberRole, getTotalProjectsCount, createProjectFromPdf, createProjectByAI } from "../controllers/project.controller";
 import adminAuth from "../middleware/adminAuth";
 import isValidProjectMember from "../middleware/isValidProjectMember";
 import memberRoleMiddleware from "../middleware/memberRole.";
@@ -19,6 +19,7 @@ projectRouter.put("/:id/members", memberRoleMiddleware("Manager"), updateProject
 
 
 projectRouter.post("/create", upload.single("pdf"), createProjectFromPdf);
+projectRouter.post("/createByAI", createProjectByAI);
 
 
 export default projectRouter;

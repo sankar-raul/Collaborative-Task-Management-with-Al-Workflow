@@ -15,6 +15,7 @@ const userSchema = new Schema<IUser>(
     skills: [{ type: String }],
     availabilityHours: { type: Number, required: true },
     currentWorkload: { type: Number, required: true },
+    stacks: [{ type: Schema.Types.ObjectId, ref: "Stack" }],
   },
   { timestamps: true }
 );
