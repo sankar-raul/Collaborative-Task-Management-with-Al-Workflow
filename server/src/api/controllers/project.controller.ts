@@ -1,9 +1,20 @@
 import { ROLE } from "@/constants/role.constant";
-import { parsePDF } from "@/services/pdfParser.service";
+import AIService from "@/services/ai.service";
+import PdfParserService from "@/services/pdfParser.service";
 import ProjectService from "@/services/project.service";
 import { MulterRequest } from "@/types/express";
 import { Request, Response } from "express";
 import { Types } from "mongoose";
+
+const getErrorMessage = (error: unknown) => {
+    if (error instanceof Error) {
+        return error.message;
+    }
+    if (typeof error === "string") {
+        return error;
+    }
+    return "Unknown error";
+};
 
 export const createProject = async (req: Request, res: Response) => {
     try {
@@ -172,13 +183,7 @@ export const createProjectFromPdf = async (req: MulterRequest, res: Response) =>
             });
         }
 
-        const parsed = await parsePDF(file.buffer);
-
-        const project = {
-            name: req.body.name,
-            description: req.body.description,
-            documentText: parsed.text
-        };
+        const parsed = await PdfParserService.parsePDF(file.buffer);
 
         // Save project to DB
         // const newProject = await Project.create(project);
@@ -189,6 +194,38 @@ export const createProjectFromPdf = async (req: MulterRequest, res: Response) =>
         });
 
     } catch (error) {
-        res.status(500).json({ success: false, message: `Error creating project: ${error.message}` });
+        res.status(500).json({
+            success: false,
+            message: `Error creating project: ${getErrorMessage(error)}`
+        });
     }
 };
+
+export const createProjectByAI = async (req: Request, res: Response) => {
+  try {
+
+    const { description, deadline, team } = req.body
+
+    if (!description || !deadline || !team) {
+      return res.status(400).json({
+        success: false,
+        message: "description, deadline and team are required"
+      })
+    }
+
+    const tasks = await AIService.generateTasks(description, deadline, team)
+
+    res.json({
+      success: true,
+      tasks
+    })
+
+    } catch (error) {
+
+    res.status(500).json({
+      success: false,
+            message: `Failed to generate tasks: ${getErrorMessage(error)}`
+    })
+
+  }
+}
