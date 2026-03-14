@@ -4,11 +4,13 @@ import { useNavigate } from "react-router";
 import { api } from "../../utils/api";
 import { useUsers } from "../../context/users";
 import type { Project } from "../../@types/interface/ProjectInterface";
+import type { TechStack } from "../../@types/interface/StackInterface";
 import { CreateProjectModal } from "../../components/admin/CreateProjectModal";
 
 export const AdminProjects = () => {
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
     const [projects, setProjects] = useState<Project[]>([]);
+    const [techStacks, setTechStacks] = useState<TechStack[]>([]);
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -20,8 +22,10 @@ export const AdminProjects = () => {
         try {
             setLoading(true);
             const projectsRes = await api.projects.getProjects(1, 100);
+            const stacksRes = await api.stack.getAllStacks();
 
             if (projectsRes.success) setProjects(projectsRes.data);
+            if (stacksRes.success) setTechStacks(stacksRes.data);
 
         } catch (err: any) {
             setError(err.message || "Failed to load dashboard data");
@@ -34,19 +38,10 @@ export const AdminProjects = () => {
         fetchData();
     }, []);
 
-    const handleCreateProject = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+    const handleCreateProject = async (data: any) => {
         setSubmitting(true);
-        const formData = new FormData(e.currentTarget);
-
-        const payload = {
-            projectName: formData.get("projectName") as string,
-            description: formData.get("description") as string,
-            members: selectedMembers
-        };
-
         try {
-            const res = await api.projects.createProject(payload);
+            const res = await api.projects.createProject(data);
             if (res.success) {
                 await fetchData();
                 setIsCreateModalOpen(false);
@@ -64,7 +59,7 @@ export const AdminProjects = () => {
         setSelectedMembers(prev =>
             prev.some(m => m.user === userId)
                 ? prev.filter(m => m.user !== userId)
-                : [...prev, { user: userId, role: "User" }]
+                : [...prev, { user: userId, role: "Manager" }]
         );
     };
 
@@ -179,6 +174,7 @@ export const AdminProjects = () => {
                 selectedMembers={selectedMembers}
                 toggleMemberSelection={toggleMemberSelection}
                 updateMemberRole={updateMemberRole}
+                techStacks={techStacks}
             />
         </div>
     );
