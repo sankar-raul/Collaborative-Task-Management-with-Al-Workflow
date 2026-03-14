@@ -1,5 +1,7 @@
+import AIService from "@/services/ai.service";
 import AuthService from "@/services/auth.service";
 import type { Request, Response } from "express";
+import { Types } from "mongoose";
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -36,7 +38,9 @@ export const registerUser = async (req: Request, res: Response) => {
                 success: false,
             });
         }
-        const { user, access_token } = await AuthService.register({ name, email, password, role: "User", skills, availabilityHours, currentWorkload });
+        const { selectedStacks } = await AIService.getStacksBasedOnSkills(skills) || {}
+        const stacks = selectedStacks.map((stack) => stack._id as unknown as Types.ObjectId) || [];
+        const { user, access_token } = await AuthService.register({ name, email, password, role: "User", skills, availabilityHours, currentWorkload, stacks });
         res.status(201).json({
             message: "User registered successfully",
             success: true,
@@ -44,6 +48,7 @@ export const registerUser = async (req: Request, res: Response) => {
                 id: user._id,
                 name: user.name,
                 email: user.email,
+                stacks: stacks,
             },
             auth: {
                 access_token: access_token,

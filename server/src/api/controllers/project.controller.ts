@@ -204,16 +204,16 @@ export const createProjectFromPdf = async (req: MulterRequest, res: Response) =>
 export const createProjectByAI = async (req: Request, res: Response) => {
   try {
 
-    const { description, deadline, team } = req.body
+    const { description, deadline, techStack } = req.body
 
-    if (!description || !deadline || !team) {
+    if (!description || !deadline || !techStack) {
       return res.status(400).json({
         success: false,
-        message: "description, deadline and team are required"
+        message: "description, deadline and techStack are required"
       })
     }
 
-    const tasks = await AIService.generateTasks(description, deadline, team)
+    const tasks = await AIService.generateTasks(description, deadline, techStack)
 
     res.json({
       success: true,
