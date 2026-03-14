@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router";
-import { ArrowLeft, Plus, LayoutGrid, Users, Settings } from "lucide-react";
+import { ArrowLeft, Plus, LayoutGrid,  Settings } from "lucide-react";
 import { api } from "../../utils/api";
 
 import { useUsers } from "../../context/users";
