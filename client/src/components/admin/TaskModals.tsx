@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { X } from "lucide-react";
+import { X, ShieldCheck, Clock, AlertTriangle } from "lucide-react";
 import type { Task } from "../../@types/interface/TasksInterface";
 import SkillsInput from "../shared/SkillsInput";
 import { api } from "@/utils/api";
@@ -123,26 +123,30 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
               transition={{ duration: 0.3, ease: "easeOut" }}
-              className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden max-h-full overflow-y-auto scroll-smooth"
+              className="bg-card rounded-[3rem] w-full max-w-xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto custom-scrollbar border border-border/50"
             >
-              <div className="px-8 sticky top-0 bg-white py-6 border-b border-gray-100 flex justify-between items-center">
-                <h3 className="text-xl font-bold text-gray-900">
-                  Create New Task
-                </h3>
+              <div className="px-10 py-8 sticky top-0 bg-card/80 backdrop-blur-xl z-10 border-b border-border/50 flex justify-between items-center relative">
+                <div className="absolute top-0 left-0 w-1 h-full bg-orange-500" />
+                <div>
+                  <h3 className="text-2xl font-bold text-foreground tracking-tight">
+                    Initialize Task
+                  </h3>
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mt-1">Operational Protocol Bravo</p>
+                </div>
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setIsCreateModalOpen(false)}
-                  className="p-2 hover:bg-white rounded-full transition-colors text-gray-400 hover:text-gray-600"
+                  className="p-2.5 text-muted-foreground/40 hover:text-foreground hover:bg-secondary rounded-2xl transition-all border border-transparent hover:border-border/60"
                 >
-                  <X size={20} />
+                  <X size={24} />
                 </motion.button>
               </div>
 
-            <form onSubmit={handleCreateTask} className="p-8 space-y-5">
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">
-                  Task Title
+            <form onSubmit={handleCreateTask} className="p-10 space-y-8">
+              <div className="space-y-2">
+                <label className="flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/80 ml-1">
+                  Task Designation
                 </label>
                 <input
                   required
@@ -151,28 +155,28 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
                   onChange={(e) =>
                     setNewTask({ ...newTask, title: e.target.value })
                   }
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
+                  className="w-full px-6 py-4 bg-secondary/50 border border-border/50 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder:text-muted-foreground/30 font-bold text-foreground"
                   placeholder="e.g. Fix Production API Errors"
                 />
               </div>
 
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">
-                  Description
+              <div className="space-y-2">
+                <label className="flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/80 ml-1">
+                  Operational Details
                 </label>
                 <textarea
                   value={newTask.description}
                   onChange={(e) =>
                     setNewTask({ ...newTask, description: e.target.value })
                   }
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all resize-none h-24"
+                  className="w-full px-6 py-4 bg-secondary/50 border border-border/50 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none h-32 font-bold text-foreground"
                   placeholder="Brief task overview..."
                 />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
-                    Priority
+              <div className="grid grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <label className="flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/80 ml-1">
+                    Priority Level
                   </label>
                   <select
                     value={newTask.priority}
@@ -182,7 +186,7 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
                         priority: e.target.value as any,
                       })
                     }
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className="w-full px-6 py-4 bg-secondary/50 border border-border/50 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-black uppercase tracking-widest text-[10px] text-foreground"
                   >
                     <option value="Low">Low</option>
                     <option value="Medium">Medium</option>
@@ -190,14 +194,14 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
                     <option value="Critical">Critical</option>
                   </select>
                 </div>
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
-                    Eastimated Time (hours)
+                <div className="space-y-2">
+                  <label className="flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/80 ml-1">
+                    Workload Estimate (Hrs)
                   </label>
                   <input
                     type="number"
                     min={0}
-                    placeholder="Eastimated Hours"
+                    placeholder="Estimate"
                     value={newTask.eastimatedTime}
                     onChange={(e) =>
                       setNewTask({
@@ -205,7 +209,7 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
                         eastimatedTime: e.target.value as any,
                       })
                     }
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    className="w-full px-6 py-4 bg-secondary/50 border border-border/50 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-bold text-foreground"
                   />
                 </div>
               </div>
@@ -213,31 +217,31 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
               <SkillsInput
                 skills={newTask.requiredSkills || []}
                 setSkills={(skills) => {
-                  setNewTask((prev) => ({
+                  setNewTask((prev: any) => ({
                     ...prev,
                     requiredSkills: skills,
                   }));
                 }}
               />
 
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-3">
-                  Assign To Member
+              <div className="space-y-4">
+                <label className="flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/80 ml-1">
+                  Enlist Personnel
                   {memberRanking.length > 0 && (
-                    <span className="text-xs font-normal text-gray-500 ml-2">
-                      (Ranked by AI - Best match selected)
+                    <span className="text-[10px] font-black text-primary ml-2 lowercase tracking-normal">
+                      (Synthesized Intelligence Selection)
                     </span>
                   )}
                 </label>
-                <div className="space-y-2 max-h-64 overflow-y-auto">
+                <div className="space-y-3 max-h-80 overflow-y-auto custom-scrollbar p-1">
                   {memberRanking.length > 0 ? (
                     memberRanking.map((ranking, index) => (
                       <label
                         key={ranking.user._id}
-                        className={`flex items-start p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                        className={`flex items-start p-6 rounded-[2rem] border transition-all cursor-pointer relative overflow-hidden group ${
                           newTask.assignedTo === ranking.user._id
-                            ? "border-indigo-500 bg-indigo-50"
-                            : "border-gray-200 hover:border-indigo-300 bg-white"
+                            ? "bg-primary/10 border-primary/40 shadow-lg shadow-primary/5"
+                            : "bg-secondary/20 border-border/40 hover:bg-secondary/40 hover:border-primary/20"
                         }`}
                       >
                         <input
@@ -249,56 +253,72 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
                             setNewTask({ ...newTask, assignedTo: e.target.value });
                             setIsManualSelection(true);
                           }}
-                          className="mt-1 h-4 w-4 text-indigo-600 focus:ring-indigo-500"
+                          className="sr-only"
                         />
-                        <div className="ml-3 flex-1">
-                          <div className="flex items-center gap-2">
-                            {index === 0 && (
-                              <span className="text-yellow-500">⭐</span>
-                            )}
-                            <span className="font-semibold text-gray-900">
-                              {ranking.user.name}
-                            </span>
-                            <span className="text-sm font-bold text-indigo-600">
-                              Score: {ranking.score?.toFixed(2) || 0} %
-                            </span>
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-black text-sm border border-primary/20 group-hover:scale-110 transition-transform">
+                                {ranking.user.name.charAt(0)}
+                            </div>
+                            <div className="flex-1">
+                                <div className="flex items-center gap-2">
+                                    {index === 0 && (
+                                        <span className="text-[8px] font-black uppercase tracking-tighter bg-amber-500 text-white px-2 py-0.5 rounded-full">Prime Match</span>
+                                    )}
+                                    <span className="font-black text-foreground text-sm">
+                                        {ranking.user.name}
+                                    </span>
+                                </div>
+                                <div className="text-[10px] font-black text-primary uppercase tracking-widest mt-0.5">
+                                    Compatibility: {ranking.score?.toFixed(0) || 0}%
+                                </div>
+                            </div>
                           </div>
-                          <div className="text-xs text-gray-500 mt-1">
-                            Current Tasks: {ranking.totalTasks} | Total Est. Time: {ranking.totalEstimatedTime}h
+                          <div className="grid grid-cols-2 gap-4 mt-4 py-3 border-y border-border/20">
+                            <div>
+                                <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground/60 mb-0.5">Active Loads</p>
+                                <p className="text-xs font-black text-foreground">{ranking.totalTasks} Vectors</p>
+                            </div>
+                            <div>
+                                <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground/60 mb-0.5">Time Mass</p>
+                                <p className="text-xs font-black text-foreground">{ranking.totalEstimatedTime}h</p>
+                            </div>
                           </div>
                           {ranking.user.skills && ranking.user.skills.length > 0 && (
-                            <div className="mt-2">
-                              <div className="flex flex-wrap gap-1">
+                            <div className="mt-4 flex flex-wrap gap-2">
                                 {ranking.user.skills.map((skill: string) => {
                                   const isMatched = newTask.requiredSkills?.includes(skill);
                                   return (
                                     <span
                                       key={skill}
-                                      className={`text-xs px-2 py-1 rounded-full ${
+                                      className={`text-[9px] font-black px-3 py-1 rounded-lg uppercase tracking-wider border transition-all ${
                                         isMatched
-                                          ? "bg-green-100 text-green-700 font-semibold border border-green-300"
-                                          : "bg-gray-100 text-gray-600"
+                                          ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20 shadow-sm"
+                                          : "bg-secondary text-muted-foreground/60 border-border/40"
                                       }`}
                                     >
-                                      {isMatched && "✓ "}
                                       {skill}
                                     </span>
                                   );
                                 })}
-                              </div>
                             </div>
                           )}
                         </div>
+                        {newTask.assignedTo === ranking.user._id && (
+                            <div className="absolute top-4 right-4 text-primary">
+                                <ShieldCheck className="w-5 h-5" />
+                            </div>
+                        )}
                       </label>
                     ))
                   ) : (
                     project?.members?.map((m: any) => (
                       <label
                         key={m.user?._id}
-                        className={`flex items-center p-4 rounded-xl border-2 cursor-pointer transition-all ${
+                        className={`flex items-center p-5 rounded-[1.5rem] border transition-all cursor-pointer group ${
                           newTask.assignedTo === m.user?._id
-                            ? "border-indigo-500 bg-indigo-50"
-                            : "border-gray-200 hover:border-indigo-300 bg-white"
+                            ? "bg-primary/10 border-primary/40"
+                            : "bg-secondary/20 border-border/40 hover:bg-secondary/40"
                         }`}
                       >
                         <input
@@ -310,26 +330,34 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
                             setNewTask({ ...newTask, assignedTo: e.target.value });
                             setIsManualSelection(true);
                           }}
-                          className="h-4 w-4 text-indigo-600 focus:ring-indigo-500"
+                          className="sr-only"
                         />
-                        <div className="ml-3">
-                          <span className="font-semibold text-gray-900">
+                        <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-black text-sm border border-primary/20 mr-4">
+                            {m.user?.name.charAt(0)}
+                        </div>
+                        <div className="flex-1">
+                          <span className="font-black text-foreground text-sm">
                             {m.user?.name}
                           </span>
-                          <span className="text-sm text-gray-500 ml-2">
-                            ({m.role})
+                          <span className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest ml-3">
+                            {m.role}
                           </span>
                         </div>
+                        {newTask.assignedTo === m.user?._id && (
+                            <div className="text-primary">
+                                <ShieldCheck className="w-5 h-5" />
+                            </div>
+                        )}
                       </label>
                     ))
                   )}
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
-                    Deadline
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/80 ml-1">
+                    Synchronization Deadline
                   </label>
                   <input
                     type="date"
@@ -337,29 +365,29 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
                     onChange={(e) =>
                       setNewTask({ ...newTask, deadline: e.target.value })
                     }
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all"
+                    className="w-full px-6 py-4 bg-secondary/50 border border-border/50 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-bold text-foreground"
                   />
                 </div>
               </div>
 
-              <div className="flex gap-4 pt-4">
+              <div className="flex gap-4 pt-6">
                 <motion.button
                   type="button"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => setIsCreateModalOpen(false)}
-                  className="flex-1 px-6 py-3 border border-gray-200 text-gray-600 font-bold rounded-xl hover:bg-gray-50 transition-colors"
+                  className="flex-1 px-8 py-5 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-foreground bg-secondary/50 hover:bg-secondary rounded-2xl transition-all border border-border/50"
                 >
-                  Cancel
+                  Abort
                 </motion.button>
                 <motion.button
                   type="submit"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   disabled={actionLoading}
-                  className="flex-1 px-6 py-3 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition-all shadow-md shadow-indigo-100 disabled:opacity-50"
+                  className="flex-[2] px-8 py-5 bg-orange-500 text-white font-bold text-[10px] uppercase tracking-widest rounded-2xl hover:bg-orange-600 active:scale-95 transition-all disabled:opacity-50 shadow-xl shadow-orange-500/20"
                 >
-                  {actionLoading ? "Creating..." : "Create Task"}
+                  {actionLoading ? "Synchronizing..." : "Initialize Vector"}
                 </motion.button>
               </div>
             </form>
@@ -383,10 +411,14 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
               transition={{ duration: 0.3, ease: "easeOut" }}
-              className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden p-8"
+              className="bg-card rounded-[3rem] w-full max-w-lg shadow-2xl overflow-hidden p-10 border border-border/50"
             >
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-bold text-gray-900">Edit Task</h3>
+              <div className="flex justify-between items-center mb-8 relative">
+                <div className="absolute -left-10 top-1/2 -translate-y-1/2 w-1 h-12 bg-primary rounded-r-full" />
+                <div>
+                    <h3 className="text-2xl font-black text-foreground tracking-tight">Modify Task</h3>
+                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 mt-1">Operational Update Protocol</p>
+                </div>
                 <motion.button
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.95 }}
@@ -394,9 +426,9 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
                     setIsEditTaskModalOpen(false);
                     setSelectedTask(null);
                 }}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-400"
+                className="p-2.5 text-muted-foreground/40 hover:text-foreground hover:bg-secondary rounded-2xl transition-all border border-transparent hover:border-border/60"
               >
-                <X size={20} />
+                <X size={24} />
               </motion.button>
             </div>
             <form
@@ -417,98 +449,100 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
               }}
               className="space-y-4"
             >
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">
-                  Title
-                </label>
-                <input
-                  name="title"
-                  defaultValue={selectedTask.title}
-                  required
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500/20 outline-none"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">
-                  Description
-                </label>
-                <textarea
-                  name="description"
-                  defaultValue={selectedTask.description}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500/20 outline-none h-24 resize-none"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
-                    Priority
+              <div className="space-y-6">
+                <div className="space-y-2">
+                  <label className="flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/80 ml-1">
+                    Task Designation
+                  </label>
+                  <input
+                    name="title"
+                    defaultValue={selectedTask.title}
+                    required
+                    className="w-full px-6 py-4 bg-secondary/50 border border-border/50 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-bold text-foreground"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/80 ml-1">
+                    Operational Briefing
+                  </label>
+                  <textarea
+                    name="description"
+                    defaultValue={selectedTask.description}
+                    className="w-full px-6 py-4 bg-secondary/50 border border-border/50 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none h-32 resize-none transition-all font-bold text-foreground"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/80 ml-1">
+                      Priority Level
+                    </label>
+                    <select
+                      name="priority"
+                      defaultValue={selectedTask.priority}
+                      className="w-full px-6 py-4 bg-secondary/50 border border-border/50 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-black uppercase tracking-widest text-[10px] text-foreground"
+                    >
+                      <option value="Low">Low</option>
+                      <option value="Medium">Medium</option>
+                      <option value="High">High</option>
+                      <option value="Critical">Critical</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/80 ml-1">
+                      Mission Status
+                    </label>
+                    <select
+                      name="status"
+                      defaultValue={selectedTask.status}
+                      className="w-full px-6 py-4 bg-secondary/50 border border-border/50 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-black uppercase tracking-widest text-[10px] text-foreground"
+                    >
+                      <option value="To Do">To Do</option>
+                      <option value="Assigned">Assigned</option>
+                      <option value="In Progress">In Progress</option>
+                      <option value="In Review">In Review</option>
+                      <option value="Completed">Completed</option>
+                    </select>
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label className="flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/80 ml-1">
+                    Personnel Assignment
                   </label>
                   <select
-                    name="priority"
-                    defaultValue={selectedTask.priority}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none"
+                    name="assignedTo"
+                    defaultValue={selectedTask.assignedTo}
+                    disabled={
+                      isManager && selectedTask.assignedTo === currentUser?.id
+                    }
+                    className={`w-full px-6 py-4 rounded-2xl border transition-all font-black uppercase tracking-widest text-[10px] ${isManager && selectedTask.assignedTo === currentUser?.id ? "bg-secondary cursor-not-allowed opacity-50 border-border/50" : "bg-secondary/50 border-border/50 focus:ring-2 focus:ring-primary/20 focus:border-primary"}`}
                   >
-                    <option value="Low">Low</option>
-                    <option value="Medium">Medium</option>
-                    <option value="High">High</option>
-                    <option value="Critical">Critical</option>
+                    <option value="">Unassigned</option>
+                    {project?.members?.map((m: any) => (
+                      <option key={m.user?._id} value={m.user?._id}>
+                        {m.user?.name}
+                      </option>
+                    ))}
                   </select>
                 </div>
-                <div>
-                  <label className="block text-sm font-bold text-gray-700 mb-2">
-                    Status
+                <div className="space-y-2">
+                  <label className="flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/80 ml-1">
+                    Timeline Deadline
                   </label>
-                  <select
-                    name="status"
-                    defaultValue={selectedTask.status}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none"
-                  >
-                    <option value="To Do">To Do</option>
-                    <option value="Assigned">Assigned</option>
-                    <option value="In Progress">In Progress</option>
-                    <option value="In Review">In Review</option>
-                    <option value="Completed">Completed</option>
-                  </select>
+                  <input
+                    type="date"
+                    name="deadline"
+                    defaultValue={
+                      selectedTask.deadline
+                        ? new Date(selectedTask.deadline)
+                            .toISOString()
+                            .split("T")[0]
+                        : ""
+                    }
+                    className="w-full px-6 py-4 bg-secondary/50 border border-border/50 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-bold text-foreground"
+                  />
                 </div>
               </div>
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">
-                  Assign To
-                </label>
-                <select
-                  name="assignedTo"
-                  defaultValue={selectedTask.assignedTo}
-                  disabled={
-                    isManager && selectedTask.assignedTo === currentUser?.id
-                  }
-                  className={`w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none ${isManager && selectedTask.assignedTo === currentUser?.id ? "bg-gray-50 cursor-not-allowed opacity-70" : ""}`}
-                >
-                  <option value="">Unassigned</option>
-                  {project?.members?.map((m: any) => (
-                    <option key={m.user?._id} value={m.user?._id}>
-                      {m.user?.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-bold text-gray-700 mb-2">
-                  Deadline
-                </label>
-                <input
-                  type="date"
-                  name="deadline"
-                  defaultValue={
-                    selectedTask.deadline
-                      ? new Date(selectedTask.deadline)
-                          .toISOString()
-                          .split("T")[0]
-                      : ""
-                  }
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500/20 outline-none"
-                />
-              </div>
-              <div className="flex gap-4 pt-4">
+              <div className="flex gap-4 pt-8">
                 <motion.button
                   type="button"
                   whileHover={{ scale: 1.02 }}
@@ -517,18 +551,18 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
                     setIsEditTaskModalOpen(false);
                     setSelectedTask(null);
                   }}
-                  className="flex-1 py-3 text-sm font-bold text-gray-500 hover:bg-gray-50 rounded-xl transition-colors"
+                  className="flex-1 py-4 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-foreground bg-secondary/50 hover:bg-secondary rounded-2xl transition-all border border-border/50"
                 >
-                  Cancel
+                  Abort
                 </motion.button>
                 <motion.button
                   type="submit"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   disabled={actionLoading}
-                  className="flex-1 py-3 bg-indigo-600 text-white text-sm font-bold rounded-xl hover:bg-indigo-700 transition-colors disabled:opacity-50"
+                  className="flex-[2] py-4 bg-orange-500 text-white font-bold text-[10px] uppercase tracking-widest rounded-2xl hover:bg-orange-600 active:scale-95 transition-all disabled:opacity-50 shadow-xl shadow-orange-500/20"
                 >
-                  {actionLoading ? "Saving..." : "Save Changes"}
+                  {actionLoading ? "Synchronizing..." : "Commit Update"}
                 </motion.button>
               </div>
             </form>

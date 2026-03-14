@@ -4,7 +4,7 @@ import { api } from "../../utils/api";
 import Button from "../shared/Button";
 import Input from "../shared/Input";
 import SkillsInput from "../shared/SkillsInput";
-import { UserCircle, CheckCircle, X } from "lucide-react";
+import { UserCircle, CheckCircle, X, Camera } from "lucide-react";
 
 const UserProfileSettings = () => {
     const { member } = useAuth();
@@ -70,22 +70,33 @@ const UserProfileSettings = () => {
     };
 
     return (
-        <div className="max-w-4xl p-8">
-            <h2 className="text-xl font-bold text-gray-900 mb-8 pb-4 border-0 md:border-b">
-                My Profile
-            </h2>
+        <div className="max-w-4xl p-10 animate-in fade-in slide-in-from-right-4 duration-500">
+            <div className="flex items-center justify-between mb-12">
+                <div>
+                    <h2 className="text-3xl font-black text-foreground tracking-tight">
+                        My Profile
+                    </h2>
+                    <p className="text-muted-foreground font-medium mt-1">Manage your personal information and expertise.</p>
+                </div>
+            </div>
 
-            <div className="flex flex-col md:flex-row gap-10">
+            <div className="flex flex-col md:flex-row gap-16">
                 {/* Profile Picture Section */}
-                <div className="flex flex-col items-center space-y-4">
-                    <div className="w-32 h-32 rounded-full bg-indigo-100 flex items-center justify-center border-4 border-white shadow-sm overflow-hidden text-indigo-500">
-                        <UserCircle className="w-20 h-20" />
+                <div className="flex flex-col items-center space-y-6">
+                    <div className="relative group">
+                        <div className="w-40 h-40 rounded-[2rem] bg-primary/10 flex items-center justify-center border-4 border-card shadow-2xl overflow-hidden text-primary group-hover:bg-primary/20 transition-all duration-300">
+                            <UserCircle className="w-24 h-24" />
+                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                                <Camera className="w-8 h-8 text-white" />
+                            </div>
+                        </div>
+                        <button className="absolute -bottom-2 -right-2 bg-primary text-primary-foreground p-3 rounded-2xl shadow-lg hover:scale-110 active:scale-90 transition-all">
+                            <Camera className="w-5 h-5" />
+                        </button>
                     </div>
-                    <button className="text-sm font-medium text-indigo-600 hover:text-indigo-800 transition-colors">
-                        Change Picture
-                    </button>
+                    
                     {member?.role && (
-                        <div className="mt-2 px-3 py-1 bg-indigo-50 text-indigo-700 text-xs font-semibold rounded-full border border-indigo-100">
+                        <div className="px-5 py-2 bg-primary/10 text-primary text-xs font-black uppercase tracking-widest rounded-2xl border border-primary/20 shadow-xs">
                             {member.role}
                         </div>
                     )}
@@ -93,9 +104,9 @@ const UserProfileSettings = () => {
 
                 {/* Profile Details Form */}
                 <div className="flex-1 w-full max-w-lg">
-                    <form onSubmit={handleSave} className="space-y-6">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <form onSubmit={handleSave} className="space-y-8">
+                        <div className="space-y-2">
+                            <label className="block text-sm font-black text-foreground/70 mb-2">
                                 Full Name
                             </label>
                             <Input
@@ -104,12 +115,12 @@ const UserProfileSettings = () => {
                                 value={formData.name}
                                 onChange={handleChange}
                                 placeholder="Your full name"
-                                className="w-full"
+                                className="w-full py-3.5 px-5 rounded-xl border-border bg-secondary/30 focus:bg-card transition-all"
                             />
                         </div>
 
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <div className="space-y-2">
+                            <label className="block text-sm font-black text-foreground/70 mb-2">
                                 Email Address
                             </label>
                             <Input
@@ -118,11 +129,11 @@ const UserProfileSettings = () => {
                                 value={formData.email}
                                 onChange={handleChange}
                                 placeholder="your.email@example.com"
-                                className="w-full"
-                                disabled // Typically email changes might require different flow
+                                className="w-full py-3.5 px-5 rounded-xl border-border bg-secondary/10 text-muted-foreground cursor-not-allowed"
+                                disabled 
                             />
-                            <p className="text-xs text-gray-500 mt-2">
-                                Email address cannot be changed directly for security reasons.
+                            <p className="text-[10px] text-muted-foreground/60 mt-2 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                                <span className="p-0.5 rounded-full bg-muted" /> Read-only for security reasons.
                             </p>
                         </div>
 
@@ -139,14 +150,16 @@ const UserProfileSettings = () => {
                         </div>
 
                         {errorMsg && (
-                            <div className="text-red-500 text-sm font-medium">
-                                {errorMsg}
+                            <div className="p-4 bg-rose-500/10 border border-rose-500/20 rounded-xl">
+                                <p className="text-xs text-rose-500 text-center font-bold uppercase tracking-wider">
+                                    {errorMsg}
+                                </p>
                             </div>
                         )}
 
-                        <div className="pt-4 border-t border-gray-100 flex justify-end">
-                            <Button type="submit" disabled={loading} className="w-auto px-8">
-                                {loading ? "Saving changes..." : "Save Changes"}
+                        <div className="pt-8 border-t border-border/40 flex justify-end">
+                            <Button type="submit" disabled={loading} className="w-full md:w-auto px-10 py-4 font-black shadow-xl shadow-primary/20">
+                                {loading ? "Saving changes..." : "Save Profile Details"}
                             </Button>
                         </div>
                     </form>
@@ -155,20 +168,20 @@ const UserProfileSettings = () => {
 
             {/* Success Modal */}
             {showSuccess && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-                    <div className="bg-white rounded-3xl w-full max-w-sm shadow-2xl p-6 text-center animate-in zoom-in-95 duration-200">
-                        <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-                            <CheckCircle className="w-8 h-8 text-green-600" />
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-background/80 backdrop-blur-md animate-in fade-in duration-300">
+                    <div className="bg-card border border-border rounded-[3rem] w-full max-w-sm shadow-[0_32px_64px_-16px_rgba(0,0,0,0.3)] p-10 text-center animate-in zoom-in-95 duration-300">
+                        <div className="mx-auto w-20 h-20 bg-emerald-500/10 rounded-[2rem] flex items-center justify-center mb-6 border border-emerald-500/20 shadow-sm shadow-emerald-500/5">
+                            <CheckCircle className="w-10 h-10 text-emerald-500" />
                         </div>
-                        <h3 className="text-xl font-bold text-gray-900 mb-2">Profile Updated!</h3>
-                        <p className="text-gray-500 text-sm mb-6">
-                            Your profile details have been successfully saved to the database.
+                        <h3 className="text-2xl font-black text-foreground mb-3 tracking-tight">Profile Updated!</h3>
+                        <p className="text-muted-foreground text-sm font-medium mb-8 leading-relaxed">
+                            Your professional profile has been successfully updated and synced.
                         </p>
                         <Button
                             onClick={() => setShowSuccess(false)}
-                            className="w-full"
+                            className="w-full py-4 font-black shadow-lg"
                         >
-                            Continue
+                            Got it, Thanks!
                         </Button>
                     </div>
                 </div>

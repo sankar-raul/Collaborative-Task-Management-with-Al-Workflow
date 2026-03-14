@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Plus, FolderOpen, Calendar, Clock } from "lucide-react";
+import { Plus, FolderOpen, Calendar, Clock, LayoutGrid, List } from "lucide-react";
 import { useNavigate } from "react-router";
 import { api } from "../../utils/api";
 import { useUsers } from "../../context/users";
@@ -14,10 +14,7 @@ export const AdminProjects = () => {
     const [error, setError] = useState<string | null>(null);
     const { systemUsers, isLoading: isUsersLoading } = useUsers();
     const [selectedMembers, setSelectedMembers] = useState<{ user: string, role: string }[]>([]);
-    // const [openMenuId, setOpenMenuId] = useState<string | null>(null);
     const navigate = useNavigate();
-
-
 
     const fetchData = async () => {
         try {
@@ -51,7 +48,6 @@ export const AdminProjects = () => {
         try {
             const res = await api.projects.createProject(payload);
             if (res.success) {
-                // Refresh list
                 await fetchData();
                 setIsCreateModalOpen(false);
             } else {
@@ -81,84 +77,90 @@ export const AdminProjects = () => {
     if (loading) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1e5eb5]"></div>
+                <div className="animate-spin rounded-full h-10 w-10 border-4 border-primary/20 border-b-primary"></div>
             </div>
         );
     }
 
     if (error) {
-        return <div className="p-8 text-red-600 bg-red-50 rounded-lg max-w-7xl mx-auto">{error}</div>;
+        return (
+            <div className="p-8 max-w-7xl mx-auto">
+                <div className="p-6 bg-rose-500/10 text-rose-500 rounded-2xl border border-rose-500/20 font-bold shadow-sm">
+                    {error}
+                </div>
+            </div>
+        );
     }
 
     return (
-        <div className="p-8 max-w-7xl mx-auto">
-            <div className="flex justify-between items-center mb-8">
+        <div className="p-8 max-w-7xl mx-auto space-y-12 animate-in fade-in duration-500">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900 mb-2">Manage Projects</h1>
-                    <p className="text-gray-600">Overview of all system projects, assignments, and statuses.</p>
+                    <h1 className="text-4xl font-bold text-foreground tracking-tight mb-2">Project Control</h1>
+                    <p className="text-muted-foreground font-medium italic text-sm">Comprehensive governance of organizational initiatives and resource allocation.</p>
                 </div>
                 <button
                     onClick={() => setIsCreateModalOpen(true)}
-                    className="flex items-center px-4 py-2 bg-[#1e5eb5] text-white rounded-lg hover:bg-[#1a51a0] transition-colors shadow-sm"
+                    className="flex items-center px-6 py-3 bg-orange-500 text-white rounded-xl hover:bg-orange-600 active:scale-95 transition-all shadow-lg shadow-orange-500/20 font-bold uppercase tracking-[0.15em] text-[10px]"
                 >
-                    <Plus className="w-5 h-5 mr-2" />
-                    Create Project
+                    <Plus className="w-4 h-4 mr-2" />
+                    Initiate Project
                 </button>
             </div>
 
             {projects.length === 0 ? (
-                <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
-                    <FolderOpen className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-1">No projects yet</h3>
-                    <p className="text-gray-500 mb-4">Get started by creating your first system project.</p>
+                <div className="bg-card rounded-3xl border border-border p-20 text-center shadow-sm">
+                    <div className="w-20 h-20 bg-orange-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-orange-500/20">
+                        <FolderOpen className="w-10 h-10 text-orange-500/40" />
+                    </div>
+                    <h3 className="text-xl font-bold text-foreground mb-2">No active projects found</h3>
+                    <p className="text-muted-foreground max-w-md mx-auto mb-8 text-sm font-medium leading-relaxed">
+                        Currently there are no active operations. Start by initiating a new project to manage your team and tasks.
+                    </p>
                     <button
                         onClick={() => setIsCreateModalOpen(true)}
-                        className="inline-flex items-center px-4 py-2 bg-indigo-50 text-indigo-700 rounded-lg hover:bg-indigo-100 transition-colors font-medium"
+                        className="inline-flex items-center px-8 py-3 bg-secondary text-foreground rounded-xl hover:bg-secondary/80 transition-all font-bold uppercase tracking-wider text-[10px] border border-border"
                     >
-                        Create Project
+                        Create Your First Project
                     </button>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {projects.map((project) => (
                         <div key={project._id}
                             onClick={(e) => { e.stopPropagation(); navigate(`/admin/projects/${project._id}`); }}
-
-                            className="relative bg-white rounded-xl shadow-sm border border-gray-100 hover:border-[#1e5eb5]/30 transition-all group flex flex-col pt-8 hover:bg-indigo-50/30 ">
-
-
-                            <div className="p-6 flex-1 pt-2">
-                                <div className="flex justify-between items-start mb-4">
-                                    <div className="w-12 h-12 bg-indigo-50 rounded-lg flex items-center justify-center text-[#1e5eb5] group-hover:scale-110 transition-transform">
-                                        <FolderOpen className="w-6 h-6" />
-                                    </div>
-                                    <span className={`px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider ${(project.status || 'IN_PROGRESS') === 'COMPLETED' ? 'bg-green-100 text-green-700' :
-                                        (project.status || 'IN_PROGRESS') === 'IN_PROGRESS' ? 'bg-blue-100 text-blue-700' :
-                                            'bg-orange-100 text-orange-700'
-                                        }`}>
-                                        {(project.status || 'IN_PROGRESS').replace("_", " ")}
-                                    </span>
+                            className="bg-card rounded-3xl border border-border hover:border-orange-500/30 hover:shadow-xl hover:shadow-orange-500/5 transition-all group cursor-pointer p-6 flex flex-col relative"
+                        >
+                            <div className="flex justify-between items-start mb-8">
+                                <div className="w-12 h-12 bg-orange-500/10 rounded-xl flex items-center justify-center text-orange-600 border border-orange-500/20 group-hover:scale-110 transition-transform">
+                                    <FolderOpen className="w-6 h-6" />
                                 </div>
-                                <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-1" title={project.projectName}>
-                                    {project.projectName}
-                                </h3>
-                                <p className="text-gray-500 text-sm line-clamp-2 h-10 mb-6">
-                                    {project.description || "No description provided for this project."}
-                                </p>
+                                <span className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border ${
+                                    (project.status || 'IN_PROGRESS') === 'COMPLETED' 
+                                        ? 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20' 
+                                        : 'bg-orange-500/10 text-orange-600 border-orange-500/20'
+                                }`}>
+                                    {(project.status || 'IN_PROGRESS').replace("_", " ")}
+                                </span>
+                            </div>
+                            
+                            <h3 className="text-xl font-bold text-foreground mb-3 tracking-tight group-hover:text-orange-600 transition-colors line-clamp-1">
+                                {project.projectName}
+                            </h3>
+                            <p className="text-muted-foreground text-xs font-medium line-clamp-2 h-10 mb-8 leading-relaxed">
+                                {project.description || "No project description available in the registry at this time."}
+                            </p>
 
-                                <div className="space-y-3">
-                                    <div className="flex items-center text-sm text-gray-600">
-                                        <Calendar className="w-4 h-4 mr-2 text-gray-400" />
-                                        Created: {new Date(project.createdAt).toLocaleDateString()}
-                                    </div>
-                                    <div className="flex items-center text-sm text-gray-600">
-                                        <Clock className="w-4 h-4 mr-2 text-gray-400" />
-                                        Members: {project.members?.length || 0}
-                                    </div>
+                            <div className="space-y-3 pt-6 border-t border-border">
+                                <div className="flex items-center text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">
+                                    <Calendar className="w-3.5 h-3.5 mr-3 text-muted-foreground/30" />
+                                    Deployment: <span className="ml-2 text-foreground/80">{new Date(project.createdAt).toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: 'numeric' })}</span>
+                                </div>
+                                <div className="flex items-center text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest">
+                                    <Clock className="w-3.5 h-3.5 mr-3 text-muted-foreground/30" />
+                                    Task Force: <span className="ml-2 text-foreground/80">{project.members?.length || 0} Operators</span>
                                 </div>
                             </div>
-
-
                         </div>
                     ))}
                 </div>

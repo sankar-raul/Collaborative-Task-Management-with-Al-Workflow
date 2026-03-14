@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getAllUsers, getAsignedProjects, getUserProjectRole, getMemberById, getMyDetails, searchMembers, updateMember, approveUser, rejectUser } from "../controllers/member.controller"
+import { getAllUsers, getAsignedProjects, getUserProjectRole, getMemberById, getMyDetails, searchMembers, updateMember, approveMember, rejectMember } from "../controllers/member.controller"
 import managerAdminAuth from "../middleware/managerAdminAuth";
 
 const memberRoute = Router()
@@ -11,7 +11,7 @@ memberRoute.get("/me", getMyDetails) // get the details of the logged in user
 memberRoute.put("/me", updateMember) // update the details of the logged in user
 memberRoute.get("/search", searchMembers) // search for users by name or email with pagination
 memberRoute.get("/:id", getMemberById) // get the details of a specific user by id
-memberRoute.put("/:id/approve", managerAdminAuth, approveUser) // approve a user's registration (only for Manager and Admin)
-memberRoute.put("/:id/reject", managerAdminAuth, rejectUser) // reject a user's registration (only for Manager and Admin)
+memberRoute.patch("/:id/approve", managerAdminAuth, approveMember) // approve a user
+memberRoute.delete("/:id/reject", managerAdminAuth, rejectMember) // reject a user
 
 export default memberRoute;

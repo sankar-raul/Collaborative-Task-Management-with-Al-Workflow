@@ -7,6 +7,7 @@ export interface Member {
     availabilityHours: number;
     currentWorkload: number;
     createdAt: string;
+    isApproved: boolean;
 }
 
 export interface PaginationData {

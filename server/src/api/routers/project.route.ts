@@ -1,8 +1,9 @@
 import { Router } from "express";
-import { createProject, getProjects, getProjectById, updateProject, deleteProject, addProjectMember, removeProjectMember, getProjectMembers, updateProjectMemberRole, getTotalProjectsCount } from "../controllers/project.controller";
+import { createProject, getProjects, getProjectById, updateProject, deleteProject, addProjectMember, removeProjectMember, getProjectMembers, updateProjectMemberRole, getTotalProjectsCount, createProjectFromPdf } from "../controllers/project.controller";
 import adminAuth from "../middleware/adminAuth";
 import isValidProjectMember from "../middleware/isValidProjectMember";
 import memberRoleMiddleware from "../middleware/memberRole.";
+import { upload } from "../middleware/upload.middleware";
 const projectRouter = Router();
 
 projectRouter.post("/", adminAuth, createProject); // Only Admin can create a project
@@ -15,5 +16,9 @@ projectRouter.post("/:id/members", memberRoleMiddleware("Manager"), addProjectMe
 projectRouter.delete("/:id/members", memberRoleMiddleware("Manager"), removeProjectMember); // Only Managers and Admin can remove members from a project
 projectRouter.get("/:id/members", isValidProjectMember, getProjectMembers) // Only project members can view project members
 projectRouter.put("/:id/members", memberRoleMiddleware("Manager"), updateProjectMemberRole) // Only Managers and Admin can update project member roles
+
+
+projectRouter.post("/create", upload.single("pdf"), createProjectFromPdf);
+
 
 export default projectRouter;

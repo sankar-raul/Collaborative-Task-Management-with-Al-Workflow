@@ -1,93 +1,135 @@
 import { NavLink } from "react-router-dom";
+import { LayoutDashboard, LogOut, Settings, ChevronLeft, ChevronRight, Users, FolderOpen, Briefcase } from "lucide-react";
 import { useAuth } from "../../context/auth";
-import {
-    LayoutDashboard,
-    FolderOpen,
-    LogOut,
-    Users,
-    UserCircle,
-    Settings,
-} from "lucide-react";
 
-export default function Sidebar() {
-    const { member, logout } = useAuth();
+interface SidebarProps {
+  collapsed?: boolean;
+  onToggle?: () => void;
+}
 
-    const getNavLinks = () => {
-        const baseLinks = [
-            { name: "Dashboard", path: "/", icon: LayoutDashboard },
-        ];
+export default function Sidebar({ collapsed = false, onToggle }: SidebarProps) {
+  const { member, logout } = useAuth();
 
-        let roleLinks: any[] = [];
+  const getNavLinks = () => {
+    const baseLinks = [
+      { name: "Dashboard", path: "/", icon: LayoutDashboard },
+    ];
 
-        if (member?.role === "Admin") {
-            roleLinks = [
-                { name: "Users & Roles", path: "/users", icon: Users },
-                { name: "Manage Projects", path: "/admin/projects", icon: FolderOpen },
-            ];
-        } else if (member?.role === "User") {
-            roleLinks = [
-                { name: "My Projects", path: "/projects", icon: FolderOpen },
-                { name: "My Tasks", path: "/tasks", icon: LayoutDashboard }, // Using LayoutDashboard for Tasks icon, or could use another
-            ];
-        }
+    let roleLinks: any[] = [];
 
-        const finalLinks = [...baseLinks, ...roleLinks];
+    if (member?.role === "Admin") {
+      roleLinks = [
+        { name: "Users & Roles", path: "/users", icon: Users },
+        { name: "Manage Projects", path: "/admin/projects", icon: FolderOpen },
+      ];
+    } else if (member?.role === "User") {
+      roleLinks = [
+        { name: "My Projects", path: "/projects", icon: FolderOpen },
+        { name: "My Tasks", path: "/tasks", icon: Briefcase },
+      ];
+    }
 
-        // Show Settings for all roles
-        finalLinks.push({ name: "Settings", path: "/settings", icon: Settings });
+    const finalLinks = [...baseLinks, ...roleLinks];
+    finalLinks.push({ name: "Settings", path: "/settings", icon: Settings });
 
-        return finalLinks;
-    };
+    return finalLinks;
+  };
 
-    const navLinks = getNavLinks();
+  const navLinks = getNavLinks();
 
-    return (
-        <aside className="w-64 bg-white h-full flex flex-col border-r border-gray-100">
-            {/* Brand logo area */}
-            <div className="h-16 flex items-center px-6 border-b border-transparent">
-                <div className="flex items-center space-x-2">
-                    <div className="w-8 h-8 bg-[#1e5eb5] rounded-lg flex items-center justify-center">
-                        <svg
-                            className="w-5 h-5 text-white"
-                            fill="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path d="M3 13h8V3H3v10zm10 8h8V11h-8v10zM3 21h8v-6H3v6zm10-18v6h8V3h-8z" />
-                        </svg>
-                    </div>
-                    <span className="text-xl font-bold text-[#1e5eb5]">Taskflow AI</span>
-                </div>
-            </div>
+  return (
+    <aside 
+      className={`h-full relative border-r border-border bg-card flex flex-col transition-all duration-300 ease-in-out ${
+        collapsed ? "w-20" : "w-64"
+      } hidden md:flex`}
+    >
+      {/* Toggle button */}
+      {onToggle && (
+        <button
+          onClick={onToggle}
+          className="absolute -right-3 top-12 z-20 w-6 h-6 rounded-full bg-card border border-border flex items-center justify-center hover:bg-secondary text-muted-foreground hover:text-foreground transition-all duration-200 shadow-sm"
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+        >
+          {collapsed ? (
+            <ChevronRight className="w-3.5 h-3.5" />
+          ) : (
+            <ChevronLeft className="w-3.5 h-3.5" />
+          )}
+        </button>
+      )}
 
-            {/* Navigation Links */}
-            <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
-                {navLinks.map((link) => (
-                    <NavLink
-                        key={link.name}
-                        to={link.path}
-                        className={({ isActive }) =>
-                            `flex items-center px-4 py-3 rounded-lg text-sm font-medium transition-colors ${isActive
-                                ? "bg-[#ebf0fa] text-[#1e5eb5]"
-                                : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                            }`
-                        }
-                    >
-                        <link.icon className="w-5 h-5 mr-3" />
-                        {link.name}
-                    </NavLink>
-                ))}
-            </nav>
+      {/* Logo */}
+      <div className={`h-16 flex items-center border-b border-border px-4 mb-2 ${collapsed ? "justify-center" : "gap-3"}`}>
+        <div className="bg-primary/10 p-2 rounded-xl shrink-0 transition-colors">
+          <div className="w-6 h-6 bg-primary rounded-md flex items-center justify-center shadow-sm">
+            <svg
+              className="w-4 h-4 text-primary-foreground"
+              fill="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path d="M3 13h8V3H3v10zm10 8h8V11h-8v10zM3 21h8v-6H3v6zm10-18v6h8V3h-8z" />
+            </svg>
+          </div>
+        </div>
+        {!collapsed && (
+          <span className="font-bold text-lg tracking-tight text-foreground truncate">
+            Taskflow AI
+          </span>
+        )}
+      </div>
 
-            {/* Sign Out Button */}
-            <div className="p-4 border-t border-gray-200">
-                <button
-                    onClick={logout}
-                    className="flex items-center w-full px-4 py-4 text-sm font-medium text-gray-600 rounded-lg hover:bg-red-50 hover:text-red-900 transition-colors"
-                >
-                    <LogOut className="w-5 h-5 mr-3" />
-                    Sign Out
-                </button>
-            </div>
-        </aside>
-    );
+      {/* Navigation */}
+      <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto w-full custom-scrollbar">
+        {!collapsed && (
+          <div className="text-[10px] font-bold text-muted-foreground/50 uppercase tracking-[0.2em] mb-4 px-3">
+            Menu
+          </div>
+        )}
+        
+        {navLinks.map((link) => (
+          <NavLink
+            key={link.name}
+            to={link.path}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-3 py-2.5 rounded text-sm font-medium transition-all duration-200 mb-2 group relative ${
+                isActive
+                  ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                  : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+              } ${collapsed ? "justify-center" : ""}`
+            }
+            title={collapsed ? link.name : undefined}
+          >
+            <link.icon className={`w-5 h-5 shrink-0 transition-transform duration-200 ${collapsed ? "" : "group-hover:scale-110"}`} />
+            {!collapsed && <span className="truncate">{link.name}</span>}
+            
+            {collapsed && (
+               <div className="absolute left-full ml-2 px-2 py-1 bg-popover text-popover-foreground text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50 shadow-lg border border-border">
+                {link.name}
+               </div>
+            )}
+          </NavLink>
+        ))}
+      </nav>
+
+      {/* Footer / User Action */}
+      <div className="p-3 border-t border-border">
+        <button
+          className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-destructive hover:bg-destructive/10 transition-all duration-200 group relative ${
+            collapsed ? "justify-center" : ""
+          }`}
+          title={collapsed ? "Logout" : undefined}
+          onClick={logout}
+        >
+          <LogOut className={`w-5 h-5 shrink-0 transition-transform duration-200 ${collapsed ? "" : "group-hover:-translate-x-1"}`} />
+          {!collapsed && <span>Logout</span>}
+          
+          {collapsed && (
+             <div className="absolute left-full ml-2 px-2 py-1 bg-popover text-popover-foreground text-xs rounded opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all whitespace-nowrap z-50 shadow-lg border border-border">
+              Logout
+             </div>
+          )}
+        </button>
+      </div>
+    </aside>
+  );
 }

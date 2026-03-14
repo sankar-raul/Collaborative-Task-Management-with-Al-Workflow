@@ -50,6 +50,26 @@ export const post = async (
   }
 };
 
+export const patch = async (
+  endPoint: string,
+  payload: object,
+  token?: string
+): Promise<any> => {
+  try {
+    if (!token) {
+      const response = await API.patch<any>(endPoint, payload);
+      return response.data;
+    } else {
+      const response = await API.patch<any>(endPoint, payload, {
+        headers: { ...headers, Authorization: `Bearer ${token}` },
+      });
+      return response.data;
+    }
+  } catch (error: any) {
+    throw new Error(error.response?.data?.message || "Something Went Wrong");
+  }
+};
+
 export const put = async (
   endPoint: string,
   payload: object,

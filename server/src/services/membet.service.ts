@@ -92,27 +92,24 @@ class MemberService {
     return member;
   }
 
-  static async approveUser(userId: string) {
-    const user = await UserModel.findByIdAndUpdate(
-      userId,
+  static async approveMember(memberId: string) {
+    const member = await UserModel.findByIdAndUpdate(
+      memberId,
       { isApproved: true },
       { returnDocument: "after" },
     );
-    if (!user) {
-      throw new Error("User not found");
-    } else if (user.isApproved) {
-      throw new Error("User is already approved");
+    if (!member) {
+      throw new Error("Member not found");
     }
-    return user;
+    return member;
   }
 
-  static async rejectUser(userId: string) {
-    const user = await UserModel.findByIdAndDelete(userId);
-    if (!user) {
-      throw new Error("User not found");
-    } else if (user.isApproved) {
-      throw new Error("Cannot reject an already approved user");
+  static async rejectMember(memberId: string) {
+    const member = await UserModel.findByIdAndDelete(memberId);
+    if (!member) {
+      throw new Error("Member not found");
     }
+    return member;
   }
 }
 

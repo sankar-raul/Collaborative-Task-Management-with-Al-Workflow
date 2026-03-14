@@ -114,19 +114,26 @@ export const updateMember = async (req: Request, res: Response) => {
   }
 };
 
-export const approveUser = async (req: Request, res: Response) => {
-    try {
+export const approveMember = async (req: Request, res: Response) => {
+  try {
+    const memberId = req.params.id as string;
+    const updatedMember = await MemberService.approveMember(memberId);
+    res.status(200).json({ success: true, data: updatedMember });
+    return;
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+    return;
+  }
+};
 
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-        return;
-    }};
-
-export const rejectUser = async (req: Request, res: Response) => {
-    try {
-
-    } catch (error) {
-        res.status(500).json({ success: false, message: error.message });
-        return;
-    }
+export const rejectMember = async (req: Request, res: Response) => {
+  try {
+    const memberId = req.params.id as string;
+    const deletedMember = await MemberService.rejectMember(memberId);
+    res.status(200).json({ success: true, data: deletedMember });
+    return;
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+    return;
+  }
 };

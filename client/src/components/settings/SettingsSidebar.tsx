@@ -18,38 +18,36 @@ const SettingsSidebar: React.FC<SettingsSidebarProps> = ({ activeTab, setActiveT
     ];
 
     return (
-        <aside className="w-full md:w-64 md:h-full bg-white border-r border-gray-100 flex flex-col pt-6 md:overflow-y-auto">
-            <div className="px-6 mb-8">
-                <h2 className="text-xl font-semibold flex items-center text-gray-900 border-b pb-4">
-                    <span className="font-bold text-gray-800">Settings</span>
-                    <span className="mx-2 text-gray-400 font-normal">›</span>
-                    <span className="text-sm text-gray-500 font-normal">{activeTab}</span>
+        <aside className="w-full md:w-72 md:h-full bg-card flex flex-col pt-8 md:overflow-y-auto border-r border-border/50">
+            <div className="px-8 mb-10">
+                <h2 className="text-2xl font-black text-foreground flex items-center gap-3">
+                    <span className="tracking-tighter">Settings</span>
+                    <span className="text-muted-foreground/30 font-thin">/</span>
+                    <span className="text-sm text-primary font-bold">{activeTab}</span>
                 </h2>
             </div>
 
-            <div className="px-4 mb-4 md:mb-6">
-                <p className="px-4 text-xs font-semibold text-gray-400 tracking-wider mb-2 uppercase hidden md:block">
-                    Account
+            <div className="px-4 mb-4 md:mb-8">
+                <p className="px-6 text-[10px] font-black text-muted-foreground/50 tracking-[0.2em] mb-4 uppercase hidden md:block">
+                    Personal Settings
                 </p>
-                <ul className="flex overflow-x-auto md:flex-col md:space-y-1 pb-2 md:pb-0 hide-scrollbar">
+                <ul className="flex overflow-x-auto md:flex-col gap-2 pb-4 md:pb-0 px-2 scrollbar-none">
                     {accountLinks.map((link) => (
                         <li key={link.name} className="flex-shrink-0 md:w-full">
                             <button
                                 onClick={() => setActiveTab(link.name)}
-                                className={`flex items-center px-4 py-2 rounded-lg text-sm font-medium transition-colors ${activeTab === link.name
-                                    ? "bg-gray-100 text-gray-900"
-                                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                                className={`flex items-center w-full px-6 py-3.5 rounded-2xl text-sm font-bold transition-all ${activeTab === link.name
+                                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-[1.02]"
+                                    : "text-muted-foreground hover:bg-secondary hover:text-foreground"
                                     }`}
                             >
-                                <link.icon className="w-4 h-4 mr-2 md:mr-3 text-gray-500" />
+                                <link.icon className={`w-5 h-5 mr-4 transition-colors ${activeTab === link.name ? "text-primary-foreground" : "text-muted-foreground/60"}`} />
                                 <span className="whitespace-nowrap">{link.name}</span>
                             </button>
                         </li>
                     ))}
                 </ul>
             </div>
-
-
         </aside>
     );
 };

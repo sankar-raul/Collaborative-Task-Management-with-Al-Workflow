@@ -64,8 +64,8 @@ const UserProjectDetails = () => {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-100">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+            <div className="flex items-center justify-center min-h-[400px]">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
             </div>
         );
     }
@@ -73,10 +73,10 @@ const UserProjectDetails = () => {
     if (error || !project) {
         return (
             <div className="p-8 max-w-5xl mx-auto">
-                <button onClick={() => navigate(-1)} className="flex items-center text-gray-500 hover:text-gray-900 mb-6">
-                    <ArrowLeft className="w-5 h-5 mr-2" /> Back
+                <button onClick={() => navigate(-1)} className="flex items-center text-muted-foreground hover:text-foreground mb-6 transition-colors font-bold gap-2">
+                    <ArrowLeft className="w-5 h-5" /> Back
                 </button>
-                <div className="bg-red-50 text-red-600 p-6 rounded-2xl border border-red-100 italic">
+                <div className="bg-rose-500/10 text-rose-500 p-8 rounded-3xl border border-rose-500/20 italic font-medium flex items-center justify-center shadow-xs">
                     {error || "Project not found"}
                 </div>
             </div>
@@ -84,9 +84,9 @@ const UserProjectDetails = () => {
     }
 
     return (
-        <div className="px-8 py-3 max-w-6xl mx-auto space-y-8 animate-in fade-in duration-500">
-            <button onClick={() => navigate(-1)} className="flex items-center text-gray-500 hover:text-gray-900 transition-colors">
-                <ArrowLeft className="w-5 h-5 mr-2" /> Back to Dashboard
+        <div className="px-8 py-6 max-w-7xl mx-auto space-y-8 animate-in fade-in duration-500">
+            <button onClick={() => navigate(-1)} className="flex items-center text-muted-foreground hover:text-foreground transition-all hover:-translate-x-1 font-bold gap-2">
+                <ArrowLeft className="w-5 h-5" /> Back to Projects
             </button>
 
             <ProjectHeader
@@ -96,13 +96,16 @@ const UserProjectDetails = () => {
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 <div className="lg:col-span-8 space-y-6">
-                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 mt-6">
-                        <div className="flex justify-between items-center mb-6">
-                            <h3 className="text-lg font-semibold text-gray-900">Recent Tasks</h3>
+                    <div className="bg-card rounded-3xl border border-border shadow-sm p-8">
+                        <div className="flex justify-between items-center mb-8">
+                            <div>
+                                <h3 className="text-xl font-bold text-foreground">Recent Tasks</h3>
+                                <p className="text-xs text-muted-foreground mt-1 font-medium">Manage and monitor progress of project tasks.</p>
+                            </div>
                             {isManager && (
                                 <button
                                     onClick={() => setIsCreateModalOpen(true)}
-                                    className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-bold transition-all shadow-md shadow-indigo-100 active:scale-95"
+                                    className="flex items-center gap-2 bg-primary text-primary-foreground px-5 py-2.5 rounded-xl text-sm font-bold transition-all shadow-md shadow-primary/10 active:scale-95 hover:opacity-90"
                                 >
                                     <Plus size={18} /> Create Task
                                 </button>
@@ -110,12 +113,12 @@ const UserProjectDetails = () => {
                         </div>
 
                         {tasks.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center py-12 text-center text-gray-500">
-                                <p className="text-sm font-medium">No tasks created</p>
-                                <p className="text-xs mt-1">Tasks will appear here when added</p>
+                            <div className="flex flex-col items-center justify-center py-20 text-center bg-secondary/30 rounded-2xl border border-dashed border-border/60">
+                                <p className="text-sm font-bold text-foreground">No tasks created yet</p>
+                                <p className="text-xs mt-1 text-muted-foreground">Tasks will appear here when you add them to the project.</p>
                             </div>
                         ) : (
-                            <div className="space-y-5">
+                            <div className="space-y-4">
                                 {tasks.map((task) => (
                                     <TaskItem
                                         key={task._id}
