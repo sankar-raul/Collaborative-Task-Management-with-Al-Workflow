@@ -78,26 +78,22 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
         e.preventDefault();
         onSubmit({
             ...formData,
-            members: selectedMembers
+            members: selectedMembers,
+            isAI: !!parsedText
         });
     };
 
     return (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-6 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
             <div className="bg-card rounded-xl w-full max-w-2xl shadow-2xl overflow-hidden border border-border/50 animate-in zoom-in-95 duration-300">
-                <div className="p-6 border-b border-border/50 flex justify-between items-center bg-secondary/30 relative">
-                    <div className="flex items-center gap-4">
-                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${step === 1 ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/20' : 'bg-emerald-500 text-white'}`}>
-                            {step === 1 ? <Upload size={20} /> : <Check size={20} />}
-                        </div>
-                        <div>
-                            <h2 className="text-xl font-bold text-foreground tracking-tight">
-                                {step === 1 ? "Phase I: Data Ingestion" : "Phase II: Configuration"}
-                            </h2>
-                            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60">
-                                {step === 1 ? "Upload Project Protocol (PDF)" : "Configure Mission Parameters"}
-                            </p>
-                        </div>
+                <div className="p-7 sticky top-0 bg-card/80 backdrop-blur-xl z-10 border-b border-border/50 flex justify-between items-center relative">
+                    <div>
+                        <h3 className="text-xl font-extrabold text-foreground tracking-tight">
+                            {step === 1 ? "Initialize Mission" : "Configure Deployment"}
+                        </h3>
+                        <p className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-[0.2em] mt-1">
+                            {step === 1 ? "Phase I: Intelligence Gathering" : "Phase II: Vector Alignment"}
+                        </p>
                     </div>
                     <button
                         onClick={onClose}
@@ -121,8 +117,8 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                                         <div className="w-16 h-16 bg-orange-500/10 rounded-2xl flex items-center justify-center text-orange-500 mb-6 group-hover:scale-110 transition-transform">
                                             <Upload size={32} />
                                         </div>
-                                        <h3 className="text-lg font-bold text-foreground mb-2">Upload Mission Briefing</h3>
-                                        <p className="text-xs text-muted-foreground text-center max-w-xs mb-8 font-medium">
+                                        <h3 className="text-lg font-extrabold text-foreground mb-2">Upload Mission Briefing</h3>
+                                        <p className="text-[13px] text-muted-foreground text-center max-w-xs mb-8 font-medium leading-relaxed">
                                             Provide the project documentation in PDF format (Max 2MB). Our AI will analyze the content for deployment.
                                         </p>
                                         <input

@@ -29,10 +29,10 @@ export const TeamMembersList = ({
         <div className="bg-card rounded-3xl border border-border shadow-sm overflow-hidden animate-in fade-in duration-500">
             <div className="px-8 py-6 border-b border-border flex justify-between items-center bg-muted/30">
                 <div>
-                    <h3 className="text-lg font-bold text-foreground flex items-center gap-3">
+                    <h3 className="text-lg font-[800] text-foreground flex items-center gap-3 tracking-[-0.01em]">
                         <Users className="w-5 h-5 text-primary" /> Project Members
                     </h3>
-                    <p className="text-xs text-muted-foreground mt-0.5 font-medium">Collaborators and access roles.</p>
+                    <p className="text-[9px] text-muted-foreground mt-1 font-black uppercase tracking-[0.2em] opacity-30">Collaborators and access roles</p>
                 </div>
                 {isManager && onAdd && (
                     <button
@@ -49,9 +49,9 @@ export const TeamMembersList = ({
                 <table className="w-full text-left border-collapse">
                     <thead>
                         <tr className="bg-muted/10 border-b border-border">
-                            <th className="px-6 py-4 font-bold text-muted-foreground text-[10px] uppercase tracking-wider">Member</th>
-                            <th className="px-6 py-4 font-bold text-muted-foreground text-[10px] uppercase tracking-wider">Role</th>
-                            <th className="px-6 py-4 font-bold text-muted-foreground text-[10px] uppercase tracking-wider text-right">Actions</th>
+                            <th className="px-6 py-4 font-black text-muted-foreground text-[8px] uppercase tracking-[0.25em]">Member</th>
+                            <th className="px-6 py-4 font-black text-muted-foreground text-[8px] uppercase tracking-[0.25em]">Role</th>
+                            <th className="px-6 py-4 font-black text-muted-foreground text-[8px] uppercase tracking-[0.25em] text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-border">
@@ -80,11 +80,10 @@ export const TeamMembersList = ({
                                                 <option value="User">User</option>
                                             </select>
                                         ) : (
-                                            <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border transition-all ${
-                                                member.role === 'Manager' 
-                                                    ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' 
-                                                    : 'bg-primary/10 text-primary border-primary/20'
-                                            }`}>
+                                            <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border transition-all ${member.role === 'Manager'
+                                                ? 'bg-amber-500/10 text-amber-600 border-amber-500/20'
+                                                : 'bg-primary/10 text-primary border-primary/20'
+                                                }`}>
                                                 {member.role}
                                             </span>
                                         )}
@@ -96,7 +95,7 @@ export const TeamMembersList = ({
                                                     <button
                                                         onClick={() => onApprove(member.user?._id)}
                                                         disabled={actionLoading || loadingId === member.user?._id}
-                                                        className="px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-all disabled:opacity-50"
+                                                        className="px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-all "
                                                     >
                                                         Approve
                                                     </button>
@@ -113,7 +112,7 @@ export const TeamMembersList = ({
                                             {isManager && onRemove && member.user?._id !== currentUserId && (
                                                 <button
                                                     onClick={() => onRemove(member)}
-                                                    className="p-2 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 rounded-lg opacity-0 group-hover:opacity-100 transition-all"
+                                                    className="p-2 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 rounded-lg opacity-100 transition-all"
                                                     title="Remove"
                                                 >
                                                     <Trash2 size={16} />

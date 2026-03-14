@@ -112,8 +112,8 @@ export const AdminProjectDetails = () => {
                                     <LayoutGrid className="w-6 h-6 text-orange-600" />
                                 </div>
                                 <div>
-                                    <h3 className="text-2xl font-bold text-foreground tracking-tight">Project Backlog</h3>
-                                    <p className="text-[10px] uppercase font-bold tracking-widest text-muted-foreground/60 mt-0.5">Vector Management Protocol</p>
+                                    <h3 className="text-xl font-[800] text-foreground tracking-[-0.02em]">Project Backlog</h3>
+                                    <p className="text-[9px] uppercase font-black tracking-[0.25em] text-muted-foreground/30 mt-1">Vector Management Protocol</p>
                                 </div>
                             </div>
                             <button
@@ -192,6 +192,7 @@ export const AdminProjectDetails = () => {
                     const res = await handleUpdateProject({
                         projectName: formData.get("projectName") as string,
                         description: formData.get("description") as string,
+                        deadline: formData.get("deadline") as string,
                     });
                     if (res && res.success) setIsEditProjectModalOpen(false);
                     else if (res) alert(res.message);

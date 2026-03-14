@@ -54,13 +54,13 @@ export const ProjectModals: React.FC<ProjectModalsProps> = ({
             {isEditProjectModalOpen && project && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
                     <div className="bg-card rounded-[2.5rem] w-full max-w-lg shadow-2xl overflow-hidden border border-border/50 animate-in zoom-in-95 duration-300">
-                <div className="px-10 py-8 border-b border-border/50 flex justify-between items-center bg-secondary/30 relative">
-                    <div className="absolute top-0 left-0 w-1 h-full bg-orange-500" />
-                    <div>
-                        <h3 className="text-2xl font-bold text-foreground tracking-tight flex items-center">
-                            <Edit3 className="w-6 h-6 mr-3 text-orange-600" />
-                            Modify Operation
-                        </h3>
+                        <div className="px-10 py-8 border-b border-border/50 flex justify-between items-center bg-secondary/30 relative">
+                            <div className="absolute top-0 left-0 w-1 h-full bg-orange-500" />
+                            <div>
+                                <h3 className="text-2xl font-bold text-foreground tracking-tight flex items-center">
+                                    <Edit3 className="w-6 h-6 mr-3 text-orange-600" />
+                                    Modify Operation
+                                </h3>
                                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 mt-1">Update Core Project Parameters</p>
                             </div>
                             <button onClick={() => setIsEditProjectModalOpen(false)} className="text-muted-foreground/40 hover:text-foreground hover:bg-secondary p-2.5 rounded-2xl transition-all border border-transparent hover:border-border/60">
@@ -83,6 +83,15 @@ export const ProjectModals: React.FC<ProjectModalsProps> = ({
                                     name="description"
                                     defaultValue={project.description}
                                     className="w-full px-6 py-4 bg-secondary/50 border border-border/50 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none h-32 resize-none transition-all font-bold text-foreground"
+                                />
+                            </div>
+                            <div className="space-y-2">
+                                <label className="flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/80 ml-1">Operational Deadline</label>
+                                <input
+                                    type="date"
+                                    name="deadline"
+                                    defaultValue={project.deadline ? new Date(project.deadline).toISOString().split('T')[0] : ""}
+                                    className="w-full px-6 py-4 bg-secondary/50 border border-border/50 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-bold text-foreground"
                                 />
                             </div>
                             <div className="flex gap-4 pt-4">
@@ -171,31 +180,31 @@ export const ProjectModals: React.FC<ProjectModalsProps> = ({
             {/* Add Member Modal */}
             {isAddMemberModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
-                    <div className="bg-card rounded-[3rem] w-full max-w-xl shadow-2xl overflow-hidden border border-border/50 animate-in zoom-in-95 duration-300">
-                        <div className="px-10 py-8 border-b border-border/50 flex justify-between items-center bg-secondary/30 relative">
-                            <div className="absolute top-0 left-0 w-1 h-full bg-orange-500" />
+                    <div className="bg-card rounded-xl w-full max-w-xl shadow-2xl overflow-hidden border border-border/50 animate-in zoom-in-95 duration-300">
+                        <div className="px-8 py-6 border-b border-border/50 flex justify-between items-center bg-secondary/30 relative">
+
                             <div>
-                                <h3 className="text-2xl font-bold text-foreground tracking-tight flex items-center">
-                                    <UserPlus className="w-6 h-6 mr-3 text-orange-600" />
+                                <h3 className="text-xl font-bold text-foreground tracking-tight flex items-center">
+                                    <UserPlus className="w-5 h-5 mr-3 text-orange-600" />
                                     Assign Personnel
                                 </h3>
-                                <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 mt-1">Enlist Operators to Task Force</p>
+                                <p className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/60 mt-0.5">Enlist Operators to Task Force</p>
                             </div>
-                            <button onClick={() => setIsAddMemberModalOpen(false)} className="text-muted-foreground/40 hover:text-foreground hover:bg-secondary p-2.5 rounded-2xl transition-all border border-transparent hover:border-border/60">
-                                <X size={20} />
+                            <button onClick={() => setIsAddMemberModalOpen(false)} className="text-muted-foreground/40 hover:text-foreground hover:bg-secondary p-2 rounded-xl transition-all border border-transparent hover:border-border/60">
+                                <X size={18} />
                             </button>
                         </div>
 
-                        <div className="p-10 space-y-6">
+                        <div className="p-8 space-y-5">
                             {/* Search Input */}
                             <div className="relative">
-                                <div className="absolute left-5 top-1/2 -translate-y-1/2 text-primary/40">
-                                    <Search size={22} />
+                                <div className="absolute left-4 top-1/2 -translate-y-1/2 text-primary/40">
+                                    <Search size={18} />
                                 </div>
                                 <input
                                     type="text"
                                     placeholder="Scan identity or communication matrix..."
-                                    className="w-full px-6 py-4 pl-14 bg-secondary/50 border border-border/50 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-bold text-foreground placeholder:text-muted-foreground/30"
+                                    className="w-full px-5 py-3 pl-12 bg-secondary/50 border border-border/50 rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-bold text-foreground placeholder:text-muted-foreground/30 text-sm"
                                     onChange={async (e) => {
                                         const query = e.target.value;
                                         setSearchQuery(query);
@@ -246,38 +255,38 @@ export const ProjectModals: React.FC<ProjectModalsProps> = ({
                                         const isAlreadyMember = project?.members?.some((m: any) => m.user?._id === user._id);
 
                                         return (
-                                            <div key={user._id} className="flex items-center justify-between p-5 bg-card/50 border border-border/40 rounded-[1.5rem] hover:bg-card hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all group">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-black text-base border border-primary/20 group-hover:scale-110 transition-transform">
+                                            <div key={user._id} className="flex items-center justify-between p-3.5 bg-card/50 border border-border/40 rounded-2xl hover:bg-card hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all group">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-black text-sm border border-primary/20 group-hover:scale-105 transition-transform">
                                                         {user.name.charAt(0)}
                                                     </div>
                                                     <div>
-                                                        <p className="text-sm font-black text-foreground">{user.name}</p>
-                                                        <p className="text-[10px] font-bold text-muted-foreground/60">{user.email}</p>
+                                                        <p className="text-xs font-black text-foreground leading-tight">{user.name}</p>
+                                                        <p className="text-[9px] font-bold text-muted-foreground/60">{user.email}</p>
                                                     </div>
                                                 </div>
-                                                <div className="flex gap-2">
+                                                <div className="flex gap-1.5">
                                                     {isAdmin ? (
-                                                        <div className="px-5 py-2 flex items-center gap-2 bg-rose-500/10 text-rose-500 font-black text-[10px] rounded-xl border border-rose-500/20 uppercase tracking-widest">
-                                                            <ShieldCheck className="w-3.5 h-3.5" /> High Alpha
+                                                        <div className="px-4 py-1.5 flex items-center gap-2 bg-rose-500/10 text-rose-500 font-black text-[9px] rounded-lg border border-rose-500/20 uppercase tracking-widest">
+                                                            <ShieldCheck className="w-3 h-3" /> Alpha
                                                         </div>
                                                     ) : isAlreadyMember ? (
-                                                        <div className="px-5 py-2 flex items-center gap-2 bg-emerald-500/10 text-emerald-500 font-black text-[10px] rounded-xl border border-emerald-500/20 uppercase tracking-widest">
+                                                        <div className="px-4 py-1.5 flex items-center gap-2 bg-emerald-500/10 text-emerald-500 font-black text-[9px] rounded-lg border border-emerald-500/20 uppercase tracking-widest">
                                                             Deployed
                                                         </div>
                                                     ) : (
-                                                        <div className="flex gap-2">
+                                                        <div className="flex gap-1.5">
                                                             <button
                                                                 onClick={() => handleAddMember(user._id, "Manager")}
                                                                 disabled={actionLoading}
-                                                                className="px-4 py-2 text-[10px] bg-amber-500/10 text-amber-500 font-black rounded-xl hover:bg-amber-500 hover:text-white transition-all disabled:opacity-50 uppercase tracking-widest border border-amber-500/20 active:scale-95"
+                                                                className="px-3 py-1.5 text-[9px] bg-amber-500/10 text-amber-500 font-black rounded-lg hover:bg-amber-500 hover:text-white transition-all disabled:opacity-50 uppercase tracking-widest border border-amber-500/20 active:scale-95"
                                                             >
                                                                 + Manager
                                                             </button>
                                                             <button
                                                                 onClick={() => handleAddMember(user._id, "User")}
                                                                 disabled={actionLoading}
-                                                                className="px-4 py-2 text-[10px] bg-primary/10 text-primary font-black rounded-xl hover:bg-primary hover:text-primary-foreground transition-all disabled:opacity-50 uppercase tracking-widest border border-primary/20 active:scale-95"
+                                                                className="px-3 py-1.5 text-[9px] bg-primary/10 text-primary font-black rounded-lg hover:bg-primary hover:text-primary-foreground transition-all disabled:opacity-50 uppercase tracking-widest border border-primary/20 active:scale-95"
                                                             >
                                                                 + Operator
                                                             </button>
@@ -289,8 +298,8 @@ export const ProjectModals: React.FC<ProjectModalsProps> = ({
                                     });
                                 })()}
                             </div>
-                            <div className="pt-4">
-                                <button onClick={() => setIsAddMemberModalOpen(false)} className="w-full py-5 px-10 bg-secondary/50 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-foreground hover:bg-secondary rounded-[2rem] border border-border/50 transition-all active:scale-95">
+                            <div className="pt-2">
+                                <button onClick={() => setIsAddMemberModalOpen(false)} className="w-full py-4 px-8 bg-secondary/50 text-[10px] font-black uppercase tracking-widest text-muted-foreground hover:text-foreground hover:bg-secondary rounded-2xl border border-border/50 transition-all active:scale-95">
                                     Close Personnel Matrix
                                 </button>
                             </div>

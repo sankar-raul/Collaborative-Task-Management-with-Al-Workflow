@@ -29,11 +29,11 @@ export const ProjectHeader = ({
             <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full -mr-32 -mt-32 blur-3xl" />
             
             {showActions && (
-                <div className="absolute top-8 right-8 flex gap-3 z-10">
+                <div className="absolute top-6 right-8 flex gap-3 z-30">
                     {onEdit && (
                         <button
-                            onClick={onEdit}
-                            className="flex items-center justify-center w-11 h-11 bg-primary/10 text-primary hover:bg-primary/20 rounded-xl transition-all shadow-sm border border-primary/20"
+                            onClick={(e) => { e.stopPropagation(); onEdit(); }}
+                            className="flex items-center justify-center w-10 h-10 bg-white dark:bg-card border border-border shadow-md text-muted-foreground hover:text-primary hover:border-primary/30 rounded-xl transition-all active:scale-90"
                             title="Edit Project"
                         >
                             <SquarePen className="w-5 h-5" />
@@ -41,8 +41,8 @@ export const ProjectHeader = ({
                     )}
                     {onDelete && (
                         <button
-                            onClick={onDelete}
-                            className="flex items-center justify-center w-11 h-11 bg-rose-500/10 text-rose-500 hover:bg-rose-500/20 rounded-xl transition-all shadow-sm border border-rose-500/20"
+                            onClick={(e) => { e.stopPropagation(); onDelete(); }}
+                            className="flex items-center justify-center w-10 h-10 bg-white dark:bg-card border border-border shadow-md text-muted-foreground hover:text-rose-500 hover:border-rose-500/30 rounded-xl transition-all active:scale-90"
                             title="Delete Project"
                         >
                             <Trash2 className="w-5 h-5" />
@@ -57,10 +57,10 @@ export const ProjectHeader = ({
                         <Briefcase className="w-8 h-8 text-primary" />
                     </div>
                     <div>
-                        <h1 className="text-4xl font-black text-foreground tracking-tight">
+                        <h1 className="text-4xl font-[800] text-foreground tracking-[-0.04em] leading-[1.1] mb-1">
                             {project.projectName}
                         </h1>
-                        <p className="text-lg text-muted-foreground mt-2 max-w-3xl leading-relaxed">
+                        <p className="text-base text-muted-foreground max-w-3xl leading-relaxed font-medium tracking-tight">
                             {project.description || "No project description provided"}
                         </p>
                     </div>
@@ -87,6 +87,19 @@ export const ProjectHeader = ({
                             {taskCount} Tasks
                         </span>
                     </div>
+
+                    {project.deadline && (
+                        <div className="flex items-center gap-2.5 bg-amber-500/10 px-4 py-2 rounded-2xl text-amber-500 font-bold border border-amber-500/20 text-sm shadow-xs">
+                            <span className="text-[10px] uppercase tracking-widest opacity-60">Deadline:</span>
+                            <span>
+                                {new Date(project.deadline).toLocaleDateString(undefined, {
+                                    day: 'numeric',
+                                    month: 'short',
+                                    year: 'numeric'
+                                })}
+                            </span>
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

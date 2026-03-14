@@ -29,7 +29,7 @@ class MemberService {
   }
 
   static async getMemberById(memberId: string) {
-    const member = await UserModel.findById(memberId);
+    const member = await UserModel.findById(memberId).populate("stacks");
     if (!member) {
       throw new Error("Member not found");
     }

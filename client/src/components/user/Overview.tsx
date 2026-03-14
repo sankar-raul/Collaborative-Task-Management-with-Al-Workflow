@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Phone, Briefcase, MapPin, Edit2, ChevronRight, X } from 'lucide-react';
+import { Mail, Phone, Briefcase, MapPin, Edit2, ChevronRight, X, Cpu } from 'lucide-react';
 import { api } from '../../utils/api';
 import type { Task } from '../../@types/interface/TasksInterface';
 import type { Project } from '../../@types/interface/ProjectInterface';
@@ -106,14 +106,37 @@ const Overview: React.FC<OverviewProps> = ({ user, tasks, projects, taskStats, o
                     </div>
                 </div>
 
+                {/* Tech Stacks Section */}
+                {user.stacks && user.stacks.length > 0 && (
+                    <div className="mt-8 pt-8 border-t border-border/50">
+                        <h4 className="text-sm font-black text-foreground uppercase tracking-wider mb-4 flex items-center gap-2">
+                            <Cpu className="w-4 h-4 text-orange-500" />
+                            Specialized Tech Stacks
+                        </h4>
+                        <div className="flex flex-wrap gap-2">
+                            {user.stacks.map((stack: any, i: number) => (
+                                <div
+                                    key={i}
+                                    className="px-3 py-1.5 rounded-lg bg-primary/5 border border-primary/10 hover:bg-primary/10 transition-all cursor-default"
+                                >
+                                    <span className="text-[11px] font-black text-primary uppercase tracking-tight">{stack.name}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
                 {/* Skills Section Integrated */}
                 <div className="mt-8 pt-8 border-t border-border/50">
-                    <h4 className="text-sm font-black text-foreground uppercase tracking-wider mb-4">Expertise & Skills</h4>
+                    <h4 className="text-sm font-black text-foreground uppercase tracking-wider mb-4 flex items-center gap-2">
+                        <Briefcase className="w-4 h-4 text-primary" />
+                        Expertise & Skills
+                    </h4>
                     <div className="flex flex-wrap gap-2">
                         {user.skills?.map((skill: string, i: number) => (
                             <span
                                 key={i}
-                                className="px-3 py-1.5 text-xs font-bold rounded-xl bg-primary/10 text-primary border border-primary/20"
+                                className="px-3 py-1.5 text-xs font-bold rounded-xl bg-primary/10 text-primary border border-primary/20 hover:bg-primary/20 transition-all"
                             >
                                 {skill}
                             </span>

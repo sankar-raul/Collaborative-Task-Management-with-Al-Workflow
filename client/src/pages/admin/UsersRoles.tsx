@@ -1,13 +1,28 @@
-import { Mail, Shield, User, Calendar, CheckCircle, XCircle } from "lucide-react";
+import { Mail, Shield, User, Calendar, CheckCircle, XCircle, Layers } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { useAuth } from "../../context/auth";
 import { useUsers } from "../../context/users";
 import { api } from "../../utils/api";
+import { type TechStack } from "../../@types/interface/StackInterface";
 
 export const UsersRoles = () => {
     const { systemUsers, isLoading: loading, error } = useUsers();
     const navigate = useNavigate();
     const { member } = useAuth();
+    const [techStacks, setTechStacks] = useState<TechStack[]>([]);
+
+    useEffect(() => {
+        const fetchStacks = async () => {
+            try {
+                const res = await api.stack.getAllStacks();
+                if (res.success) setTechStacks(res.data);
+            } catch (err) {
+                console.error("Failed to fetch stacks:", err);
+            }
+        };
+        fetchStacks();
+    }, []);
 
     if (loading) {
         return (
@@ -49,6 +64,7 @@ export const UsersRoles = () => {
                                 <th className="px-8 py-5 font-bold text-muted-foreground text-[11px] uppercase tracking-wider">User</th>
                                 <th className="px-8 py-5 font-bold text-muted-foreground text-[11px] uppercase tracking-wider">Email Address</th>
                                 <th className="px-8 py-5 font-bold text-muted-foreground text-[11px] uppercase tracking-wider">Role</th>
+                                <th className="px-8 py-5 font-bold text-muted-foreground text-[11px] uppercase tracking-wider">Tech Stacks</th>
                                 <th className="px-8 py-5 font-bold text-muted-foreground text-[11px] uppercase tracking-wider">Joined Date</th>
                                 <th className="px-8 py-5 font-bold text-muted-foreground text-[11px] uppercase tracking-wider text-right">Actions</th>
                             </tr>
@@ -79,6 +95,22 @@ export const UsersRoles = () => {
                                                 Member
                                             </div>
                                         )}
+                                    </td>
+                                    <td className="px-8 py-5">
+                                        <div className="flex flex-wrap gap-1.5 max-w-[200px]">
+                                            {user.stacks && user.stacks.length > 0 ? (
+                                                user.stacks.map(stackId => {
+                                                    const stack = techStacks.find(s => s._id === stackId);
+                                                    return stack ? (
+                                                        <span key={stackId} className="px-2 py-0.5 rounded-md bg-secondary text-[10px] font-bold text-secondary-foreground border border-border">
+                                                            {stack.name}
+                                                        </span>
+                                                    ) : null;
+                                                })
+                                            ) : (
+                                                <span className="text-[10px] text-muted-foreground italic">No stacks assigned</span>
+                                            )}
+                                        </div>
                                     </td>
                                     <td className="px-8 py-5 text-sm text-muted-foreground font-medium">
                                         <div className="flex items-center gap-2">

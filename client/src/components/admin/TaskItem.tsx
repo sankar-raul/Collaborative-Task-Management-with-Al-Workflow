@@ -29,19 +29,19 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task, project, onEdit, onDel
     }, []);
 
     return (
-        <div className="bg-card/50 backdrop-blur-sm border border-border/60 rounded-[1.5rem] p-6 hover:bg-card hover:border-primary/30 transition-all duration-300 group relative shadow-xs hover:shadow-xl hover:shadow-primary/5">
+        <div className="bg-card/50 backdrop-blur-sm border border-border/60 rounded-[1.25rem] p-5 hover:bg-card hover:border-primary/30 transition-all duration-300 group relative shadow-xs hover:shadow-xl hover:shadow-primary/5">
             {/* Title + Priority */}
             <div className="flex justify-between items-start gap-4">
                 <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                        <span className="text-[10px] font-black text-primary uppercase tracking-[0.2em] bg-primary/10 px-2 py-0.5 rounded-md">Task</span>
+                    <div className="flex items-center gap-2 mb-1.5">
+                        <span className="text-[9px] font-black text-primary uppercase tracking-[0.25em] bg-primary/10 px-2 py-0.5 rounded-md">Task</span>
                         <div className={`h-1.5 w-1.5 rounded-full ${task.status === 'Completed' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]'}`} />
                     </div>
-                    <p className={`text-lg font-black tracking-tight leading-tight ${task.status === 'Completed' ? 'text-emerald-500 line-through opacity-60' : 'text-foreground'}`}>
+                    <p className={`text-[17px] font-[800] tracking-[-0.02em] ${task.status === 'Completed' ? 'text-emerald-500 line-through opacity-60' : 'text-foreground'}`}>
                         {task.title}
                     </p>
                     {task.description && (
-                        <p className="text-xs text-muted-foreground mt-2 font-medium leading-relaxed line-clamp-2">
+                        <p className="text-[11px] text-muted-foreground mt-1.5 font-medium leading-relaxed line-clamp-2 tracking-tight">
                             {task.description}
                         </p>
                     )}
@@ -49,7 +49,7 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task, project, onEdit, onDel
 
                 <div className="flex items-center gap-3">
                     <span
-                        className={`px-4 py-1.5 text-[10px] font-black rounded-full uppercase tracking-widest border transition-all
+                        className={`px-3 py-1 text-[9px] font-black rounded-full uppercase tracking-[0.2em] border transition-all
                             ${task.priority === "Low"
                                 ? "bg-emerald-500/10 text-emerald-500 border-emerald-500/20"
                                 : task.priority === "Medium"
@@ -109,11 +109,11 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task, project, onEdit, onDel
 
             {/* Skills */}
             {task.requiredSkills?.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-6">
+                <div className="flex flex-wrap gap-1.5 mt-4">
                     {task.requiredSkills.map((skill, index) => (
                         <span
                             key={index}
-                            className="text-[10px] font-black bg-secondary/80 text-muted-foreground px-3 py-1 rounded-lg uppercase tracking-wider border border-border/40"
+                            className="text-[9px] font-black bg-secondary/80 text-muted-foreground px-2.5 py-0.5 rounded-lg uppercase tracking-wider border border-border/40"
                         >
                             <Hash className="w-2.5 h-2.5 inline mr-1 opacity-40" />
                             {skill}
@@ -123,15 +123,15 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task, project, onEdit, onDel
             )}
 
             {/* Footer Info */}
-            <div className="flex justify-between items-end mt-8 pt-6 border-t border-border/40">
+            <div className="flex justify-between items-end mt-6 pt-5 border-t border-border/40">
                 {/* Assigned User */}
-                <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
-                        <UserIcon className="w-4 h-4 text-primary" />
+                <div className="flex items-center gap-2.5">
+                    <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
+                        <UserIcon className="w-3.5 h-3.5 text-primary" />
                     </div>
                     <div>
-                        <p className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest leading-none mb-1">Operator</p>
-                        <p className="text-xs font-bold text-foreground">
+                        <p className="text-[8px] font-black text-muted-foreground/30 uppercase tracking-[0.25em] leading-none mb-1">Operator</p>
+                        <p className="text-[11px] font-bold text-foreground">
                             {assignedMember?.user?.name || "Unassigned"}
                         </p>
                     </div>
@@ -139,9 +139,9 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task, project, onEdit, onDel
 
                 {/* Deadline */}
                 <div className="flex flex-col items-end">
-                    <p className="text-[10px] font-black text-muted-foreground/40 uppercase tracking-widest leading-none mb-1">Timeline</p>
-                    <div className="flex items-center gap-2 text-xs font-black text-muted-foreground/80">
-                        <Clock size={14} className="text-primary/60" />
+                    <p className="text-[8px] font-black text-muted-foreground/30 uppercase tracking-[0.25em] leading-none mb-1">Timeline</p>
+                    <div className="flex items-center gap-1.5 text-[11px] font-bold text-muted-foreground/80">
+                        <Clock size={12} className="text-primary/60" />
                         {task.deadline
                             ? new Date(task.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
                             : "Undetermined"}
