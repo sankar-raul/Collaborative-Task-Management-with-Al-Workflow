@@ -8,7 +8,7 @@ import TaskService from "./task.service";
 import UserModel from "@/models/user/user.model";
 
 const WORK_HOURS_PER_WEEK = 40;
-const MAX_WORKLOAD = 5;
+const MAX_WORKLOAD = 50;
 const PRIORITY_MAP = {
   Low: 1,
   Medium: 2,

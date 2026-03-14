@@ -1,4 +1,7 @@
 import ProjectModel from "@/models/project/project.model";
+import TaskModel from "@/models/task/task.model";
+import UserModel from "@/models/user/user.model";
+import { ROLE } from "@/constants/role.constant";
 import connectMembersToProject from "@/socketService/connectMembersToProject";
 import ProjectNotification from "@/socketService/projectUpdates";
 import { IProject } from "@/types/interface/project.interface";
@@ -7,6 +10,37 @@ import { IUser } from "@/types/interface/user.interface";
 import { Types } from "mongoose";
 
 class ProjectService {
+
+  static async getMembersByTaskAsigned(projectID: string) {
+    try {
+      if (!Types.ObjectId.isValid(projectID)) {
+        throw new Error("Invalid project ID");
+      }
+
+      const project = await ProjectModel.findById(projectID);
+      if (!project) {
+        throw new Error("Project not found");
+      }
+
+      const assignedUserIds = await TaskModel.distinct("assignedTo", {
+        projectId: new Types.ObjectId(projectID),
+        assignedTo: { $ne: null },
+      });
+
+      if (!assignedUserIds.length) {
+        return [];
+      }
+
+      const members = await UserModel.find(
+        { _id: { $in: assignedUserIds } },
+        "name email role isApproved skills availabilityHours currentWorkload",
+      );
+
+      return members as IUser[];
+    } catch (error) {
+      throw error;
+    }
+  }
   static async getProjects(page: number = 1, limit: number = 10) {
     try {
       const skip = (page - 1) * limit;
@@ -200,7 +234,16 @@ class ProjectService {
       if (!project) {
         throw new Error("Project not found");
       }
-      return project.members;
+
+      if (project.members.length) {
+        return project.members;
+      }
+
+      const assignedMembers = await this.getMembersByTaskAsigned(projectId);
+      return assignedMembers.map((member) => ({
+        user: (member as unknown as { _id: Types.ObjectId })._id,
+        role: ROLE.USER,
+      }));
     } catch (error) {
       throw error;
     }
@@ -217,7 +260,16 @@ class ProjectService {
       if (!project) {
         throw new Error("Project not found");
       }
-      return project.members;
+
+      if (project.members.length) {
+        return project.members;
+      }
+
+      const assignedMembers = await this.getMembersByTaskAsigned(projectId);
+      return assignedMembers.map((member) => ({
+        user: member,
+        role: ROLE.USER,
+      }));
     } catch (error) {
       throw error;
     }
