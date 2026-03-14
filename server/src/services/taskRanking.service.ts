@@ -25,6 +25,7 @@ class TaskRankingService {
     userStat: IUserStat;
   }) {
     const priorityScore = PRIORITY_MAP[task.priority] / 4;
+    // console.log(task, userStat)
     const overlap = task.requiredSkills.filter((skill) =>
       userStat.skills.includes(skill),
     ).length;
@@ -36,6 +37,7 @@ class TaskRankingService {
       userStat.availabilityHours - userStat?.totalEstimatedTime || 0;
     const availabilityScore =
       (availlableHours - task.eastimatedTime) / WORK_HOURS_PER_WEEK;
+    //   console.log(priorityScore, workloadScore, availabilityScore)
     return (
       0.35 * priorityScore +
       0.4 * skillMatch +
@@ -45,10 +47,16 @@ class TaskRankingService {
   }
 
   static async getWorkLoads(stackId: string) {
+    if (!Types.ObjectId.isValid(stackId)) {
+      return [];
+    }
+
+    const stackObjectId = new Types.ObjectId(stackId);
+
     const usersWithWorkload = await UserModel.aggregate([
       {
         $match: {
-          skills: { $in: [stackId] },
+          stacks: { $in: [stackObjectId] },
         },
       },
       {
@@ -86,7 +94,7 @@ class TaskRankingService {
         },
       },
     ]);
-
+    // console.log(usersWithWorkload)
     return usersWithWorkload as IUserStat[];
   }
 
@@ -104,6 +112,7 @@ class TaskRankingService {
       task.assignedTo = rankedMembers[0]?.userId || null;
       task.projectId = project_id;
       task.status = "To Do";
+    //   console.log(task, rankedMembers[0])
       return task;
     } catch (error) {
       console.log("Error in rankTasksByMembers:", error);
@@ -122,7 +131,9 @@ class TaskRankingService {
           this.rankTasksByMembers(task, techstack, project_id),
         ),
       );
+      console.log(assignedTasks)
       const newTasks = await TaskService.createAndAssignTask(assignedTasks);
+      console.log(newTasks)
       return newTasks as ITask[];
     } catch (error) {
       console.log("Error in rankMembers:", error);
