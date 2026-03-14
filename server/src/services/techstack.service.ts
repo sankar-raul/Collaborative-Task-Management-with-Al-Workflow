@@ -12,6 +12,17 @@ class TechStackService {
         }
     }
 
+    static async getSkillsById(id: string) {
+        // Implement fetching skills by ID here
+        try {
+            const stack = await TechStackModel.findById(id);
+            return stack?.skills || [];
+        } catch (error) {
+            throw error;
+        }
+    }
+    
+
     static async create(task: ITechstack) {
         try {
             const stack = new TechStackModel({

@@ -1,66 +1,67 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import TechStackService from "./techstack.service";
 import { ITechstack } from "@/types/interface/techstack.interface";
+import { ITask } from "@/types/interface/task.interface";
 
 class AIService {
-  private static readonly MODEL_NAME = "gemini-2.5-flash";
+    private static readonly MODEL_NAME = "gemini-2.5-flash";
 
-  private static getClient() {
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      throw new Error("GEMINI_API_KEY is not configured");
-    }
-    return new GoogleGenerativeAI(apiKey);
-  }
-
-  private static sanitizeModelOutput(output: string) {
-    const trimmed = output.trim();
-
-    // Gemini can wrap JSON in markdown fences. Strip them before parsing.
-    const codeBlockMatch = trimmed.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i);
-    return codeBlockMatch ? codeBlockMatch[1].trim() : trimmed;
-  }
-
-  private static getErrorMessage(error: unknown) {
-    if (error instanceof Error) {
-      return error.message;
-    }
-    if (typeof error === "string") {
-      return error;
-    }
-    return "Unknown AI service error";
-  }
-
-  static async generateTasks(
-    description: string,
-    deadline: string,
-    team: unknown[],
-    techStack: string,
-  ) {
-    if (!description?.trim()) {
-      throw new Error(
-        "AI task generation failed: project description is required",
-      );
+    private static getClient() {
+        const apiKey = process.env.GEMINI_API_KEY;
+        if (!apiKey) {
+            throw new Error("GEMINI_API_KEY is not configured");
+        }
+        return new GoogleGenerativeAI(apiKey);
     }
 
-    if (!deadline?.trim()) {
-      throw new Error(
-        "AI task generation failed: project deadline is required",
-      );
+    private static sanitizeModelOutput(output: string) {
+        const trimmed = output.trim();
+
+        // Gemini can wrap JSON in markdown fences. Strip them before parsing.
+        const codeBlockMatch = trimmed.match(/^```(?:json)?\s*([\s\S]*?)\s*```$/i);
+        return codeBlockMatch ? codeBlockMatch[1].trim() : trimmed;
     }
 
-    if (!Array.isArray(team) || team.length === 0) {
-      throw new Error(
-        "AI task generation failed: team must be a non-empty array",
-      );
+    private static getErrorMessage(error: unknown) {
+        if (error instanceof Error) {
+            return error.message;
+        }
+        if (typeof error === "string") {
+            return error;
+        }
+        return "Unknown AI service error";
     }
-   
 
-    try {
-      const genAI = this.getClient();
-      const model = genAI.getGenerativeModel({ model: this.MODEL_NAME });
+    static async generateTasks(
+        description: string,
+        deadline: string,
+        techStack: string,
+    ) {
+        if (!description?.trim()) {
+            throw new Error(
+                "AI task generation failed: project description is required",
+            );
+        }
 
-const prompt = `
+        if (!deadline?.trim()) {
+            throw new Error(
+                "AI task generation failed: project deadline is required",
+            );
+        }
+
+       if (!techStack?.trim()) {
+            throw new Error(
+                "AI task generation failed: project tech stack is required",
+            );
+        }
+
+        const skills = await TechStackService.getSkillsById(techStack);
+
+        try {
+            const genAI = this.getClient();
+            const model = genAI.getGenerativeModel({ model: this.MODEL_NAME });
+
+           const prompt = `
 You are an experienced Software Project Manager.
 
 Your job is to analyze the project description and generate a detailed list of development tasks required to complete the project.
@@ -73,52 +74,96 @@ ${description}
 Project Deadline:
 ${deadline}
 
-Team Members and Skills:
-${JSON.stringify(team)}
+Available Team Skills:
+${JSON.stringify(skills)}
 
-Generate tasks for this project.
+IMPORTANT RULES
+---------------
+1. Carefully analyze the project description.
+2. Break the project into logical development tasks.
+3. Tasks should cover all stages such as:
+   - Planning
+   - UI/Frontend Development
+   - Backend Development
+   - Database
+   - API Integration
+   - Testing
+   - Deployment
 
-Rules:
-1. Break the project into tasks
-2. Assign tasks based on team skills
-3. Each task must contain:
-   - title
-   - description
-   - estimatedHours
-   - skillsRequired
-   - deadline
+4. ONLY use skills from the "Available Team Skills" list when generating tasks.
 
-Return response in JSON format only.
-`;
+5. Each task must include the most relevant skill required to complete it.
 
-      const result = await model.generateContent(prompt);
-      const responseText = result?.response?.text?.();
+6. If multiple skills are needed, include them in the skillsRequired array.
 
-      if (!responseText || !responseText.trim()) {
-        throw new Error("AI model returned an empty response");
-      }
+7. Tasks should be realistic for a software development team.
 
-      const sanitized = this.sanitizeModelOutput(responseText);
+8. Distribute the tasks logically across the project timeline before the deadline.
 
-      try {
-        return JSON.parse(sanitized);
-      } catch {
-        throw new Error("AI model returned non-JSON content");
-      }
-    } catch (error) {
-      throw new Error(
-        `AI task generation failed: ${this.getErrorMessage(error)}`,
-      );
+9. Estimated hours should be realistic for a developer.
+
+10. Tasks should be granular enough so they can be assigned individually.
+
+OUTPUT FORMAT
+-------------
+Return ONLY valid JSON with the following structure.
+
+[
+    {
+      "title": "Task title",
+      "description": "Detailed explanation of what needs to be done",
+      "estimatedTime": number,
+      "skillsRequired": ["skill1","skill2"],
+      "deadline": "YYYY-MM-DD",
+      "priority": "Low" | "Medium" | "High" | "Critical"
     }
-  }
+  ]
 
-  static async getStacksBasedOnSkills(skills: string[]) {
-    try {
-      const stacks = await TechStackService.getAll();
-      const genAI = this.getClient();
-      const model = genAI.getGenerativeModel({ model: this.MODEL_NAME });
+STRICT OUTPUT RULES
+-------------------
+- Return ONLY JSON.
+- Do NOT include markdown.
+- Do NOT include explanations.
+- Do NOT include text outside the JSON.
+- Ensure the JSON is valid and properly formatted.
+`;
+            const result = await model.generateContent(prompt);
+            const responseText = result?.response?.text?.();
 
-      const prompt = `
+            if (!responseText || !responseText.trim()) {
+                throw new Error("AI model returned an empty response");
+            }
+
+            const sanitized = this.sanitizeModelOutput(responseText);
+
+            try {
+                return JSON.parse(sanitized) as ITask[];
+            } catch {
+                throw new Error("AI model returned non-JSON content");
+            }
+        } catch (error) {
+            throw new Error(
+                `AI task generation failed: ${this.getErrorMessage(error)}`,
+            );
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+    static async getStacksBasedOnSkills(skills: string[]) {
+        try {
+            const stacks = await TechStackService.getAll();
+            const genAI = this.getClient();
+            const model = genAI.getGenerativeModel({ model: this.MODEL_NAME });
+
+            const prompt = `
 User Skills:
 ${JSON.stringify(skills)}
 
@@ -149,25 +194,25 @@ Output format:
 }
 `;
 
-      const result = await model.generateContent(prompt);
-      const responseText = result?.response?.text?.();
-      if (!responseText || !responseText.trim()) {
-        throw new Error("AI model returned an empty response");
-      }
+            const result = await model.generateContent(prompt);
+            const responseText = result?.response?.text?.();
+            if (!responseText || !responseText.trim()) {
+                throw new Error("AI model returned an empty response");
+            }
 
-      const sanitized = this.sanitizeModelOutput(responseText);
+            const sanitized = this.sanitizeModelOutput(responseText);
 
-      try {
-        return JSON.parse(sanitized) as { selectedStacks: Partial<ITechstack>[]};
-      } catch {
-        throw new Error("AI model returned non-JSON content");
-      }
-    } catch (error) {
-      throw new Error(
-        `AI stack selection failed: ${this.getErrorMessage(error)}`,
-      );
+            try {
+                return JSON.parse(sanitized) as { selectedStacks: Partial<ITechstack>[] };
+            } catch {
+                throw new Error("AI model returned non-JSON content");
+            }
+        } catch (error) {
+            throw new Error(
+                `AI stack selection failed: ${this.getErrorMessage(error)}`,
+            );
+        }
     }
-  }
 }
 
 export default AIService;

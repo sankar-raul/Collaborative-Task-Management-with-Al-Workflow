@@ -80,7 +80,7 @@ class TaskRankingService {
     return userTaskStats as IUserStat[];
   }
 
-  static async rankTasksByMembers(task: ITask, techstack: string) {
+  static async rankTasksByMembers(task: ITask, techstack: string, project_id: Types.ObjectId) {
     try {
       const workloadByMember = await this.getWorkLoads(techstack);
       workloadByMember.forEach((member) => {
@@ -88,6 +88,8 @@ class TaskRankingService {
       });
       const rankedMembers = workloadByMember.sort((a, b) => b.score - a.score);
       task.assignedTo = rankedMembers[0]?.userId || null;
+      task.projectId = project_id;
+      task.status = "To Do";
       return task;
     } catch (error) {
       console.log("Error in rankTasksByMembers:", error);
@@ -95,11 +97,11 @@ class TaskRankingService {
     }
   }
 
-  static async rankMembersAndAssignTask(tasks: ITask[], techstack: string) {
+  static async rankMembersAndAssignTask(tasks: ITask[], techstack: string, project_id: Types.ObjectId) {
     try {
       const assignedTasks = await Promise.all(
         tasks.map((task) =>
-          this.rankTasksByMembers(task, techstack),
+          this.rankTasksByMembers(task, techstack, project_id),
         ),
       );
       const newTasks = await TaskService.createAndAssignTask(assignedTasks);

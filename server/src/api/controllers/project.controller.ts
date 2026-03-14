@@ -2,6 +2,7 @@ import { ROLE } from "@/constants/role.constant";
 import AIService from "@/services/ai.service";
 import PdfParserService from "@/services/pdfParser.service";
 import ProjectService from "@/services/project.service";
+import TaskRankingService from "@/services/taskRanking.service";
 import { MulterRequest } from "@/types/express";
 import { Request, Response } from "express";
 import { Types } from "mongoose";
@@ -35,6 +36,49 @@ export const createProject = async (req: Request, res: Response) => {
         return;
     }
 };
+
+
+
+export const createProjectByAI = async (req: Request, res: Response) => {
+  try {
+
+    const { projectName,  description, deadline,members=[], techStack } = req.body
+
+     if (!projectName) {
+            res.status(400).json({ success: false, message: "Project name is required" });
+            return;
+        }
+    
+    if (!description || !deadline || !techStack) {
+      return res.status(400).json({
+        success: false,
+        message: "description, deadline and techStack are required"
+      })
+    }
+
+     const project = await ProjectService.createProject({ projectName, description, members, deadline });
+
+    const tasks = await AIService.generateTasks(description, deadline, techStack)
+    await TaskRankingService.rankMembersAndAssignTask(tasks, techStack, project._id as unknown as Types.ObjectId)
+    res.json({
+      success: true,
+      data: project
+    })
+    } catch (error) {
+
+    res.status(500).json({
+      success: false,
+            message: `Failed to generate tasks: ${getErrorMessage(error)}`
+    })
+
+  }
+}
+
+
+
+
+
+
 
 export const getProjects = async (req: Request, res: Response) => {
     try {
@@ -201,31 +245,3 @@ export const createProjectFromPdf = async (req: MulterRequest, res: Response) =>
     }
 };
 
-export const createProjectByAI = async (req: Request, res: Response) => {
-  try {
-
-    const { description, deadline, techStack } = req.body
-
-    if (!description || !deadline || !techStack) {
-      return res.status(400).json({
-        success: false,
-        message: "description, deadline and techStack are required"
-      })
-    }
-
-    const tasks = await AIService.generateTasks(description, deadline, techStack)
-
-    res.json({
-      success: true,
-      tasks
-    })
-
-    } catch (error) {
-
-    res.status(500).json({
-      success: false,
-            message: `Failed to generate tasks: ${getErrorMessage(error)}`
-    })
-
-  }
-}

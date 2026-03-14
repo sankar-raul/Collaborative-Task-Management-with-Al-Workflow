@@ -5,4 +5,5 @@ export interface IProject {
   description?: string;
   members: IProjectMember[];
   deadline?: string;
+  _id?: string;
 }
