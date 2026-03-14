@@ -66,7 +66,7 @@ const Register = () => {
               <Brain className="w-7 h-7 text-white" />
             </div>
             <h1 className="text-2xl font-semibold text-foreground tracking-tight">
-              AI TaskFlow
+              TaskFlow AI
             </h1>
           </div>
 
