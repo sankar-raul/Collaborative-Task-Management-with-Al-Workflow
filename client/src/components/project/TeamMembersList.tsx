@@ -29,10 +29,10 @@ export const TeamMembersList = ({
         <div className="bg-card rounded-3xl border border-border shadow-sm overflow-hidden animate-in fade-in duration-500">
             <div className="px-8 py-6 border-b border-border flex justify-between items-center bg-muted/30">
                 <div>
-                    <h3 className="text-lg font-bold text-foreground flex items-center gap-3">
+                    <h3 className="text-lg font-[800] text-foreground flex items-center gap-3 tracking-[-0.01em]">
                         <Users className="w-5 h-5 text-primary" /> Project Members
                     </h3>
-                    <p className="text-xs text-muted-foreground mt-0.5 font-medium">Collaborators and access roles.</p>
+                    <p className="text-[9px] text-muted-foreground mt-1 font-black uppercase tracking-[0.2em] opacity-30">Collaborators and access roles</p>
                 </div>
                 {isManager && onAdd && (
                     <button
@@ -49,9 +49,9 @@ export const TeamMembersList = ({
                 <table className="w-full text-left border-collapse">
                     <thead>
                         <tr className="bg-muted/10 border-b border-border">
-                            <th className="px-6 py-4 font-bold text-muted-foreground text-[10px] uppercase tracking-wider">Member</th>
-                            <th className="px-6 py-4 font-bold text-muted-foreground text-[10px] uppercase tracking-wider">Role</th>
-                            <th className="px-6 py-4 font-bold text-muted-foreground text-[10px] uppercase tracking-wider text-right">Actions</th>
+                            <th className="px-6 py-4 font-black text-muted-foreground text-[8px] uppercase tracking-[0.25em]">Member</th>
+                            <th className="px-6 py-4 font-black text-muted-foreground text-[8px] uppercase tracking-[0.25em]">Role</th>
+                            <th className="px-6 py-4 font-black text-muted-foreground text-[8px] uppercase tracking-[0.25em] text-right">Actions</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-border">

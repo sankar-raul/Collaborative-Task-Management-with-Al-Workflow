@@ -46,3 +46,13 @@ export const removeProjectMember = async (id: string, userId: string): Promise<{
 export const updateProjectMemberRole = async (id: string, memberData: { userId: string; role: string }): Promise<{ success: boolean; message: string }> => {
     return await put(`${ROUTE}/${id}/members`, memberData, getToken());
 };
+
+export const createProjectByAI = async (data: {
+    projectName: string;
+    description: string;
+    techStackId: string;
+    deadline: string;
+    members: { user: string; role: string }[];
+}): Promise<{ success: boolean; data: Project; message: string }> => {
+    return await post(`${ROUTE}/createByAI`, data, getToken());
+};

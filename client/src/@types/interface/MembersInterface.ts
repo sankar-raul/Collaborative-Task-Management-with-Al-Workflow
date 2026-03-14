@@ -8,6 +8,7 @@ export interface Member {
     currentWorkload: number;
     createdAt: string;
     isApproved: boolean;
+    stacks?: string[];
 }
 
 export interface PaginationData {

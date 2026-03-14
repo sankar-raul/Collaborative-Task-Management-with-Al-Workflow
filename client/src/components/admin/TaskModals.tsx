@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { X, ShieldCheck, Clock, AlertTriangle } from "lucide-react";
+import { X, ShieldCheck, } from "lucide-react";
 import type { Task } from "../../@types/interface/TasksInterface";
 import SkillsInput from "../shared/SkillsInput";
 import { api } from "@/utils/api";
@@ -123,10 +123,9 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
               transition={{ duration: 0.3, ease: "easeOut" }}
-              className="bg-card rounded-[3rem] w-full max-w-xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto custom-scrollbar border border-border/50"
+              className="bg-card rounded-xl w-full max-w-xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto custom-scrollbar border border-border/50"
             >
-              <div className="px-10 py-8 sticky top-0 bg-card/80 backdrop-blur-xl z-10 border-b border-border/50 flex justify-between items-center relative">
-                <div className="absolute top-0 left-0 w-1 h-full bg-orange-500" />
+              <div className="p-7 sticky top-0 bg-card/80 backdrop-blur-xl z-10 border-b border-border/50 flex justify-between items-center relative">
                 <div>
                   <h3 className="text-2xl font-bold text-foreground tracking-tight">
                     Initialize Task

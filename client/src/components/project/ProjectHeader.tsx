@@ -57,10 +57,10 @@ export const ProjectHeader = ({
                         <Briefcase className="w-8 h-8 text-primary" />
                     </div>
                     <div>
-                        <h1 className="text-4xl font-black text-foreground tracking-tight">
+                        <h1 className="text-4xl font-[800] text-foreground tracking-[-0.04em] leading-[1.1] mb-1">
                             {project.projectName}
                         </h1>
-                        <p className="text-lg text-muted-foreground mt-2 max-w-3xl leading-relaxed">
+                        <p className="text-base text-muted-foreground max-w-3xl leading-relaxed font-medium tracking-tight">
                             {project.description || "No project description provided"}
                         </p>
                     </div>

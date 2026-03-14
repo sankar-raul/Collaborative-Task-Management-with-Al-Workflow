@@ -41,7 +41,11 @@ export const AdminProjects = () => {
     const handleCreateProject = async (data: any) => {
         setSubmitting(true);
         try {
-            const res = await api.projects.createProject(data);
+            const { isAI, ...projectData } = data;
+            const res = isAI 
+                ? await api.projects.createProjectByAI(projectData)
+                : await api.projects.createProject(projectData);
+            
             if (res.success) {
                 await fetchData();
                 setIsCreateModalOpen(false);
