@@ -1,4 +1,4 @@
-import { get, put } from "../apiMethod";
+import { get, put, patch, deleteRequest } from "../apiMethod";
 import { getToken } from "../GetToken";
 import type { GetAllMembersResponse, Member } from "../../../@types/interface/MembersInterface";
 import type { Project } from "../../../@types/interface/ProjectInterface";
@@ -24,4 +24,12 @@ export const searchMembers = async (q: string = "", page: number = 1, limit: num
 
 export const updateMe = async (data: Partial<Omit<Member, "_id" | "role" | "createdAt" | "currentWorkload">>): Promise<{ success: boolean; data: Member }> => {
     return await put(`${ROUTE}/me`, data, getToken());
+};
+
+export const approveMember = async (id: string): Promise<{ success: boolean; data: Member }> => {
+    return await patch(`${ROUTE}/${id}/approve`, {}, getToken());
+};
+
+export const rejectMember = async (id: string): Promise<{ success: boolean; data: Member }> => {
+    return await deleteRequest(`${ROUTE}/${id}/reject`, getToken());
 };

@@ -8,4 +8,5 @@ export interface IUser {
   skills: string[];
   availabilityHours: number;
   currentWorkload: number;
+  isApproved?: boolean;
 }

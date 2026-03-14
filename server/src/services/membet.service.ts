@@ -91,6 +91,26 @@ class MemberService {
     }
     return member;
   }
+
+  static async approveMember(memberId: string) {
+    const member = await UserModel.findByIdAndUpdate(
+      memberId,
+      { isApproved: true },
+      { returnDocument: "after" },
+    );
+    if (!member) {
+      throw new Error("Member not found");
+    }
+    return member;
+  }
+
+  static async rejectMember(memberId: string) {
+    const member = await UserModel.findByIdAndDelete(memberId);
+    if (!member) {
+      throw new Error("Member not found");
+    }
+    return member;
+  }
 }
 
 export default MemberService;

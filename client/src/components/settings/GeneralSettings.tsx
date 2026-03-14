@@ -23,151 +23,128 @@ const GeneralSettings = () => {
     };
 
     return (
-        <div className="max-w-4xl p-8">
-            <h2 className="text-xl font-bold text-gray-900 mb-8 pb-4 border-b">
-                My Notifications
+        <div className="max-w-4xl p-10 animate-in fade-in slide-in-from-right-4 duration-500">
+            <h2 className="text-3xl font-black text-foreground mb-12 tracking-tight pb-4 border-b border-border/40">
+                Notifications Hub
             </h2>
 
             {/* Notify me when Section */}
-            <div className="mb-10 flex flex-col md:flex-row justify-between pr-4 items-start">
-                <div className="w-full">
-                    <div className="flex justify-between items-center mb-4">
-                        <span className="font-semibold text-gray-800">Notify me when...</span>
-                        <button className="text-indigo-600 text-sm hover:underline">
-                            About notifications?
-                        </button>
+            <div className="mb-16">
+                <div className="flex justify-between items-center mb-8">
+                    <div>
+                        <span className="text-xl font-bold text-foreground">Alert Protocols</span>
+                        <p className="text-xs text-muted-foreground mt-1 font-medium text-wrap">Configure when you want to be notified about workspace actions.</p>
                     </div>
-                    <div className="space-y-3">
-                        {[
-                            { id: "dailyUpdate", label: "Daily productivity update" },
-                            { id: "newEvent", label: "New event created" },
-                            { id: "addedOnTeam", label: "When added on new team" },
-                        ].map((item) => (
-                            <label key={item.id} className="flex items-center space-x-3 cursor-pointer">
+                    <button className="text-primary text-xs font-black uppercase tracking-widest hover:underline whitespace-nowrap">
+                        Docs
+                    </button>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {[
+                        { id: "dailyUpdate", label: "Daily productivity summaries" },
+                        { id: "newEvent", label: "New team event broadcasts" },
+                        { id: "addedOnTeam", label: "Instant team invitation alerts" },
+                    ].map((item) => (
+                        <label key={item.id} className="flex items-center p-4 bg-secondary/30 border border-border/50 rounded-2xl cursor-pointer hover:bg-secondary/50 transition-all group">
+                            <div className="relative flex items-center">
                                 <input
                                     type="checkbox"
                                     checked={notifications[item.id as keyof typeof notifications]}
                                     onChange={() => handleNotificationChange(item.id as keyof typeof notifications)}
-                                    className="w-5 h-5 text-indigo-600 rounded border-gray-300 focus:ring-indigo-500"
+                                    className="peer w-6 h-6 opacity-0 absolute cursor-pointer"
                                 />
-                                <span className="text-gray-600 text-sm">{item.label}</span>
-                            </label>
-                        ))}
-                    </div>
+                                <div className="w-6 h-6 border-2 border-border/60 rounded-lg flex items-center justify-center transition-all peer-checked:bg-primary peer-checked:border-primary">
+                                    <svg className="w-4 h-4 text-primary-foreground opacity-0 peer-checked:opacity-100 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="4" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <span className="text-foreground/80 text-sm font-bold ml-4 group-hover:text-foreground transition-colors">{item.label}</span>
+                        </label>
+                    ))}
                 </div>
             </div>
 
             {/* Toggle Notifications Section */}
-            <div className="space-y-8 mb-12">
-                <div className="flex justify-between items-center pr-4">
-                    <div>
-                        <h3 className="font-semibold text-gray-800 mb-1">Mobile push notifications</h3>
-                        <p className="text-sm text-gray-500">
-                            Receive push notification whenever your organisation requires your attentions
-                        </p>
-                    </div>
-                    {/* Toggle Button */}
-                    <button
-                        onClick={() => handleToggleChange("push")}
-                        className={`w-11 h-6 rounded-full transition-colors relative focus:outline-none ${toggles.push ? "bg-indigo-600" : "bg-gray-200"
-                            }`}
-                    >
-                        <span
-                            className={`block w-4 h-4 rounded-full bg-white transition-transform absolute top-1 ${toggles.push ? "translate-x-6" : "translate-x-1"
+            <div className="space-y-6 mb-16">
+                <p className="text-[10px] font-black text-muted-foreground/50 tracking-[0.2em] mb-4 uppercase">Delivery Channels</p>
+                
+                {[
+                    { id: "push", label: "Mobile Push Notifications", desc: "Native alerts on your iOS or Android devices." },
+                    { id: "desktop", label: "Desktop Notifications", desc: "System-level banners even when the app is minimized." },
+                    { id: "email", label: "Email Digests", desc: "Comprehensive reports delivered directly to your inbox." },
+                ].map((item) => (
+                    <div key={item.id} className="flex justify-between items-center p-6 bg-card border border-border shadow-xs rounded-[1.5rem] hover:shadow-md transition-all">
+                        <div className="max-w-md">
+                            <h3 className="font-bold text-foreground mb-1">{item.label}</h3>
+                            <p className="text-xs text-muted-foreground font-medium leading-relaxed">
+                                {item.desc}
+                            </p>
+                        </div>
+                        <button
+                            onClick={() => handleToggleChange(item.id as keyof typeof toggles)}
+                            className={`w-14 h-8 rounded-full transition-all relative focus:outline-none p-1.5 ${toggles[item.id as keyof typeof toggles] ? "bg-primary shadow-lg shadow-primary/20" : "bg-muted"
                                 }`}
-                        />
-                    </button>
-                </div>
-
-                <div className="flex justify-between items-center pr-4">
-                    <div>
-                        <h3 className="font-semibold text-gray-800 mb-1">Desktop Notification</h3>
-                        <p className="text-sm text-gray-500">
-                            Receive desktop notification whenever your organisation requires your attentions
-                        </p>
+                        >
+                            <span
+                                className={`block w-5 h-5 rounded-full bg-white shadow-sm transition-all duration-300 ${toggles[item.id as keyof typeof toggles] ? "translate-x-6" : "translate-x-0"
+                                    }`}
+                            />
+                        </button>
                     </div>
-                    <button
-                        onClick={() => handleToggleChange("desktop")}
-                        className={`w-11 h-6 rounded-full transition-colors relative focus:outline-none ${toggles.desktop ? "bg-indigo-600" : "bg-gray-200"
-                            }`}
-                    >
-                        <span
-                            className={`block w-4 h-4 rounded-full bg-white transition-transform absolute top-1 ${toggles.desktop ? "translate-x-6" : "translate-x-1"
-                                }`}
-                        />
-                    </button>
-                </div>
-
-                <div className="flex justify-between items-center pr-4">
-                    <div>
-                        <h3 className="font-semibold text-gray-800 mb-1">Email Notification</h3>
-                        <p className="text-sm text-gray-500">
-                            Receive email whenever your organisation requires your attentions
-                        </p>
-                    </div>
-                    <button
-                        onClick={() => handleToggleChange("email")}
-                        className={`w-11 h-6 rounded-full transition-colors relative focus:outline-none ${toggles.email ? "bg-indigo-600" : "bg-gray-200"
-                            }`}
-                    >
-                        <span
-                            className={`block w-4 h-4 rounded-full bg-white transition-transform absolute top-1 ${toggles.email ? "translate-x-6" : "translate-x-1"
-                                }`}
-                        />
-                    </button>
-                </div>
+                ))}
             </div>
 
             {/* Settings Section */}
-            <h2 className="text-xl font-bold text-gray-900 mb-8 pb-4 border-b">
-                My Settings
+            <h2 className="text-xl font-black text-foreground mb-8 pb-4 border-b border-border/40 tracking-tight">
+                Preference Engine
             </h2>
 
-            <div className="space-y-8">
-                <div className="flex justify-between items-center pr-4">
+            <div className="space-y-6">
+                <div className="flex justify-between items-center p-6 bg-card border border-border/60 rounded-2xl">
                     <div>
-                        <h3 className="font-semibold text-gray-800 mb-1">Appearance</h3>
-                        <p className="text-sm text-gray-500">
-                            Customize how you theams looks on your device.
+                        <h3 className="font-bold text-foreground mb-1 text-wrap">Visual Architecture</h3>
+                        <p className="text-xs text-muted-foreground font-medium">
+                            Adjust the global application theme density.
                         </p>
                     </div>
-                    <select className="bg-gray-50 border border-gray-200 text-gray-700 py-1.5 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <option>Light</option>
-                        <option>Dark</option>
-                        <option>System</option>
+                    <select className="bg-secondary/50 border border-border text-foreground font-bold py-2 px-4 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer hover:bg-secondary transition-colors">
+                        <option>Dark Mode (Default)</option>
+                        <option>Light Aesthetics</option>
+                        <option>Sync to OS</option>
                     </select>
                 </div>
 
-                <div className="flex justify-between items-center pr-4">
-                    <div>
-                        <h3 className="font-semibold text-gray-800 mb-1">Two-factor authentication</h3>
-                        <p className="text-sm text-gray-500">
-                            Keep your account secure by enabling 2FA via SMS or using a temporary one-time passcode (TOTP).
+                <div className="flex justify-between items-center p-6 bg-card border border-border/60 rounded-2xl">
+                    <div className="max-w-md">
+                        <h3 className="font-bold text-foreground mb-1">Advanced Verification</h3>
+                        <p className="text-xs text-muted-foreground font-medium leading-relaxed">
+                            Enhance security with Multi-Factor Authentication (MFA). 
                         </p>
                     </div>
                     <button
                         onClick={() => handleToggleChange("twoFactor")}
-                        className={`w-11 h-6 rounded-full transition-colors relative focus:outline-none ${toggles.twoFactor ? "bg-indigo-600" : "bg-gray-200"
+                        className={`w-14 h-8 rounded-full transition-all relative focus:outline-none p-1.5 ${toggles.twoFactor ? "bg-primary shadow-lg shadow-primary/20" : "bg-muted"
                             }`}
                     >
                         <span
-                            className={`block w-4 h-4 rounded-full bg-white transition-transform absolute top-1 ${toggles.twoFactor ? "translate-x-6" : "translate-x-1"
+                            className={`block w-5 h-5 rounded-full bg-white transition-all duration-300 ${toggles.twoFactor ? "translate-x-6" : "translate-x-0"
                                 }`}
                         />
                     </button>
                 </div>
 
-                <div className="flex justify-between items-center pr-4">
+                <div className="flex justify-between items-center p-6 bg-card border border-border/60 rounded-2xl">
                     <div>
-                        <h3 className="font-semibold text-gray-800 mb-1">Language</h3>
-                        <p className="text-sm text-gray-500">
-                            Customize how you theams looks on your device.
+                        <h3 className="font-bold text-foreground mb-1">Interface Language</h3>
+                        <p className="text-xs text-muted-foreground font-medium">
+                            Preferred language for the user interface.
                         </p>
                     </div>
-                    <select className="bg-gray-50 border border-gray-200 text-gray-700 py-1.5 px-3 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <option>English</option>
-                        <option>Spanish</option>
-                        <option>French</option>
+                    <select className="bg-secondary/50 border border-border text-foreground font-bold py-2 px-4 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-primary/50 cursor-pointer hover:bg-secondary transition-colors">
+                        <option>English (Global)</option>
+                        <option>Hindi (Localized)</option>
+                        <option>Spanish (ES)</option>
                     </select>
                 </div>
             </div>
