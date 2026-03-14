@@ -8,6 +8,7 @@ class AuthService {
         name,
         password,
         role,
+        stacks = [],
         skills = [],
         availabilityHours = 40,
     }:IUser) {
@@ -20,6 +21,7 @@ class AuthService {
             const newUser = new UserModel({
                 name,
                 email,
+                stacks,
                 password: passwordHash,
                 role: "User",
                 skills: skills,
