@@ -5,6 +5,7 @@ import { IUserStat } from "@/types/interface/userstat.interface";
 import { calculateScore } from "@/utils/calculateTaskScore";
 import { Types } from "mongoose";
 import TaskService from "./task.service";
+import UserModel from "@/models/user/user.model";
 
 const WORK_HOURS_PER_WEEK = 40;
 const MAX_WORKLOAD = 5;
@@ -44,43 +45,56 @@ class TaskRankingService {
   }
 
   static async getWorkLoads(stackId: string) {
-    const userTaskStats = await TaskModel.aggregate([
+    const usersWithWorkload = await UserModel.aggregate([
       {
-        $lookup: {
-          from: "users",
-          localField: "assignedTo",
-          foreignField: "_id",
-          as: "user",
+        $match: {
+          skills: { $in: [stackId] },
         },
       },
       {
-        $unwind: "$user",
+        $lookup: {
+          from: "tasks",
+          localField: "_id",
+          foreignField: "assignedTo",
+          as: "tasks",
+        },
       },
       {
-        $match: {
-          "user.skills": {
-            $in: [stackId],
-          }, // e.g. "React" or "Python"
+        $addFields: {
+          totalTasks: { $size: "$tasks" },
+          totalEstimatedTime: {
+            $sum: {
+              $map: {
+                input: "$tasks",
+                as: "task",
+                in: { $ifNull: ["$$task.eastimatedTime", 0] },
+              },
+            },
+          },
         },
       },
       {
         $project: {
-          _id: 1,
-          title: 1,
-          priority: 1,
-          eastimatedTime: 1,
-          assignedTo: "$user._id",
-          name: "$user.name",
-          email: "$user.email",
-          skills: "$user.skills",
+          userId: "$_id",
+          name: 1,
+          email: 1,
+          skills: 1,
+          availabilityHours: 1,
+          totalTasks: 1,
+          totalEstimatedTime: 1,
+          _id: 0,
         },
       },
     ]);
 
-    return userTaskStats as IUserStat[];
+    return usersWithWorkload as IUserStat[];
   }
 
-  static async rankTasksByMembers(task: ITask, techstack: string, project_id: Types.ObjectId) {
+  static async rankTasksByMembers(
+    task: ITask,
+    techstack: string,
+    project_id: Types.ObjectId,
+  ) {
     try {
       const workloadByMember = await this.getWorkLoads(techstack);
       workloadByMember.forEach((member) => {
@@ -97,7 +111,11 @@ class TaskRankingService {
     }
   }
 
-  static async rankMembersAndAssignTask(tasks: ITask[], techstack: string, project_id: Types.ObjectId) {
+  static async rankMembersAndAssignTask(
+    tasks: ITask[],
+    techstack: string,
+    project_id: Types.ObjectId,
+  ) {
     try {
       const assignedTasks = await Promise.all(
         tasks.map((task) =>
