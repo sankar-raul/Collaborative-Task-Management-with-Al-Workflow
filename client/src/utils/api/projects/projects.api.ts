@@ -47,6 +47,10 @@ export const updateProjectMemberRole = async (id: string, memberData: { userId: 
     return await put(`${ROUTE}/${id}/members`, memberData, getToken());
 };
 
+export const getProjectMembers = async (id: string): Promise<{ success: boolean; data: []; message?: string }> => {
+    return await get(`${ROUTE}/${id}/members`, undefined, getToken());
+}
+
 export const createProjectByAI = async (data: {
     projectName: string;
     description: string;

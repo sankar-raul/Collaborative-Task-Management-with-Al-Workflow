@@ -10,3 +10,9 @@ export interface IAuthContextType {
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
 }
+
+
+export interface IUser {
+  user: "objectId",
+  role: "USER"
+}

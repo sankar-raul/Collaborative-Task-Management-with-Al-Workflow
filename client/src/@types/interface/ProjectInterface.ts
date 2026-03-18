@@ -1,3 +1,4 @@
+import type { IUser } from "./userInterface";
 
 export interface Project {
     _id: string;
@@ -22,4 +23,15 @@ export interface GetProjectsResponse {
     success: boolean;
     data: Project[];
     pagination: PaginationData;
+}
+
+export interface IProjectMember {
+  user: IUser | string; // string if not populated
+  role: string;
+}
+
+export interface IProjectMembersResponse {
+  success: boolean;
+  data: IProjectMember[];
+  message?: string;
 }
