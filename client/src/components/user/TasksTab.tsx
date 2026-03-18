@@ -101,7 +101,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ tasks, onStatusChange }) => {
             </div>
 
             {tasks.length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 overflow-y-auto custom-scrollbar pr-1">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 overflow-y-hidden custom-scrollbar pr-1">
                     {STATUS_COLUMNS.map((column) => {
                         const columnTasks = boardTasks[column.key];
 
@@ -118,7 +118,7 @@ const TasksTab: React.FC<TasksTabProps> = ({ tasks, onStatusChange }) => {
                                     event.preventDefault();
                                     handleDrop(column.key);
                                 }}
-                                className={`rounded-3xl select-none bg-card/50 border p-4 transition-all min-h-[400px] flex flex-col ${
+                                className={`rounded-3xl select-none bg-card/50 border p-4 transition-all min-h-[400px] overflow-y-auto flex flex-col ${
                                     activeDropStatus === column.key
                                         ? 'border-primary ring-4 ring-primary/5 bg-primary/5'
                                         : 'border-border'

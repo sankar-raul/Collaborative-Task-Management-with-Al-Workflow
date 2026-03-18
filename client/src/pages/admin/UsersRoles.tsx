@@ -1,4 +1,4 @@
-import { Mail, Shield, User, Calendar, CheckCircle, XCircle, Layers } from "lucide-react";
+import { Shield, User, Calendar, CheckCircle, XCircle } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/auth";
@@ -49,11 +49,11 @@ export const UsersRoles = () => {
                     <h1 className="text-3xl font-bold text-foreground tracking-tight mb-1">Users & Roles</h1>
                     <p className="text-muted-foreground font-medium text-base">Manage team access levels and organizational hierarchy.</p>
                 </div>
-                <button
+                {/* <button
                     className="flex items-center px-6 py-3 bg-primary text-primary-foreground rounded-xl hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-primary/20 font-bold text-sm"
                 >
                     Add New User
-                </button>
+                </button> */}
             </div>
 
             <div className="bg-card rounded-3xl border border-border shadow-sm overflow-hidden">

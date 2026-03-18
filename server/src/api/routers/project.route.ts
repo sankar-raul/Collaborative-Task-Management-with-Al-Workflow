@@ -8,6 +8,7 @@ const projectRouter = Router();
 
 projectRouter.post("/", adminAuth, createProject); // Only Admin can create a project
 projectRouter.get("/", adminAuth, getProjects); // Admin can view all projects
+projectRouter.post("/createByAI", createProjectByAI);
 projectRouter.get("/:id", isValidProjectMember, getProjectById); // Only project members can view project details
 projectRouter.put("/:id", memberRoleMiddleware("Manager"), updateProject); // Only Managers and Admin can update project details
 projectRouter.delete("/:id", adminAuth, deleteProject); // Only Admin can delete a project
@@ -17,9 +18,6 @@ projectRouter.delete("/:id/members", memberRoleMiddleware("Manager"), removeProj
 projectRouter.get("/:id/members", isValidProjectMember, getProjectMembers) // Only project members can view project members
 projectRouter.put("/:id/members", memberRoleMiddleware("Manager"), updateProjectMemberRole) // Only Managers and Admin can update project member roles
 
-
 projectRouter.post("/pdfupload", upload.single("pdf"), createProjectFromPdf);
-projectRouter.post("/createByAI", createProjectByAI);
-
 
 export default projectRouter;
