@@ -17,11 +17,6 @@ class ProjectService {
         throw new Error("Invalid project ID");
       }
 
-      const project = await ProjectModel.findById(projectID);
-      if (!project) {
-        throw new Error("Project not found");
-      }
-
       const assignedUserIds = await TaskModel.distinct("assignedTo", {
         projectId: new Types.ObjectId(projectID),
         assignedTo: { $ne: null },
@@ -236,15 +231,11 @@ class ProjectService {
         throw new Error("Project not found");
       }
 
-      if (project.members.length) {
-        return project.members;
-      }
-
       const assignedMembers = await this.getMembersByTaskAsigned(projectId);
-      return assignedMembers.map((member) => ({
+      return  [...project.members, assignedMembers.map((member) => ({
         user: (member as unknown as { _id: Types.ObjectId })._id,
         role: ROLE.USER,
-      }));
+      }))];
     } catch (error) {
       throw error;
     }
