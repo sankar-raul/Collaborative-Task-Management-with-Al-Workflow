@@ -1,5 +1,5 @@
 import React from "react";
-import { X, Check, Upload, FileText, ArrowRight, ArrowLeft, Calendar, Layers, Search } from "lucide-react";
+import { X, Check, Upload, ArrowRight, ArrowLeft, Calendar, Layers, Search } from "lucide-react";
 import { api } from "../../utils/api";
 import { type TechStack } from "../../@types/interface/StackInterface";
 
@@ -150,17 +150,6 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                         </div>
                     ) : (
                         <form onSubmit={handleFormSubmit} className="space-y-8 animate-in slide-in-from-right-4 duration-300">
-                            {/* {parsedText && (
-                                <div className="p-6 bg-orange-500/5 border border-orange-500/10 rounded-2xl space-y-3">
-                                    <div className="flex items-center gap-2 text-[10px] font-bold text-orange-600 uppercase tracking-widest">
-                                        <FileText size={14} />
-                                        Extracted Intelligence
-                                    </div>
-                                    <p className="text-xs text-muted-foreground leading-relaxed line-clamp-3 italic">
-                                        "{parsedText}"
-                                    </p>
-                                </div>
-                            )} */}
 
                             <div className="grid grid-cols-2 gap-6">
                                 <div className="space-y-2 col-span-2">
