@@ -6,6 +6,8 @@ import TaskModel from "@/models/task/task.model";
 const rankMembers = async (task: ITask, k: number = 1) => {
   try {
     // Get all project members with their details
+
+    // const mem = await ProjectService.getProjectMembersWithSkills(task.projectId.toString());
     const memberSkills = await ProjectService.getProjectMembersWithSkills(
       task.projectId.toString(),
     );

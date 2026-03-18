@@ -60,6 +60,8 @@ export const createProjectByAI = async (req: Request, res: Response) => {
 
     const tasks = await AIService.generateTasks(description, deadline, techStackId)
     await TaskRankingService.rankMembersAndAssignTask(tasks, techStackId, project._id as unknown as Types.ObjectId)
+    const tasks = await AIService.generateTasks(description, deadline, techStackId)
+    await TaskRankingService.rankMembersAndAssignTask(tasks, techStackId, project._id as unknown as Types.ObjectId)
     res.json({
       success: true,
       data: project

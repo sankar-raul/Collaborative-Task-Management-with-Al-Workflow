@@ -5,7 +5,7 @@ class MemberService {
     const skip = (page - 1) * limit;
 
     const [members, total] = await Promise.all([
-      UserModel.find().skip(skip).limit(limit),
+      UserModel.find().sort({ createdAt: -1 }).skip(skip).limit(limit),
       UserModel.countDocuments(),
     ]);
 
