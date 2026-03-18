@@ -42,14 +42,14 @@ export const createProject = async (req: Request, res: Response) => {
 export const createProjectByAI = async (req: Request, res: Response) => {
   try {
 
-    const { projectName,  description, deadline,members=[], techStack } = req.body
+    const { projectName,  description, deadline,members=[], techStackId } = req.body
 
      if (!projectName) {
             res.status(400).json({ success: false, message: "Project name is required" });
             return;
         }
     
-    if (!description || !deadline || !techStack) {
+    if (!description || !deadline || !techStackId) {
       return res.status(400).json({
         success: false,
         message: "description, deadline and techStack are required"
@@ -58,8 +58,8 @@ export const createProjectByAI = async (req: Request, res: Response) => {
 
      const project = await ProjectService.createProject({ projectName, description, members, deadline });
 
-    const tasks = await AIService.generateTasks(description, deadline, techStack)
-    await TaskRankingService.rankMembersAndAssignTask(tasks, techStack, project._id as unknown as Types.ObjectId)
+    const tasks = await AIService.generateTasks(description, deadline, techStackId)
+    await TaskRankingService.rankMembersAndAssignTask(tasks, techStackId, project._id as unknown as Types.ObjectId)
     res.json({
       success: true,
       data: project

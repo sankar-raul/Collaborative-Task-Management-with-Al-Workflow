@@ -212,6 +212,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                                 <label className="flex items-center text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80 ml-1">Mission briefing</label>
                                 <textarea
                                     value={formData.description}
+                                    required
                                     onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                                     className="w-full px-5 py-3.5 bg-secondary/50 border border-border/50 rounded-xl focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition-all font-medium text-foreground text-sm min-h-[100px] resize-none"
                                     placeholder="Describe the mission objectives..."
