@@ -14,12 +14,12 @@ export default function UserDashboard() {
     const [loading, setLoading] = useState(true);
     useEffect(() => {
         const fetchData = async () => {
-            if (!member?.id) return;
+            if (!member?._id) return;
             try {
                 setLoading(true);
                 const [userRes, tasksRes, projectsRes] = await Promise.all([
-                    api.members.getMemberById(member.id),
-                    api.tasks.getTasksByUser(member.id),
+                    api.members.getMemberById(member._id),
+                    api.tasks.getTasksByUser(member._id),
                     api.members.getAssignedProjects()
                 ]);
 
@@ -36,7 +36,7 @@ export default function UserDashboard() {
         };
 
         fetchData();
-    }, [member?.id]);
+    }, [member?._id]);
 
     if (loading || !user) {
         return (

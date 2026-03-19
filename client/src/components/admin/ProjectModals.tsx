@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import { X, Trash2, Search, Edit3, UserPlus, AlertTriangle, ShieldCheck, User } from "lucide-react";
+import { X, Trash2, Search, Edit3, UserPlus, AlertTriangle, ShieldCheck } from "lucide-react";
 import { api } from "../../utils/api";
+import type { Member } from "@/@types/interface/MembersInterface";
+import type { Project, IProjectMember } from "../../@types/interface/ProjectInterface";
 
 interface ProjectModalsProps {
-    project: any;
+    project: Project | null;
     isEditProjectModalOpen: boolean;
     setIsEditProjectModalOpen: (open: boolean) => void;
     isDeleteProjectModalOpen: boolean;
@@ -12,17 +14,17 @@ interface ProjectModalsProps {
     setIsAddMemberModalOpen: (open: boolean) => void;
     isDeleteMemberModalOpen: boolean;
     setIsDeleteMemberModalOpen: (open: boolean) => void;
-    memberToDelete: any;
+    memberToDelete: IProjectMember | null;
     handleUpdateProject: (e: React.FormEvent<HTMLFormElement>) => Promise<void>;
     handleDeleteProject: () => Promise<void>;
     handleAddMember: (userId: string, role: string) => Promise<void>;
     handleRemoveMember: (userId: string) => Promise<void>;
     actionLoading: boolean;
-    systemUsers: any[];
+    systemUsers: Member[];
     isLoadingUsers?: boolean;
     usersError?: string | null;
     isManager?: boolean;
-    currentUser?: any;
+    currentUser?: { _id: string } | null;
 }
 
 export const ProjectModals: React.FC<ProjectModalsProps> = ({
@@ -45,7 +47,7 @@ export const ProjectModals: React.FC<ProjectModalsProps> = ({
     isLoadingUsers,
     usersError,
 }) => {
-    const [localSearchResults, setLocalSearchResults] = useState<any[]>([]);
+    const [localSearchResults, setLocalSearchResults] = useState<Member[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
 
     return (
@@ -119,7 +121,7 @@ export const ProjectModals: React.FC<ProjectModalsProps> = ({
             {isDeleteProjectModalOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
                     <div className="bg-card rounded-[2.5rem] w-full max-w-md shadow-2xl overflow-hidden p-10 border border-border/50 animate-in zoom-in-95 duration-300 text-center">
-                        <div className="bg-rose-500/10 w-20 h-20 rounded-[2rem] flex items-center justify-center mx-auto mb-6 border border-rose-500/20 shadow-lg shadow-rose-500/5">
+                        <div className="bg-rose-500/10 w-20 h-20 rounded-4xl flex items-center justify-center mx-auto mb-6 border border-rose-500/20 shadow-lg shadow-rose-500/5">
                             <Trash2 className="text-rose-500 w-10 h-10" />
                         </div>
                         <h3 className="text-2xl font-black text-foreground mb-3 tracking-tight">Decommission Project?</h3>
@@ -149,12 +151,12 @@ export const ProjectModals: React.FC<ProjectModalsProps> = ({
             {isDeleteMemberModalOpen && memberToDelete && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
                     <div className="bg-card rounded-[2.5rem] w-full max-w-md shadow-2xl overflow-hidden p-10 border border-border/50 animate-in zoom-in-95 duration-300 text-center">
-                        <div className="bg-amber-500/10 w-20 h-20 rounded-[2rem] flex items-center justify-center mx-auto mb-6 border border-amber-500/20 shadow-lg shadow-amber-500/5">
+                        <div className="bg-amber-500/10 w-20 h-20 rounded-4xl flex items-center justify-center mx-auto mb-6 border border-amber-500/20 shadow-lg shadow-amber-500/5">
                             <Trash2 className="text-amber-500 w-10 h-10" />
                         </div>
                         <h3 className="text-2xl font-black text-foreground mb-3 tracking-tight">Revoke Authorization?</h3>
                         <p className="text-muted-foreground text-sm font-medium mb-8 leading-relaxed">
-                            Are you certain you wish to revoke access for <span className="text-foreground font-black">"{memberToDelete?.user?.name}"</span> from this operational unit?
+                            Are you certain you wish to revoke access for <span className="text-foreground font-black">"{typeof memberToDelete?.user === 'string' ? memberToDelete?.user : memberToDelete?.user?.name}"</span> from this operational unit?
                         </p>
                         <div className="flex gap-4">
                             <button
@@ -166,7 +168,10 @@ export const ProjectModals: React.FC<ProjectModalsProps> = ({
                                 Abort
                             </button>
                             <button
-                                onClick={() => handleRemoveMember(memberToDelete?.user?._id)}
+                                onClick={() => {
+                                    const memberId = typeof memberToDelete?.user === 'string' ? memberToDelete?.user : memberToDelete?.user?._id;
+                                    if (memberId) handleRemoveMember(memberId);
+                                }}
                                 disabled={actionLoading}
                                 className="flex-1 py-4 bg-amber-500 text-white text-[10px] font-black uppercase tracking-widest rounded-2xl hover:bg-amber-600 transition-all disabled:opacity-50 shadow-xl shadow-amber-500/20"
                             >
@@ -220,7 +225,7 @@ export const ProjectModals: React.FC<ProjectModalsProps> = ({
                                 />
                             </div>
 
-                            <div className="max-h-80 overflow-y-auto space-y-3 pr-2 custom-scrollbar min-h-[150px] flex flex-col p-1">
+                            <div className="max-h-80 overflow-y-auto space-y-3 pr-2 custom-scrollbar min-h-37.5 flex flex-col p-1">
                                 {isLoadingUsers ? (
                                     <div className="flex flex-col items-center justify-center py-16 space-y-4 text-muted-foreground">
                                         <div className="animate-spin rounded-full h-10 w-10 border-4 border-primary/20 border-b-primary"></div>
@@ -241,7 +246,7 @@ export const ProjectModals: React.FC<ProjectModalsProps> = ({
 
                                     if (filteredUsers.length === 0) {
                                         return (
-                                            <div className="flex flex-col items-center justify-center py-16 text-muted-foreground bg-secondary/20 rounded-[2rem] border border-dashed border-border/50">
+                                            <div className="flex flex-col items-center justify-center py-16 text-muted-foreground bg-secondary/20 rounded-4xl border border-dashed border-border/50">
                                                 <AlertTriangle className="w-10 h-10 mb-4 opacity-20" />
                                                 <p className="text-[10px] font-black uppercase tracking-widest italic">
                                                     {searchQuery.length > 0 ? `Zero matches for "${searchQuery}"` : "No personnel available"}
@@ -252,7 +257,10 @@ export const ProjectModals: React.FC<ProjectModalsProps> = ({
 
                                     return filteredUsers.map((user) => {
                                         const isAdmin = user.role === "Admin";
-                                        const isAlreadyMember = project?.members?.some((m: any) => m.user?._id === user._id);
+                                        const isAlreadyMember = project?.members?.some((m: IProjectMember) => {
+                                            const memberId = typeof m.user === 'string' ? m.user : m.user?._id;
+                                            return memberId === user._id;
+                                        });
 
                                         return (
                                             <div key={user._id} className="flex items-center justify-between p-3.5 bg-card/50 border border-border/40 rounded-2xl hover:bg-card hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all group">

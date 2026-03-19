@@ -1,18 +1,18 @@
-import { Plus, Trash2, Users, Shield, User } from "lucide-react";
+import type { IProjectMember } from "@/@types/interface/ProjectInterface";
+import { Plus, Trash2, Users } from "lucide-react";
 
 interface TeamMembersListProps {
-    members: any[];
+    members: IProjectMember[];
     onAdd?: () => void;
-    onRemove?: (member: any) => void;
-    onUpdateRole?: (userId: string, role: string) => void;
-    onApprove?: (userId: string) => void;
-    onReject?: (userId: string) => void;
+    onRemove?: (member: IProjectMember) => void;
+    onUpdateRole?: (userId: string, role: string) => void | Promise<void>;
+    onApprove?: (userId: string) => Promise<void>;
+    onReject?: (userId: string) => Promise<void>;
     isManager: boolean;
     actionLoading: boolean;
     currentUserId?: string;
     loadingId?: string | null;
 }
-
 export const TeamMembersList = ({
     members,
     onAdd,
@@ -56,52 +56,60 @@ export const TeamMembersList = ({
                     </thead>
                     <tbody className="divide-y divide-border">
                         {members?.length ? (
-                            members.map((member: any, i: number) => (
-                                <tr key={i} className="hover:bg-muted/20 transition-colors group">
-                                    <td className="px-6 py-4">
-                                        <div className="flex items-center gap-3">
+                            members.map((member: IProjectMember, i: number) => {
+                                const userId = typeof member.user === "string" ? member.user : member.user?._id;
+                                const userName = typeof member.user === "string" ? member.user : member.user?.name || "Unknown";
+                                const userInitial = userName?.charAt(0)?.toUpperCase() || "U";
+                                const isApproved = typeof member.user !== "string" && member.user?.isApproved === false;
+                                const isCurrentUser = Boolean(userId && currentUserId && userId === currentUserId);
+                                const role = member.role || "User";
+
+                                return (
+                                    <tr key={userId || `member-${i}`} className="hover:bg-muted/20 transition-colors group">
+                                        <td className="px-6 py-4">
+                                            <div className="flex items-center gap-3">
                                             <div className="w-9 h-9 rounded-lg bg-primary/10 text-primary flex items-center justify-center text-xs font-bold border border-primary/20 transition-transform group-hover:scale-105">
-                                                {member.user?.name?.charAt(0)?.toUpperCase() || "U"}
+                                                {userInitial}
                                             </div>
                                             <div className="font-semibold text-foreground text-sm">
-                                                {member.user?.name || "Unknown"}
+                                                {userName}
                                             </div>
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
                                         {isManager && onUpdateRole ? (
                                             <select
-                                                value={member.role}
-                                                onChange={(e) => onUpdateRole(member.user?._id, e.target.value)}
-                                                disabled={actionLoading || member.user?._id === currentUserId}
-                                                className={`text-[10px] font-bold text-primary bg-primary/5 px-2.5 py-1.5 rounded-lg border border-primary/10 focus:ring-0 outline-none transition-all ${member.user?._id === currentUserId ? 'cursor-not-allowed opacity-40' : 'cursor-pointer hover:bg-primary/10'}`}
+                                                value={role}
+                                                onChange={(e) => onUpdateRole(userId || "", e.target.value)}
+                                                disabled={actionLoading || isCurrentUser}
+                                                className={`text-[10px] font-bold text-primary bg-primary/5 px-2.5 py-1.5 rounded-lg border border-primary/10 focus:ring-0 outline-none transition-all ${isCurrentUser ? 'cursor-not-allowed opacity-40' : 'cursor-pointer hover:bg-primary/10'}`}
                                             >
                                                 <option value="Manager">Manager</option>
                                                 <option value="User">User</option>
                                             </select>
                                         ) : (
-                                            <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border transition-all ${member.role === 'Manager'
+                                            <span className={`px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider border transition-all ${role === 'Manager'
                                                 ? 'bg-amber-500/10 text-amber-600 border-amber-500/20'
                                                 : 'bg-primary/10 text-primary border-primary/20'
                                                 }`}>
-                                                {member.role}
+                                                {role}
                                             </span>
                                         )}
                                     </td>
                                     <td className="px-6 py-4 text-right">
                                         <div className="flex items-center justify-end gap-2">
-                                            {isManager && member.user?.isApproved === false && onApprove && onReject && (
+                                            {isManager && isApproved && onApprove && onReject && (
                                                 <div className="flex items-center gap-2 mr-2">
                                                     <button
-                                                        onClick={() => onApprove(member.user?._id)}
-                                                        disabled={actionLoading || loadingId === member.user?._id}
+                                                        onClick={() => userId && onApprove(userId)}
+                                                        disabled={actionLoading || loadingId === userId}
                                                         className="px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition-all "
                                                     >
                                                         Approve
                                                     </button>
                                                     <button
-                                                        onClick={() => onReject(member.user?._id)}
-                                                        disabled={actionLoading || loadingId === member.user?._id}
+                                                        onClick={() => userId && onReject(userId)}
+                                                        disabled={actionLoading || loadingId === userId}
                                                         className="px-2.5 py-1 text-[9px] font-bold uppercase tracking-widest bg-rose-500/10 text-rose-500 rounded-lg hover:bg-rose-500/20 transition-all disabled:opacity-50"
                                                     >
                                                         Reject
@@ -109,7 +117,7 @@ export const TeamMembersList = ({
                                                 </div>
                                             )}
 
-                                            {isManager && onRemove && member.user?._id !== currentUserId && (
+                                            {isManager && onRemove && !isCurrentUser && (
                                                 <button
                                                     onClick={() => onRemove(member)}
                                                     className="p-2 text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 rounded-lg opacity-100 transition-all"
@@ -121,7 +129,8 @@ export const TeamMembersList = ({
                                         </div>
                                     </td>
                                 </tr>
-                            ))
+                            );
+                        })
                         ) : (
                             <tr>
                                 <td colSpan={3} className="px-6 py-10 text-center text-muted-foreground/40 text-xs font-medium italic">

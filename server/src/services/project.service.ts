@@ -232,10 +232,13 @@ class ProjectService {
       }
 
       const assignedMembers = await this.getMembersByTaskAsigned(projectId);
-      return  [...project.members, assignedMembers.map((member) => ({
-        user: (member as unknown as { _id: Types.ObjectId })._id,
-        role: ROLE.USER,
-      }))];
+      return [
+        ...project.members,
+        ...assignedMembers.map((member) => ({
+          user: member,
+          role: ROLE.USER,
+        })),
+      ];
     } catch (error) {
       throw error;
     }

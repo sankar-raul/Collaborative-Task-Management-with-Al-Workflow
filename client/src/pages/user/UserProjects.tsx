@@ -12,12 +12,12 @@ export default function UserProjects() {
 
     useEffect(() => {
         const fetchProjects = async () => {
-            if (!member?.id) return;
+            if (!member?._id) return;
             try {
                 setLoading(true);
                 const [projectsRes, userRes] = await Promise.all([
                     api.members.getAssignedProjects(),
-                    api.members.getMemberById(member.id)
+                    api.members.getMemberById(member._id)
                 ]);
                 if (projectsRes.success) setProjects(projectsRes.data);
                 if (userRes.success) setUser(userRes.data);
@@ -29,7 +29,7 @@ export default function UserProjects() {
         };
 
         fetchProjects();
-    }, [member?.id]);
+    }, [member?._id]);
 
     if (loading || !user) {
         return (

@@ -1,12 +1,12 @@
-import type { IUser } from "./userInterface";
+import type { Member } from "./MembersInterface";
 
 export interface Project {
     _id: string;
     projectName: string;
     description: string;
     status: string;
-    members: any[];
-    createdBy: any;
+    members: IProjectMember[];
+    createdBy: Member | string; 
     createdAt: string;
     updatedAt: string;
     deadline?: string;
@@ -26,7 +26,7 @@ export interface GetProjectsResponse {
 }
 
 export interface IProjectMember {
-  user: IUser | string; // string if not populated
+  user: Member | string;
   role: string;
 }
 

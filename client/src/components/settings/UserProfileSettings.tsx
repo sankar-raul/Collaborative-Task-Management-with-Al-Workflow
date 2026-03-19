@@ -21,9 +21,9 @@ const UserProfileSettings = () => {
 
     useEffect(() => {
         const fetchUserData = async () => {
-            if (!member?.id) return;
+            if (!member?._id) return;
             try {
-                const res = await api.members.getMemberById(member.id);
+                const res = await api.members.getMemberById(member._id);
                 if (res.success && res.data) {
                     setFormData((prev) => ({
                         ...prev,
@@ -38,7 +38,7 @@ const UserProfileSettings = () => {
             }
         };
         fetchUserData();
-    }, [member?.id]);
+    }, [member?._id]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({

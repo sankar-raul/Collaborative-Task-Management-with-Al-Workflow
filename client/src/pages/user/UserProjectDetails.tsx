@@ -10,6 +10,8 @@ import { useProjectData } from "../../hooks/useProjectData";
 import { ProjectHeader } from "../../components/project/ProjectHeader";
 import { TeamMembersList } from "../../components/project/TeamMembersList";
 import type { Task } from "../../@types/interface/TasksInterface";
+import type { IProjectMember } from "../../@types/interface/ProjectInterface";
+import { api } from "../../utils/api";
 
 const UserProjectDetails = () => {
     const { id } = useParams<{ id: string }>();
@@ -19,6 +21,7 @@ const UserProjectDetails = () => {
 
     const {
         project,
+        members,
         tasks,
         loading,
         error,
@@ -39,32 +42,37 @@ const UserProjectDetails = () => {
     const [isEditProjectModalOpen, setIsEditProjectModalOpen] = useState(false);
     const [isDeleteProjectModalOpen, setIsDeleteProjectModalOpen] = useState(false);
     const [isDeleteMemberModalOpen, setIsDeleteMemberModalOpen] = useState(false);
-    const [memberToDelete, setMemberToDelete] = useState<any>(null);
+    const [memberToDelete, setMemberToDelete] = useState<IProjectMember | null>(null);
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
-    const [newTask, setNewTask] = useState({
+    const [newTask, setNewTask] = useState<Partial<Task>>({
         title: "",
         description: "",
-        priority: "Medium" as "Low" | "Medium" | "High" | "Critical",
+        priority: "Medium",
         requiredSkills: [],
         assignedTo: "",
         deadline: "",
-        status: "To Do" as any,
-        estimatedTime: 0
+        status: "To Do",
+        eastimatedTime: 0
     });
 
-    const projectMember = project?.members?.find((m: any) => m.user?._id === member?.id);
+    const projectMember = project?.members?.find((m: IProjectMember) => {
+        const userId = typeof m.user === 'string' ? m.user : m.user?._id;
+        return userId === member?._id;
+    });
     const isManager = projectMember?.role === "Manager" || member?.role === "Admin";
 
-    const wrapAction = (action: (...args: any[]) => Promise<any>) => async (...args: any[]) => {
+    const wrapAction = <T extends unknown[], R>(action: (...args: T) => Promise<R>) => async (...args: T): Promise<R> => {
         const res = await action(...args);
-        if (res && !res.success) alert(res.message);
+        if (res && typeof res === 'object' && 'success' in res && !res.success && 'message' in res) {
+            alert(String(res.message));
+        }
         return res;
     };
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-[400px]">
+            <div className="flex items-center justify-center min-h-100">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
             </div>
         );
@@ -139,16 +147,19 @@ const UserProjectDetails = () => {
 
                 <div className="lg:col-span-4">
                     <TeamMembersList
-                        members={project.members}
+                        members={members}
                         isManager={isManager}
                         actionLoading={actionLoading}
-                        currentUserId={member?.id}
+                        currentUserId={member?._id}
                         onAdd={isManager ? () => setIsAddMemberModalOpen(true) : undefined}
-                        onRemove={isManager ? (memberItem) => {
+                        onRemove={isManager ? (memberItem: IProjectMember) => {
                             setMemberToDelete(memberItem);
                             setIsDeleteMemberModalOpen(true);
                         } : undefined}
-                        onUpdateRole={isManager ? wrapAction(handleUpdateMemberRole) : undefined}
+                        onUpdateRole={isManager ? async (userId: string, role: string) => {
+                            await wrapAction(handleUpdateMemberRole)(userId, role);
+                            return;
+                        } : undefined}
                     />
                 </div>
             </div>
@@ -203,10 +214,16 @@ const UserProjectDetails = () => {
                 setNewTask={setNewTask}
                 handleCreateTask={async (e) => {
                     e.preventDefault();
-                    const taskData = {
-                        ...newTask,
+                    type CreationPayload = Omit<Parameters<typeof api.tasks.createTask>[0], 'projectId'>;
+                    const taskData: CreationPayload = {
+                        title: newTask.title || "",
+                        priority: (newTask.priority || "Medium") as CreationPayload['priority'],
+                        status: (newTask.status || "To Do") as CreationPayload['status'],
                         requiredSkills: newTask.requiredSkills || [],
-                        deadline: newTask.deadline ? new Date(newTask.deadline).toISOString() : undefined
+                        description: newTask.description,
+                        assignedTo: typeof newTask.assignedTo === 'string' ? newTask.assignedTo : undefined,
+                        deadline: newTask.deadline ? new Date(newTask.deadline).toISOString() : undefined,
+                        eastimatedTime: newTask.eastimatedTime
                     };
                     const res = await handleCreateTask(taskData);
                     if (res && res.success) {
@@ -219,7 +236,7 @@ const UserProjectDetails = () => {
                             assignedTo: "",
                             deadline: "",
                             status: "To Do",
-                            estimatedTime: 0
+                            eastimatedTime: 0
                         });
                     }
                 }}

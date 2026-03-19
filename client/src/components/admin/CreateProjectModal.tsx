@@ -2,17 +2,27 @@ import React from "react";
 import { X, Check, Upload, ArrowRight, ArrowLeft, Calendar, Layers, Search } from "lucide-react";
 import { api } from "../../utils/api";
 import { type TechStack } from "../../@types/interface/StackInterface";
+import type { Member } from "@/@types/interface/MembersInterface";
+
+interface CreateProjectData {
+    projectName: string;
+    description: string;
+    deadline: string;
+    techStackId: string;
+    members: { user: string; role: string }[];
+    isAI: boolean;
+}
 
 interface CreateProjectModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onSubmit: (data: any) => Promise<void>;
+    onSubmit: (data: CreateProjectData) => Promise<void>;
     submitting: boolean;
-    systemUsers: any[];
+    systemUsers: Member[];
     isUsersLoading: boolean;
     selectedMembers: { user: string; role: string }[];
     toggleMemberSelection: (userId: string) => void;
-    updateMemberRole: (userId: string, role: string) => void;
+    updateMemberRole?: (userId: string, role: string) => void;
     techStacks: TechStack[];
 }
 
@@ -25,7 +35,6 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
     isUsersLoading,
     selectedMembers,
     toggleMemberSelection,
-    updateMemberRole,
     techStacks,
 }) => {
     const [step, setStep] = React.useState(1);
@@ -67,8 +76,8 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
             } else {
                 setFileError(res.message || "Failed to parse PDF.");
             }
-        } catch (err: any) {
-            setFileError(err.message || "An error occurred during upload.");
+        } catch (err: unknown) {
+            setFileError(err instanceof Error ? err.message : "An error occurred during upload.");
         } finally {
             setUploadingPdf(false);
         }
@@ -84,9 +93,9 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
     };
 
     return (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-6 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-6 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
             <div className="bg-card rounded-xl w-full max-w-2xl shadow-2xl overflow-hidden border border-border/50 animate-in zoom-in-95 duration-300">
-                <div className="p-7 sticky top-0 bg-card/80 backdrop-blur-xl z-10 border-b border-border/50 flex justify-between items-center relative">
+                <div className="p-7 sticky top-0 bg-card/80 backdrop-blur-xl z-10 border-b border-border/50 flex justify-between items-center">
                     <div>
                         <h3 className="text-xl font-extrabold text-foreground tracking-tight">
                             {step === 1 ? "Initialize Mission" : "Configure Deployment"}
@@ -106,7 +115,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                 <div className="p-8 max-h-[80vh] overflow-y-auto custom-scrollbar">
                     {step === 1 ? (
                         <div className="space-y-8 animate-in slide-in-from-left-4 duration-300">
-                            <div className="flex flex-col items-center justify-center p-12 border-2 border-dashed border-border/60 rounded-[2rem] bg-secondary/20 hover:bg-secondary/30 transition-all group relative overflow-hidden">
+                            <div className="flex flex-col items-center justify-center p-12 border-2 border-dashed border-border/60 rounded-4xl bg-secondary/20 hover:bg-secondary/30 transition-all group relative overflow-hidden">
                                 {uploadingPdf ? (
                                     <div className="flex flex-col items-center text-center space-y-4">
                                         <div className="w-12 h-12 border-4 border-orange-500/20 border-t-orange-500 rounded-full animate-spin" />
@@ -203,7 +212,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                                     value={formData.description}
                                     required
                                     onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                                    className="w-full px-5 py-3.5 bg-secondary/50 border border-border/50 rounded-xl focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition-all font-medium text-foreground text-sm min-h-[100px] resize-none"
+                                    className="w-full px-5 py-3.5 bg-secondary/50 border border-border/50 rounded-xl focus:ring-2 focus:ring-orange-500/20 focus:border-orange-500 outline-none transition-all font-medium text-foreground text-sm min-h-25 resize-none"
                                     placeholder="Describe the mission objectives..."
                                 />
                             </div>
@@ -236,7 +245,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                                     ) : (
                                         <div className="divide-y divide-border/40">
                                             {systemUsers.filter(u => u.role === "User" && (u.name.toLowerCase().includes(memberSearch.toLowerCase()) || u.email.toLowerCase().includes(memberSearch.toLowerCase()))).map(user => {
-                                                const memberData = selectedMembers?.find((m: any) => m.user === user._id);
+                                                const memberData = selectedMembers?.find((m: { user: string; role: string }) => m.user === user._id);
                                                 const isSelected = !!memberData;
                                                 return (
                                                     <div
@@ -279,7 +288,7 @@ export const CreateProjectModal: React.FC<CreateProjectModalProps> = ({
                                 <button
                                     type="submit"
                                     disabled={submitting}
-                                    className="flex-[2] py-3.5 bg-orange-500 text-white rounded-xl hover:bg-orange-600 disabled:opacity-50 transition-all font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-orange-500/20 active:scale-95 flex items-center justify-center gap-2"
+                                    className="flex-2 py-3.5 bg-orange-500 text-white rounded-xl hover:bg-orange-600 disabled:opacity-50 transition-all font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-orange-500/20 active:scale-95 flex items-center justify-center gap-2"
                                 >
                                     {submitting ? (
                                         <>

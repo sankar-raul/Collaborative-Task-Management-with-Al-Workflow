@@ -2,10 +2,12 @@ import React, { useState } from 'react';
 import { Mail, Phone, Briefcase, MapPin, Edit2, ChevronRight, X, Cpu } from 'lucide-react';
 import { api } from '../../utils/api';
 import type { Task } from '../../@types/interface/TasksInterface';
-import type { Project } from '../../@types/interface/ProjectInterface';
+import type { Project, IProjectMember } from '../../@types/interface/ProjectInterface';
+import type { Member } from '../../@types/interface/MembersInterface';
+import type { TechStack } from '../../@types/interface/StackInterface';
 
 interface OverviewProps {
-    user: any;
+    user: Member;
     tasks: Task[];
     projects: Project[];
     taskStats: {
@@ -15,7 +17,7 @@ interface OverviewProps {
         completed: number;
         overdue: number;
     };
-    onUserUpdate?: (updatedUser: any) => void;
+    onUserUpdate?: (updatedUser: Member) => void;
 }
 
 const Overview: React.FC<OverviewProps> = ({ user, tasks, projects, taskStats, onUserUpdate }) => {
@@ -114,14 +116,17 @@ const Overview: React.FC<OverviewProps> = ({ user, tasks, projects, taskStats, o
                             Specialized Tech Stacks
                         </h4>
                         <div className="flex flex-wrap gap-2">
-                            {user.stacks.map((stack: any, i: number) => (
-                                <div
-                                    key={i}
-                                    className="px-3 py-1.5 rounded-lg bg-primary/5 border border-primary/10 hover:bg-primary/10 transition-all cursor-default"
-                                >
-                                    <span className="text-[11px] font-black text-primary uppercase tracking-tight">{stack.name}</span>
-                                </div>
-                            ))}
+                            {user.stacks.map((stackId: string | TechStack, i: number) => {
+                                const stackName = typeof stackId === 'string' ? "Stack" : stackId.name;
+                                return (
+                                    <div
+                                        key={i}
+                                        className="px-3 py-1.5 rounded-lg bg-primary/5 border border-primary/10 hover:bg-primary/10 transition-all cursor-default"
+                                    >
+                                        <span className="text-[11px] font-black text-primary uppercase tracking-tight">{stackName}</span>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
                 )}
@@ -182,7 +187,10 @@ const Overview: React.FC<OverviewProps> = ({ user, tasks, projects, taskStats, o
                         <div className="flex-1 space-y-6 w-full">
                             {projects.length > 0 ? (
                                 projects.slice(0, 3).map((project, idx) => {
-                                    const userMember = project.members.find((m: any) => m.user._id === user._id || m.user === user._id);
+                                    const userMember = project.members.find((m: IProjectMember) => {
+                                        const userId = typeof m.user === 'string' ? m.user : m.user._id;
+                                        return userId === user._id;
+                                    });
                                     const colors = ['bg-purple-500', 'bg-cyan-500', 'bg-orange-500'];
 
                                     return (
@@ -204,7 +212,7 @@ const Overview: React.FC<OverviewProps> = ({ user, tasks, projects, taskStats, o
                         </div>
 
                         {/* Chart Placeholder */}
-                        <div className="relative w-40 h-40 flex-shrink-0">
+                        <div className="relative w-40 h-40 shrink-0">
                             <svg viewBox="0 0 36 36" className="w-full h-full transform -rotate-90 drop-shadow-sm">
                                 <path
                                     className="text-secondary"

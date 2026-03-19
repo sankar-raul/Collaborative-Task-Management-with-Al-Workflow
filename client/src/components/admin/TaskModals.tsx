@@ -1,26 +1,27 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { X, ShieldCheck, } from "lucide-react";
 import type { Task } from "../../@types/interface/TasksInterface";
+import type { Project, IProjectMember } from "../../@types/interface/ProjectInterface";
 import SkillsInput from "../shared/SkillsInput";
 import { api } from "@/utils/api";
 import type { Member } from "@/@types/interface/MembersInterface";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface TaskModalsProps {
-  project: any;
+  project: Project | null;
   isCreateModalOpen: boolean;
   setIsCreateModalOpen: (open: boolean) => void;
   isEditTaskModalOpen: boolean;
   setIsEditTaskModalOpen: (open: boolean) => void;
   selectedTask: Task | null;
   setSelectedTask: (task: Task | null) => void;
-  newTask: any;
-  setNewTask: (task: any) => void;
+  newTask: Partial<Task>;
+  setNewTask: React.Dispatch<React.SetStateAction<Partial<Task>>>;
   handleCreateTask: (e: React.FormEvent) => Promise<void>;
-  handleUpdateTask: (taskId: string, taskData: any) => Promise<void>;
+  handleUpdateTask: (taskId: string, taskData: Partial<Task>) => Promise<void>;
   actionLoading: boolean;
   isManager?: boolean;
-  currentUser?: any;
+  currentUser?: { _id: string } | null;
 }
 
 export const TaskModals: React.FC<TaskModalsProps> = ({
@@ -48,6 +49,14 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
     }[]
   >([]);
   const [isManualSelection, setIsManualSelection] = useState(false);
+  const [editSkills, setEditSkills] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (selectedTask) {
+      setEditSkills(selectedTask.requiredSkills || []);
+    }
+  }, [selectedTask]);
+
   
   const handleRanking = useCallback(
     async ({ requiredSkills, priority, eastimatedTime }: Partial<Task>) => {
@@ -91,7 +100,7 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
   useEffect(() => {
     // Auto-select the highest-ranked member when ranking changes (only if not manually selected)
     if (memberRanking.length > 0 && !isManualSelection) {
-      setNewTask((prev: any) => ({
+      setNewTask((prev: Partial<Task>) => ({
         ...prev,
         assignedTo: memberRanking[0].user._id,
       }));
@@ -125,7 +134,7 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
               transition={{ duration: 0.3, ease: "easeOut" }}
               className="bg-card rounded-xl w-full max-w-xl shadow-2xl overflow-hidden max-h-[90vh] overflow-y-auto custom-scrollbar border border-border/50"
             >
-              <div className="p-7 sticky top-0 bg-card/80 backdrop-blur-xl z-10 border-b border-border/50 flex justify-between items-center relative">
+              <div className="p-7 sticky top-0 bg-card/80 backdrop-blur-xl z-10 border-b border-border/50 flex justify-between items-center">
                 <div>
                   <h3 className="text-2xl font-bold text-foreground tracking-tight">
                     Initialize Task
@@ -152,7 +161,7 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
                   type="text"
                   value={newTask.title}
                   onChange={(e) =>
-                    setNewTask({ ...newTask, title: e.target.value })
+                    setNewTask((prev: Partial<Task>) => ({ ...prev, title: e.target.value }))
                   }
                   className="w-full px-6 py-4 bg-secondary/50 border border-border/50 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all placeholder:text-muted-foreground/30 font-bold text-foreground"
                   placeholder="e.g. Fix Production API Errors"
@@ -166,7 +175,7 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
                 <textarea
                   value={newTask.description}
                   onChange={(e) =>
-                    setNewTask({ ...newTask, description: e.target.value })
+                    setNewTask((prev: Partial<Task>) => ({ ...prev, description: e.target.value }))
                   }
                   className="w-full px-6 py-4 bg-secondary/50 border border-border/50 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all resize-none h-32 font-bold text-foreground"
                   placeholder="Brief task overview..."
@@ -180,10 +189,10 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
                   <select
                     value={newTask.priority}
                     onChange={(e) =>
-                      setNewTask({
-                        ...newTask,
-                        priority: e.target.value as any,
-                      })
+                      setNewTask((prev: Partial<Task>) => ({
+                        ...prev,
+                        priority: e.target.value as Task["priority"],
+                      }))
                     }
                     className="w-full px-6 py-4 bg-secondary/50 border border-border/50 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-black uppercase tracking-widest text-[10px] text-foreground"
                   >
@@ -203,10 +212,10 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
                     placeholder="Estimate"
                     value={newTask.eastimatedTime}
                     onChange={(e) =>
-                      setNewTask({
-                        ...newTask,
-                        eastimatedTime: e.target.value as any,
-                      })
+                      setNewTask((prev: Partial<Task>) => ({
+                        ...prev,
+                        eastimatedTime: Number(e.target.value),
+                      }))
                     }
                     className="w-full px-6 py-4 bg-secondary/50 border border-border/50 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-bold text-foreground"
                   />
@@ -216,7 +225,7 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
               <SkillsInput
                 skills={newTask.requiredSkills || []}
                 setSkills={(skills) => {
-                  setNewTask((prev: any) => ({
+                  setNewTask((prev: Partial<Task>) => ({
                     ...prev,
                     requiredSkills: skills,
                   }));
@@ -237,7 +246,7 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
                     memberRanking.map((ranking, index) => (
                       <label
                         key={ranking.user._id}
-                        className={`flex items-start p-6 rounded-[2rem] border transition-all cursor-pointer relative overflow-hidden group ${
+                        className={`flex items-start p-6 rounded-4xl border transition-all cursor-pointer relative overflow-hidden group ${
                           newTask.assignedTo === ranking.user._id
                             ? "bg-primary/10 border-primary/40 shadow-lg shadow-primary/5"
                             : "bg-secondary/20 border-border/40 hover:bg-secondary/40 hover:border-primary/20"
@@ -311,11 +320,15 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
                       </label>
                     ))
                   ) : (
-                    project?.members?.map((m: any) => (
+                    project?.members?.map((m: IProjectMember) => {
+                      const memberUser = typeof m.user === "string" ? null : m.user;
+                      const memberId = typeof m.user === "string" ? m.user : m.user?._id;
+                      if (!memberId || !memberUser) return null;
+                      return (
                       <label
-                        key={m.user?._id}
-                        className={`flex items-center p-5 rounded-[1.5rem] border transition-all cursor-pointer group ${
-                          newTask.assignedTo === m.user?._id
+                        key={memberId}
+                        className={`flex items-center p-5 rounded-3xl border transition-all cursor-pointer group ${
+                          newTask.assignedTo === memberId
                             ? "bg-primary/10 border-primary/40"
                             : "bg-secondary/20 border-border/40 hover:bg-secondary/40"
                         }`}
@@ -323,8 +336,8 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
                         <input
                           type="radio"
                           name="assignedTo"
-                          value={m.user?._id}
-                          checked={newTask.assignedTo === m.user?._id}
+                          value={memberId}
+                          checked={newTask.assignedTo === memberId}
                           onChange={(e) => {
                             setNewTask({ ...newTask, assignedTo: e.target.value });
                             setIsManualSelection(true);
@@ -332,23 +345,23 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
                           className="sr-only"
                         />
                         <div className="w-10 h-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center font-black text-sm border border-primary/20 mr-4">
-                            {m.user?.name.charAt(0)}
+                            {memberUser.name.charAt(0)}
                         </div>
                         <div className="flex-1">
                           <span className="font-black text-foreground text-sm">
-                            {m.user?.name}
+                            {memberUser.name}
                           </span>
                           <span className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest ml-3">
                             {m.role}
                           </span>
                         </div>
-                        {newTask.assignedTo === m.user?._id && (
+                        {newTask.assignedTo === memberId && (
                             <div className="text-primary">
                                 <ShieldCheck className="w-5 h-5" />
                             </div>
                         )}
                       </label>
-                    ))
+                    )})
                   )}
                 </div>
               </div>
@@ -384,7 +397,7 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   disabled={actionLoading}
-                  className="flex-[2] px-8 py-5 bg-orange-500 text-white font-bold text-[10px] uppercase tracking-widest rounded-2xl hover:bg-orange-600 active:scale-95 transition-all disabled:opacity-50 shadow-xl shadow-orange-500/20"
+                  className="flex-2 px-8 py-5 bg-orange-500 text-white font-bold text-[10px] uppercase tracking-widest rounded-2xl hover:bg-orange-600 active:scale-95 transition-all disabled:opacity-50 shadow-xl shadow-orange-500/20"
                 >
                   {actionLoading ? "Synchronizing..." : "Initialize Vector"}
                 </motion.button>
@@ -437,9 +450,11 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
                 const updatedData = {
                   title: formData.get("title") as string,
                   description: formData.get("description") as string,
-                  priority: formData.get("priority") as string,
-                  status: formData.get("status") as string,
+                  priority: formData.get("priority") as Task["priority"],
+                  status: formData.get("status") as Task["status"],
                   assignedTo: formData.get("assignedTo") as string,
+                  eastimatedTime: Number(formData.get("eastimatedTime")),
+                  requiredSkills: editSkills,
                   deadline: formData.get("deadline")
                     ? new Date(formData.get("deadline") as string).toISOString()
                     : undefined,
@@ -504,23 +519,40 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
                   </div>
                 </div>
                 <div className="space-y-2">
+                  <SkillsInput
+                    skills={editSkills}
+                    setSkills={setEditSkills}
+                  />
+                </div>
+                <div className="space-y-2">
                   <label className="flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/80 ml-1">
                     Personnel Assignment
                   </label>
                   <select
                     name="assignedTo"
-                    defaultValue={selectedTask.assignedTo}
-                    disabled={
-                      isManager && selectedTask.assignedTo === currentUser?.id
+                    defaultValue={
+                      typeof selectedTask.assignedTo === "string"
+                        ? selectedTask.assignedTo
+                        : selectedTask.assignedTo?._id ?? ""
                     }
-                    className={`w-full px-6 py-4 rounded-2xl border transition-all font-black uppercase tracking-widest text-[10px] ${isManager && selectedTask.assignedTo === currentUser?.id ? "bg-secondary cursor-not-allowed opacity-50 border-border/50" : "bg-secondary/50 border-border/50 focus:ring-2 focus:ring-primary/20 focus:border-primary"}`}
+                    disabled={
+                      isManager &&
+                      (typeof selectedTask.assignedTo === "string"
+                        ? selectedTask.assignedTo === currentUser?._id
+                        : selectedTask.assignedTo?._id === currentUser?._id)
+                    }
+                    className={`w-full px-6 py-4 rounded-2xl border transition-all font-black uppercase tracking-widest text-[10px] ${isManager && (typeof selectedTask.assignedTo === "string" ? selectedTask.assignedTo === currentUser?._id : selectedTask.assignedTo?._id === currentUser?._id) ? "bg-secondary cursor-not-allowed opacity-50 border-border/50" : "bg-secondary/50 border-border/50 focus:ring-2 focus:ring-primary/20 focus:border-primary"}`}
                   >
                     <option value="">Unassigned</option>
-                    {project?.members?.map((m: any) => (
-                      <option key={m.user?._id} value={m.user?._id}>
-                        {m.user?.name}
+                    {project?.members?.map((m: IProjectMember) => {
+                      const memberUser = typeof m.user === "string" ? null : m.user;
+                      const memberId = typeof m.user === "string" ? m.user : m.user?._id;
+                      if (!memberId || !memberUser) return null;
+                      return (
+                      <option key={memberId} value={memberId}>
+                        {memberUser.name}
                       </option>
-                    ))}
+                    )})}
                   </select>
                 </div>
                 <div className="space-y-2">
@@ -537,6 +569,18 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
                             .split("T")[0]
                         : ""
                     }
+                    className="w-full px-6 py-4 bg-secondary/50 border border-border/50 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-bold text-foreground"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label className="flex items-center text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/80 ml-1">
+                    Workload Estimate (Hrs)
+                  </label>
+                  <input
+                    type="number"
+                    name="eastimatedTime"
+                    min={0}
+                    defaultValue={selectedTask.eastimatedTime}
                     className="w-full px-6 py-4 bg-secondary/50 border border-border/50 rounded-2xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all font-bold text-foreground"
                   />
                 </div>
@@ -559,7 +603,7 @@ export const TaskModals: React.FC<TaskModalsProps> = ({
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   disabled={actionLoading}
-                  className="flex-[2] py-4 bg-orange-500 text-white font-bold text-[10px] uppercase tracking-widest rounded-2xl hover:bg-orange-600 active:scale-95 transition-all disabled:opacity-50 shadow-xl shadow-orange-500/20"
+                  className="flex-2 py-4 bg-orange-500 text-white font-bold text-[10px] uppercase tracking-widest rounded-2xl hover:bg-orange-600 active:scale-95 transition-all disabled:opacity-50 shadow-xl shadow-orange-500/20"
                 >
                   {actionLoading ? "Synchronizing..." : "Commit Update"}
                 </motion.button>
