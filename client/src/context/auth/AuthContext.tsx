@@ -21,11 +21,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         console.log("Decoded Token Data:", decoded);
         const role = decoded.role || "User";
 
-        const newMember = {
-          id: response.user.id,
+        const newMember: IMemeber = {
+          _id: response.user.id,
           name: response.user.name,
           email: response.user.email,
-          role
+          role: role as any
         };
 
         console.log("Logged in user member data:", newMember);

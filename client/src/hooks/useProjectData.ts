@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { api } from "../utils/api";
-import type { Project } from "../@types/interface/ProjectInterface";
+import type { Project, IProjectMember } from "../@types/interface/ProjectInterface";
 import type { Task } from "../@types/interface/TasksInterface";
 import { useProjectSocket } from "./useProjectSocket";
 
@@ -10,6 +10,7 @@ interface UseProjectDataProps {
 
 export const useProjectData = ({ projectId }: UseProjectDataProps) => {
     const [project, setProject] = useState<Project | null>(null);
+    const [members, setMembers] = useState<IProjectMember[]>([]);
     const [tasks, setTasks] = useState<Task[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -18,14 +19,24 @@ export const useProjectData = ({ projectId }: UseProjectDataProps) => {
     const fetchProjectAndTasks = useCallback(async () => {
         if (!projectId) return;
         try {
-            const [projectRes, tasksRes] = await Promise.all([
+            const [projectRes, tasksRes, membersRes] = await Promise.all([
                 api.projects.getProjectById(projectId),
-                api.tasks.getTasksByProject(projectId)
+                api.tasks.getTasksByProject(projectId),
+                api.projects.getProjectMembers(projectId),
             ]);
             if (projectRes.success) setProject(projectRes.data);
             if (tasksRes.success) setTasks(tasksRes.data);
-        } catch (err: any) {
-            setError(err.message || "Failed to load project data");
+            if (membersRes.success) {
+                const unique = new Map<string, IProjectMember>();
+                membersRes.data.forEach((m) => {
+                    const id = typeof m.user === "string" ? m.user : m.user?._id;
+                    if (!id) return;
+                    if (!unique.has(id)) unique.set(id, m);
+                });
+                setMembers(Array.from(unique.values()));
+            }
+        } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : "Failed to load project data");
         }
     }, [projectId]);
 
@@ -76,9 +87,9 @@ export const useProjectData = ({ projectId }: UseProjectDataProps) => {
                 await fetchProjectAndTasks();
                 return { success: true };
             }
-            return { success: false, message: (res as any)?.message || "Internal error" };
-        } catch (err: any) {
-            return { success: false, message: err.message };
+            return { success: false, message: (res as { message?: string }).message || "Internal error" };
+        } catch (err: unknown) {
+            return { success: false, message: err instanceof Error ? err.message : "An error occurred" };
         } finally {
             setActionLoading(false);
         }
@@ -93,9 +104,9 @@ export const useProjectData = ({ projectId }: UseProjectDataProps) => {
                 await fetchProjectAndTasks();
                 return { success: true };
             }
-            return { success: false, message: (res as any)?.message || "Internal error" };
-        } catch (err: any) {
-            return { success: false, message: err.message };
+            return { success: false, message: (res as { message?: string }).message || "Internal error" };
+        } catch (err: unknown) {
+            return { success: false, message: err instanceof Error ? err.message : "An error occurred" };
         } finally {
             setActionLoading(false);
         }
@@ -110,15 +121,15 @@ export const useProjectData = ({ projectId }: UseProjectDataProps) => {
                 await fetchProjectAndTasks();
                 return { success: true };
             }
-            return { success: false, message: (res as any)?.message || "Internal error" };
-        } catch (err: any) {
-            return { success: false, message: err.message };
+            return { success: false, message: (res as { message?: string }).message || "Internal error" };
+        } catch (err: unknown) {
+            return { success: false, message: err instanceof Error ? err.message : "An error occurred" };
         } finally {
             setActionLoading(false);
         }
     };
 
-    const handleUpdateProject = async (projectData: any) => {
+    const handleUpdateProject = async (projectData: Partial<Project>) => {
         if (!projectId) return;
         try {
             setActionLoading(true);
@@ -127,9 +138,9 @@ export const useProjectData = ({ projectId }: UseProjectDataProps) => {
                 await fetchProjectAndTasks();
                 return { success: true };
             }
-            return { success: false, message: (res as any)?.message || "Internal error" };
-        } catch (err: any) {
-            return { success: false, message: err.message };
+            return { success: false, message: (res as { message?: string }).message || "Internal error" };
+        } catch (err: unknown) {
+            return { success: false, message: err instanceof Error ? err.message : "An error occurred" };
         } finally {
             setActionLoading(false);
         }
@@ -143,33 +154,32 @@ export const useProjectData = ({ projectId }: UseProjectDataProps) => {
             if (res.success) {
                 return { success: true };
             }
-            return { success: false, message: (res as any)?.message || "Internal error" };
-        } catch (err: any) {
-            return { success: false, message: err.message };
+            return { success: false, message: (res as { message?: string }).message || "Internal error" };
+        } catch (err: unknown) {
+            return { success: false, message: err instanceof Error ? err.message : "An error occurred" };
         } finally {
             setActionLoading(false);
         }
     };
 
-    const handleCreateTask = async (taskData: any) => {
+    const handleCreateTask = async (taskData: Omit<Parameters<typeof api.tasks.createTask>[0], 'projectId'>) => {
         if (!projectId) return;
-        console.log("creating")
         try {
             setActionLoading(true);
-            const res = await api.tasks.createTask({ ...taskData, projectId });
+            const res = await api.tasks.createTask({ ...taskData, projectId } as Parameters<typeof api.tasks.createTask>[0]);
             if (res.success) {
                 await fetchProjectAndTasks();
                 return { success: true };
             }
-            return { success: false, message: (res as any)?.message || "Internal error" };
-        } catch (err: any) {
-            return { success: false, message: err.message };
+            return { success: false, message: (res as { message?: string }).message || "Internal error" };
+        } catch (err: unknown) {
+            return { success: false, message: err instanceof Error ? err.message : "An error occurred" };
         } finally {
             setActionLoading(false);
         }
     };
 
-    const handleUpdateTask = async (taskId: string, taskData: any) => {
+    const handleUpdateTask = async (taskId: string, taskData: Partial<Task>) => {
         try {
             setActionLoading(true);
             const res = await api.tasks.updateTask(taskId, taskData);
@@ -177,9 +187,9 @@ export const useProjectData = ({ projectId }: UseProjectDataProps) => {
                 await fetchProjectAndTasks();
                 return { success: true };
             }
-            return { success: false, message: (res as any)?.message || "Internal error" };
-        } catch (err: any) {
-            return { success: false, message: err.message };
+            return { success: false, message: (res as { message?: string }).message || "Internal error" };
+        } catch (err: unknown) {
+            return { success: false, message: err instanceof Error ? err.message : "An error occurred" };
         } finally {
             setActionLoading(false);
         }
@@ -193,9 +203,9 @@ export const useProjectData = ({ projectId }: UseProjectDataProps) => {
                 await fetchProjectAndTasks();
                 return { success: true };
             }
-            return { success: false, message: (res as any)?.message || "Internal error" };
-        } catch (err: any) {
-            return { success: false, message: err.message };
+            return { success: false, message: (res as { message?: string }).message || "Internal error" };
+        } catch (err: unknown) {
+            return { success: false, message: err instanceof Error ? err.message : "An error occurred" };
         } finally {
             setActionLoading(false);
         }
@@ -203,6 +213,7 @@ export const useProjectData = ({ projectId }: UseProjectDataProps) => {
 
     return {
         project,
+        members,
         tasks,
         loading,
         error,

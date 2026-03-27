@@ -69,7 +69,7 @@ export default function AdminDashboard() {
         }
     };
 
-    const totalUsers: number = systemUsers.filter(user => user._id !== member?.id).length;
+    const totalUsers: number = systemUsers.filter(user => user._id !== member?._id).length;
     return (
         <div className="space-y-6">
             {/* Header */}
@@ -120,7 +120,7 @@ export default function AdminDashboard() {
                     {/* Users */}
                     <div className="divide-y">
                         {systemUsers
-                            .filter(user => user._id !== member?.id)
+                            .filter(user => user._id !== member?._id)
                             .map((user) => (
                                 <div
                                     key={user._id}

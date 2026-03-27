@@ -25,10 +25,20 @@ export const me = async (): Promise<MeResponse | ErrorResponse> => {
     }
 }
 
-export const login = async (payload: any) => {
-    return await post(`${ROUTE}/login`, payload);
+export const login = async (payload: any): Promise<{
+    success: boolean;
+    auth: { access_token: string };
+    user: { id: string; name: string; email: string };
+    message?: string;
+}> => {
+    return await post<{
+        success: boolean;
+        auth: { access_token: string };
+        user: { id: string; name: string; email: string };
+        message?: string;
+    }>(`${ROUTE}/login`, payload);
 };
 
-export const register = async (payload: any) => {
-    return await post(`${ROUTE}/register`, payload);
+export const register = async (payload: any): Promise<{ success: boolean; message: string }> => {
+    return await post<{ success: boolean; message: string }>(`${ROUTE}/register`, payload);
 };

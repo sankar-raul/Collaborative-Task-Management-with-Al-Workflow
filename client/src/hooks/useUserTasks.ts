@@ -16,17 +16,17 @@ export function useUserTasks(): UseUserTasksReturn {
     const [loading, setLoading] = useState(true);
 
     const fetchTasks = useCallback(async () => {
-        if (!member?.id) return;
+        if (!member?._id) return;
         try {
             setLoading(true);
-            const res = await api.tasks.getTasksByUser(member.id);
+            const res = await api.tasks.getTasksByUser(member._id);
             if (res.success) setTasks(res.data);
         } catch (error) {
             console.error('Failed to fetch user tasks:', error);
         } finally {
             setLoading(false);
         }
-    }, [member?.id]);
+    }, [member?._id]);
 
     useEffect(() => {
         fetchTasks();
@@ -41,12 +41,12 @@ export function useUserTasks(): UseUserTasksReturn {
         } catch (error) {
             console.error('Error updating task status:', error);
             // Revert by re-fetching
-            if (member?.id) {
-                const tasksRes = await api.tasks.getTasksByUser(member.id);
+            if (member?._id) {
+                const tasksRes = await api.tasks.getTasksByUser(member._id);
                 if (tasksRes.success) setTasks(tasksRes.data);
             }
         }
-    }, [member?.id]);
+    }, [member?._id]);
 
     return { tasks, loading, refetch: fetchTasks, updateTaskStatus };
 }

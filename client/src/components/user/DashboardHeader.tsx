@@ -1,7 +1,8 @@
 import React from 'react';
+import type { Member } from '../../@types/interface/MembersInterface';
 
 interface DashboardHeaderProps {
-    user: any;
+    user: Member;
 }
 
 const DashboardHeader: React.FC<DashboardHeaderProps> = ({ user }) => {

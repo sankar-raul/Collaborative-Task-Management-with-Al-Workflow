@@ -1,11 +1,12 @@
 import React from 'react';
 import { Briefcase, ChevronRight, CheckSquare } from 'lucide-react';
-import type { Project } from '../../@types/interface/ProjectInterface';
+import type { Project, IProjectMember } from '../../@types/interface/ProjectInterface';
+import type { Member } from '../../@types/interface/MembersInterface';
 import { useNavigate } from 'react-router-dom';
 
 interface ProjectsTabProps {
     projects: Project[];
-    user: any;
+    user: Member;
 }
 
 const ProjectsTab: React.FC<ProjectsTabProps> = ({ projects, user }) => {
@@ -22,7 +23,10 @@ const ProjectsTab: React.FC<ProjectsTabProps> = ({ projects, user }) => {
 
             <div className="space-y-4">
                 {projects.map((project) => {
-                    const userMember = project.members.find((m: any) => m.user._id === user._id || m.user === user._id);
+                    const userMember = project.members.find((m: IProjectMember) => {
+                        const userId = typeof m.user === 'string' ? m.user : m.user?._id;
+                        return userId === user._id;
+                    });
 
                     return (
                         <div
@@ -39,7 +43,7 @@ const ProjectsTab: React.FC<ProjectsTabProps> = ({ projects, user }) => {
                                         {project.projectName}
                                     </h4>
                                     <p className="text-xs text-muted-foreground mt-1.5 flex items-center gap-2">
-                                        <span className="font-black text-primary bg-primary/10 px-2.5 py-1 rounded-lg uppercase tracking-[0.1em] text-[10px]">
+                                        <span className="font-black text-primary bg-primary/10 px-2.5 py-1 rounded-lg uppercase tracking-widest text-[10px]">
                                             {userMember?.role || 'Member'}
                                         </span>
                                         <span className="text-muted-foreground/40">•</span>

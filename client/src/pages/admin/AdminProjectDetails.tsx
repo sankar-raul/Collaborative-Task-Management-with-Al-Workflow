@@ -4,6 +4,7 @@ import { ArrowLeft, Plus, LayoutGrid,  Settings } from "lucide-react";
 import { api } from "../../utils/api";
 
 import { useUsers } from "../../context/users";
+import { useAuth } from "../../context/auth/useAuth";
 import { ProjectModals } from "../../components/admin/ProjectModals";
 import { TaskModals } from "../../components/admin/TaskModals";
 import { TaskItem } from "../../components/admin/TaskItem";
@@ -11,14 +12,17 @@ import { useProjectData } from "../../hooks/useProjectData";
 import { ProjectHeader } from "../../components/project/ProjectHeader";
 import { TeamMembersList } from "../../components/project/TeamMembersList";
 import type { Task } from "../../@types/interface/TasksInterface";
+import type { IProjectMember } from "../../@types/interface/ProjectInterface";
 
 export const AdminProjectDetails = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
     const { systemUsers } = useUsers();
+    const { member } = useAuth();
 
     const {
         project,
+        members,
         tasks,
         loading,
         error,
@@ -30,7 +34,8 @@ export const AdminProjectDetails = () => {
         handleDeleteProject,
         handleCreateTask,
         handleUpdateTask,
-        handleDeleteTask
+        handleDeleteTask,
+        refresh,
     } = useProjectData({ projectId: id });
 
     // Component Local State for Modals
@@ -40,29 +45,32 @@ export const AdminProjectDetails = () => {
     const [isEditProjectModalOpen, setIsEditProjectModalOpen] = useState(false);
     const [isDeleteProjectModalOpen, setIsDeleteProjectModalOpen] = useState(false);
     const [isDeleteMemberModalOpen, setIsDeleteMemberModalOpen] = useState(false);
-    const [memberToDelete, setMemberToDelete] = useState<any>(null);
+    const [memberToDelete, setMemberToDelete] = useState<IProjectMember | null>(null);
+    const [loadingId, setLoadingId] = useState<string | null>(null);
     const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
-    const [newTask, setNewTask] = useState({
+    const [newTask, setNewTask] = useState<Partial<Task>>({
         title: "",
         description: "",
-        priority: "Medium" as "Low" | "Medium" | "High" | "Critical",
+        priority: "Medium",
         requiredSkills: [],
         assignedTo: "",
         deadline: "",
-        status: "To Do" as any,
-        estimatedTime: 0
+        status: "To Do",
+        eastimatedTime: 0
     });
 
-    const wrapAction = (action: (...args: any[]) => Promise<any>) => async (...args: any[]) => {
+    const wrapAction = <T extends unknown[], R>(action: (...args: T) => Promise<R>) => async (...args: T): Promise<R> => {
         const res = await action(...args);
-        if (res && !res.success) alert(res.message);
+        if (res && typeof res === 'object' && 'success' in res && !res.success && 'message' in res) {
+            alert(String(res.message));
+        }
         return res;
     };
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center min-h-[400px]">
+            <div className="flex items-center justify-center min-h-100">
                 <div className="animate-spin rounded-full h-10 w-10 border-4 border-primary/20 border-b-primary"></div>
             </div>
         );
@@ -78,7 +86,7 @@ export const AdminProjectDetails = () => {
                     <ArrowLeft className="w-5 h-5 mr-3" />
                     Return to Projects
                 </button>
-                <div className="p-10 bg-rose-500/10 text-rose-500 rounded-[2rem] border border-rose-500/20 font-bold shadow-sm">
+                <div className="p-10 bg-rose-500/10 text-rose-500 rounded-4xl border border-rose-500/20 font-bold shadow-sm">
                     {error || "Project resource not found or decommissioned."}
                 </div>
             </div>
@@ -86,7 +94,7 @@ export const AdminProjectDetails = () => {
     }
 
     return (
-        <div className="p-8 max-w-[1400px] mx-auto min-h-screen space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
+        <div className="p-8 max-w-350 mx-auto min-h-screen space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
             <button
                 onClick={() => navigate("/admin/projects")}
                 className="flex items-center text-muted-foreground hover:text-foreground font-bold text-[10px] uppercase tracking-[0.2em] transition-all group"
@@ -112,7 +120,7 @@ export const AdminProjectDetails = () => {
                                     <LayoutGrid className="w-6 h-6 text-orange-600" />
                                 </div>
                                 <div>
-                                    <h3 className="text-xl font-[800] text-foreground tracking-[-0.02em]">Project Backlog</h3>
+                                    <h3 className="text-xl font-extrabold text-foreground tracking-[-0.02em]">Project Backlog</h3>
                                     <p className="text-[9px] uppercase font-black tracking-[0.25em] text-muted-foreground/30 mt-1">Vector Management Protocol</p>
                                 </div>
                             </div>
@@ -152,24 +160,32 @@ export const AdminProjectDetails = () => {
                 </div>
 
                 <div className="lg:col-span-4 space-y-8">
-                    <TeamMembersList
-                        members={project.members}
+                        <TeamMembersList
+                        members={members}
                         isManager={true}
                         actionLoading={actionLoading}
+                        loadingId={loadingId}
                         onAdd={() => setIsAddMemberModalOpen(true)}
-                        onRemove={(member) => {
-                            setMemberToDelete(member);
+                        onRemove={(memberItem: IProjectMember) => {
+                            setMemberToDelete(memberItem);
                             setIsDeleteMemberModalOpen(true);
                         }}
-                        onUpdateRole={wrapAction(handleUpdateMemberRole)}
+                        onUpdateRole={async (userId: string, role: string) => {
+                            await wrapAction(handleUpdateMemberRole)(userId, role);
+                            return;
+                        }}
                         onApprove={async (id) => {
+                            setLoadingId(id);
                             const res = await api.members.approveMember(id);
-                            if (res.success) window.location.reload(); // Quick fix to refresh data if useProjectData doesn't expose refresh
+                            setLoadingId(null);
+                            if (res.success) await refresh();
                         }}
                         onReject={async (id) => {
                             if (!window.confirm("Reject this member's registration?")) return;
+                            setLoadingId(id);
                             const res = await api.members.rejectMember(id);
-                            if (res.success) window.location.reload();
+                            setLoadingId(null);
+                            if (res.success) await refresh();
                         }}
                     />
                 </div>
@@ -228,10 +244,16 @@ export const AdminProjectDetails = () => {
                 setNewTask={setNewTask}
                 handleCreateTask={async (e) => {
                     e.preventDefault();
-                    const taskData = {
-                        ...newTask,
+                    type CreationPayload = Omit<Parameters<typeof api.tasks.createTask>[0], 'projectId'>;
+                    const taskData: CreationPayload = {
+                        title: newTask.title || "",
+                        priority: (newTask.priority || "Medium") as CreationPayload['priority'],
+                        status: (newTask.status || "To Do") as CreationPayload['status'],
                         requiredSkills: newTask.requiredSkills || [],
-                        deadline: newTask.deadline ? new Date(newTask.deadline).toISOString() : undefined
+                        description: newTask.description,
+                        assignedTo: typeof newTask.assignedTo === 'string' ? newTask.assignedTo : undefined,
+                        deadline: newTask.deadline ? new Date(newTask.deadline).toISOString() : undefined,
+                        eastimatedTime: newTask.eastimatedTime
                     };
                     const res = await handleCreateTask(taskData);
                     if (res?.success) {
@@ -244,7 +266,7 @@ export const AdminProjectDetails = () => {
                             assignedTo: "",
                             deadline: "",
                             status: "To Do",
-                            estimatedTime: 0
+                            eastimatedTime: 0
                         });
                     } else if (res) alert(res.message);
                 }}
@@ -254,6 +276,7 @@ export const AdminProjectDetails = () => {
                     else if (res) alert(res.message);
                 }}
                 actionLoading={actionLoading}
+                currentUser={member}
             />
         </div>
     );

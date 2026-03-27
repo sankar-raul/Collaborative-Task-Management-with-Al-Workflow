@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Clock, Edit2, Trash2, MoreVertical, Hash, User as UserIcon } from "lucide-react";
 import type { Task } from "../../@types/interface/TasksInterface";
+import type { Project } from "../../@types/interface/ProjectInterface";
 
 interface TaskItemProps {
     task: Task;
-    project: any;
+    project?: Project;
     onEdit: (task: Task) => void;
     onDelete: (taskId: string) => void;
     showActions?: boolean;
@@ -38,7 +39,7 @@ export const TaskItem: React.FC<TaskItemProps> = ({ task, onEdit, onDelete, show
                         <span className="text-[9px] font-black text-primary uppercase tracking-[0.25em] bg-primary/10 px-2 py-0.5 rounded-md">Task</span>
                         <div className={`h-1.5 w-1.5 rounded-full ${task.status === 'Completed' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]'}`} />
                     </div>
-                    <p className={`text-[17px] font-[800] tracking-[-0.02em] ${task.status === 'Completed' ? 'text-emerald-500 line-through opacity-60' : 'text-foreground'}`}>
+                    <p className={`text-[17px] font-extrabold tracking-[-0.02em] ${task.status === 'Completed' ? 'text-emerald-500 line-through opacity-60' : 'text-foreground'}`}>
                         {task.title}
                     </p>
                     {task.description && (

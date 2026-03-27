@@ -35,7 +35,7 @@ const Register = () => {
     console.log(formData);
     try {
       const response = await api.auth.register(formData);
-      if (response.success && response.auth?.access_token) {
+      if (response.success) {
         const loginSuccess = await login(formData.email, formData.password);
         if (loginSuccess) {
           navigate("/");

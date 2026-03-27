@@ -1,34 +1,34 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { headers } from "../../config/config";
 import API from "./api";
 
-export const get = async (
+export const get = async <T = unknown>(
   endPoint: string,
   filter?: object,
   token?: string
-): Promise<any> => {
+): Promise<T> => {
   try {
-    const queryString = new URLSearchParams(filter as any).toString();
+    const queryString = new URLSearchParams(filter as Record<string, string>).toString();
     if (!token) {
-      const response = await API.get<any>(`${endPoint}?${queryString}`);
+      const response = await API.get<T>(`${endPoint}?${queryString}`);
       return response.data;
     } else {
-      const response = await API.get<any>(`${endPoint}?${queryString}`, {
+      const response = await API.get<T>(`${endPoint}?${queryString}`, {
         headers: { ...headers, Authorization: `Bearer ${token}` },
       });
       return response.data;
     }
-  } catch (error: any) {
-    throw new Error(error.response?.data?.message || "Something Went Wrong");
+  } catch (error: unknown) {
+    const err = error as { response?: { data?: { message?: string } } };
+    throw new Error(err.response?.data?.message || "Something Went Wrong");
   }
 };
 
-export const post = async (
+export const post = async <T = unknown>(
   endPoint: string,
   payload: object,
   token?: string,
   customHeaders?: object
-): Promise<any> => {
+): Promise<T> => {
   try {
     const requestHeaders = {
       ...headers,
@@ -37,76 +37,80 @@ export const post = async (
     };
 
     if (!token && !customHeaders) {
-      const response = await API.post<any>(endPoint, payload);
+      const response = await API.post<T>(endPoint, payload);
       return response.data;
     } else {
-      const response = await API.post<any>(endPoint, payload, {
+      const response = await API.post<T>(endPoint, payload, {
         headers: requestHeaders,
       });
       return response.data;
     }
-  } catch (error: any) {
-    throw new Error(error.response?.data?.message || "Something Went Wrong");
+  } catch (error: unknown) {
+    const err = error as { response?: { data?: { message?: string } } };
+    throw new Error(err.response?.data?.message || "Something Went Wrong");
   }
 };
 
-export const patch = async (
+export const patch = async <T = unknown>(
   endPoint: string,
   payload: object,
   token?: string
-): Promise<any> => {
+): Promise<T> => {
   try {
     if (!token) {
-      const response = await API.patch<any>(endPoint, payload);
+      const response = await API.patch<T>(endPoint, payload);
       return response.data;
     } else {
-      const response = await API.patch<any>(endPoint, payload, {
+      const response = await API.patch<T>(endPoint, payload, {
         headers: { ...headers, Authorization: `Bearer ${token}` },
       });
       return response.data;
     }
-  } catch (error: any) {
-    throw new Error(error.response?.data?.message || "Something Went Wrong");
+  } catch (error: unknown) {
+    const err = error as { response?: { data?: { message?: string } } };
+    throw new Error(err.response?.data?.message || "Something Went Wrong");
   }
 };
 
-export const put = async (
+export const put = async <T = unknown>(
   endPoint: string,
   payload: object,
   token?: string
-): Promise<any> => {
+): Promise<T> => {
   try {
     if (!token) {
-      const response = await API.put<any>(endPoint, payload);
+      const response = await API.put<T>(endPoint, payload);
       return response.data;
     } else {
-      const response = await API.put<any>(endPoint, payload, {
+      const response = await API.put<T>(endPoint, payload, {
         headers: { ...headers, Authorization: `Bearer ${token}` },
       });
       return response.data;
     }
-  } catch (error: any) {
-    throw new Error(error.response?.data?.message || "Something Went Wrong");
+  } catch (error: unknown) {
+    const err = error as { response?: { data?: { message?: string } } };
+    throw new Error(err.response?.data?.message || "Something Went Wrong");
   }
 };
 
-export const deleteRequest = async (
+export const deleteRequest = async <T = unknown>(
   endPoint: string,
   token?: string,
   data?: object
-): Promise<any> => {
+): Promise<T> => {
   try {
     if (!token) {
-      const response = await API.delete<any>(endPoint, { data });
+      const response = await API.delete<T>(endPoint, { data });
       return response.data;
     } else {
-      const response = await API.delete<any>(endPoint, {
+      const response = await API.delete<T>(endPoint, {
         headers: { ...headers, Authorization: `Bearer ${token}` },
         data,
       });
       return response.data;
     }
-  } catch (error: any) {
-    throw new Error(error.response?.data?.message || "Something Went Wrong");
+  } catch (error: unknown) {
+    const err = error as { response?: { data?: { message?: string } } };
+    throw new Error(err.response?.data?.message || "Something Went Wrong");
   }
 };

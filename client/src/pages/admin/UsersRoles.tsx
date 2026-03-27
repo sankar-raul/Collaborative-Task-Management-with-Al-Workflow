@@ -70,7 +70,7 @@ export const UsersRoles = () => {
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-border">
-                            {systemUsers.filter(user => user._id !== member?.id).map((user) => (
+                            {systemUsers.filter(user => user._id !== member?._id).map((user) => (
                                 <tr key={user._id} className="hover:bg-muted/30 transition-colors group">
                                     <td className="px-8 py-5">
                                         <div className="flex items-center gap-4">
