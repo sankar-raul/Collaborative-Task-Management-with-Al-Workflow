@@ -105,6 +105,10 @@ class TaskRankingService {
   ) {
     try {
       const workloadByMember = await this.getWorkLoads(techstack);
+
+      // return () => {
+    // use closure here to calculate score for each member based on the task and their workload
+      // }
       workloadByMember.forEach((member) => {
         member.score = this.calculateScore({ task, userStat: member });
       });
@@ -124,6 +128,7 @@ class TaskRankingService {
     tasks: ITask[],
     techstack: string,
     project_id: Types.ObjectId,
+    totalProjectHours: number,
   ) {
     try {
       const assignedTasks = await Promise.all(

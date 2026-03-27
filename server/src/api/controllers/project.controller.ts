@@ -1,4 +1,5 @@
 import { ROLE } from "@/constants/role.constant";
+import ProjectModel from "@/models/project/project.model";
 import AIService from "@/services/ai.service";
 import PdfParserService from "@/services/pdfParser.service";
 import ProjectService from "@/services/project.service";
@@ -84,10 +85,13 @@ export const createProjectByAI = async (req: Request, res: Response) => {
       deadline,
       techStackId,
     );
+    const totalProjectHours = tasks.reduce((sum, task) => sum + (task.eastimatedTime || 0), 0);
+    await ProjectModel.findByIdAndUpdate(project._id, { totalProjectHours }, { new: true }).exec();
     await TaskRankingService.rankMembersAndAssignTask(
       tasks,
       techStackId,
       project._id as unknown as Types.ObjectId,
+      totalProjectHours,
     );
     res.json({
       success: true,

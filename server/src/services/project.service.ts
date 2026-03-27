@@ -68,14 +68,14 @@ class ProjectService {
   }: IProject) {
     try {
       const project = new ProjectModel({ projectName, description, members, deadline});
-      await project.save();
+      // await project.save();
       await connectMembersToProject(
         project._id.toString(),
         project,
         members.map((m) => m.user.toString()),
       );
       // call create project ai service here
-      return project as IProject;
+      return project;
     } catch (error) {
       throw error;
     }

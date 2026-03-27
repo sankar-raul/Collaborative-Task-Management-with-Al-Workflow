@@ -6,4 +6,5 @@ export interface IProject {
   members: IProjectMember[];
   deadline?: string;
   _id?: string;
+  eastimatedTime?: number; // in hours
 }

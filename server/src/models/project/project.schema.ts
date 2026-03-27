@@ -12,6 +12,7 @@ const projectSchema = new Schema<IProject>(
       },
     ],
     deadline: { type: String },
+    eastimatedTime: { type: Number, default: 0 }, // in hours
   },
   { timestamps: true }
 );
